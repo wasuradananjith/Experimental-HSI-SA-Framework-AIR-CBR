@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.chaquo.python.PyException;
@@ -46,7 +47,9 @@ import java.util.concurrent.TimeUnit;
 
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private GoogleMap swarmMap;
+    private SeekBar radiusSeekBar;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
     private boolean isSimStopped = false;
@@ -57,7 +60,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private List<CircleOptions> circleOptionsList = new ArrayList();
-    private Circle selectedCircle = null;
+    private Double selectedCircleRadius = null;
     private LatLng selectedCircleLatLng = null;
     Handler handler = new Handler();
     Runnable updateMarker = new Runnable() {
@@ -75,6 +78,31 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
+
+        radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
+
+        radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                for (CircleOptions circleOptions: circleOptionsList) {
+                    LatLng currentCircleLatLng = circleOptions.getCenter();
+                    if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
+                        selectedCircleRadius = (double) progress;
+                        circleOptions.radius(selectedCircleRadius);
+                    }
+                }
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //seekBar.setProgress((int) Math.round(selectedCircleRadius));
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+//                selectedCircleRadius = Double.valueOf(progressChangedValue);
+//                Toast.makeText(SwarmActivity.this, "Seek bar progress is :" + progressChangedValue,
+//                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -99,14 +127,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng latLng) {
+                // Add a circle to the space, upon a single click on the map
                 CircleOptions circleOptions = new CircleOptions()
                         .center(latLng)
-                        .radius(10)
+                        .radius(DEFAULT_CIRCLE_RADIUS)
                         .strokeWidth(10)
                         .strokeColor(Color.GREEN)
                         .fillColor(Color.argb(128, 255, 0, 0))
                         .clickable(true);
                 selectedCircleLatLng = latLng;
+                selectedCircleRadius = circleOptions.getRadius();
                 circleOptionsList.add(circleOptions);
             }
         });
@@ -115,13 +145,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onMapLongClick(@NonNull LatLng latLng) {
                 for (int i = 0; i < circleOptionsList.size(); i++) {
-                    LatLng center = circleOptionsList.get(i).getCenter();
+                    CircleOptions circleOptions = circleOptionsList.get(i);
+                    LatLng center = circleOptions.getCenter();
                     float[] distance = new float[2];
                     Location.distanceBetween(latLng.latitude, latLng.longitude, center.latitude,
                             center.longitude, distance);
-                    if( distance[0] <= circleOptionsList.get(i).getRadius() ){
+                    // If the long clicked point is inside a circle,
+                    // prompt the region deletion dialog
+                    if( distance[0] <= circleOptions.getRadius() ){
                         deleteRegionPopup(i);
                         selectedCircleLatLng = center;
+                        selectedCircleRadius = circleOptions.getRadius();
+                        return;
                     }
                 }
             }
@@ -180,21 +215,39 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         for (CircleOptions circleOptions: circleOptionsList) {
             LatLng currentCircleLatLng = circleOptions.getCenter();
-            if (isSelectedCircleLatLngEquals(currentCircleLatLng))
+            // Change the colour of the selected circle's stroke
+            if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
                 circleOptions.strokeColor(circleOptions.getStrokeColor() ^ 0x00ffffff);
-            else
+                selectedCircleRadius = circleOptions.getRadius();
+            } else {
                 circleOptions.strokeColor(Color.GREEN);
+            }
             swarmMap.addCircle(circleOptions);
         }
         swarmMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
             @Override
             public void onCircleClick(Circle circle) {
-                if (selectedCircleLatLng == null)
-                    selectedCircleLatLng = circle.getCenter();
-                else
+                // If the clicked circle is already selected, deselect it
+                if (isSelectedCircleLatLngEquals(circle.getCenter())) {
                     selectedCircleLatLng = null;
+                    selectedCircleRadius = null;
+                } else {
+                    // If the clicked circle is not already selected, select it
+                    selectedCircleLatLng = circle.getCenter();
+                    selectedCircleRadius = circle.getRadius();
+                }
             }
         });
+
+        // When a circle is not selected, disable the radius seek bar
+        if (selectedCircleRadius == null) {
+            radiusSeekBar.setEnabled(false);
+        } else {
+            // When a circle is selected, enable the radius seek bar and
+            // set the progress to the selected circle's radius
+            radiusSeekBar.setEnabled(true);
+            radiusSeekBar.setProgress((int)Math.round(selectedCircleRadius));
+        }
     }
 
     private void deleteRegionPopup(int index){
@@ -214,6 +267,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
             circleOptionsList.remove(index);
             selectedCircleLatLng = null;
+            selectedCircleRadius = null;
         });
 
         // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
