@@ -54,9 +54,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private PyObject sim = null;
     private boolean isSimStopped = false;
     private Map<String, ArrayList<Float>> locations;
-    private LatLng bottomLeftLatLng = new LatLng(-35.290891, 149.168508);
-    private LatLng bottomRightLatLng = new LatLng(-35.290891, 149.169253);
-    private LatLng basketBallCourt = new LatLng(-35.290575, 149.168852);
+    private LatLng bottomLeftLatLng = new LatLng(-35.293925, 149.166375);
+    private LatLng bottomRightLatLng = new LatLng(-35.293925, 149.167633);
+    private LatLng mapCentre = new LatLng(-35.293379, 149.167026);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private List<CircleOptions> circleOptionsList = new ArrayList();
@@ -111,9 +111,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // Add a marker in UNSW Canberra basketball court and move the camera
         swarmMap.addMarker(new MarkerOptions()
-                .position(basketBallCourt)
-                .title("Marker in UNSW Canberra Basketball court"));
-        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(basketBallCourt, 20.1f));
+                .position(mapCentre)
+                .title("Marker in UNSW Canberra Main Parade Ground"));
+        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.2f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         Python py = Python.getInstance();
