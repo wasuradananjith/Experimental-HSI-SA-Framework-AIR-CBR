@@ -22,13 +22,24 @@ def connect():
     print('Sim retrieved...')
     return sim
 
-
 def isSimStopped(sim):
     return sim.getSimulationState() == sim.simulation_stopped;
 
 def getCuboidsLocations(sim):
     parentScriptHandle = sim.getScript(0)
     return json.dumps(sim.callScriptFunction("getCuboidsLocations", parentScriptHandle))
+
+def createCylinderRegion(sim, regionId, centerX, centerY, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("createCylinderRegion", parentScriptHandle, regionId, centerX, centerY, radius)
+
+def updateCylinderRadius(sim, regionId, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("updateCylinderRadius", parentScriptHandle, regionId, radius)
+
+def deleteCylinderRegion(sim, regionId):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("deleteCylinderRegion", parentScriptHandle, regionId)
 
 def stopSim(sim):
     sim.stopSimulation()

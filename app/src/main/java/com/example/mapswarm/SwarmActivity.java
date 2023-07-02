@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -52,6 +53,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private SeekBar radiusSeekBar;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
+    private int simOffset = 6;
+    private int simSize = 12;
     private boolean isSimStopped = false;
     private Map<String, ArrayList<Float>> locations;
     private LatLng bottomLeftLatLng = new LatLng(-35.293925, 149.166375);
@@ -59,9 +62,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng mapCentre = new LatLng(-35.293379, 149.167026);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
-    private List<CircleOptions> circleOptionsList = new ArrayList();
+    private HashMap<Integer, CircleOptions> circleOptionsList = new HashMap<>();
     private Double selectedCircleRadius = null;
     private LatLng selectedCircleLatLng = null;
+    private Integer selectedCircleId = null;
+    private int regionsCount = 0;
+    private int screenWidth = 0;
+    private float widthInMeters = 0;
     Handler handler = new Handler();
     Runnable updateMarker = new Runnable() {
         @Override
@@ -83,8 +90,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
+            int previousRadius = 0;
+            Double previousSelectedCircleRadius = 0.0;
+
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                for (CircleOptions circleOptions: circleOptionsList) {
+                previousRadius = seekBar.getProgress();
+                previousSelectedCircleRadius = selectedCircleRadius;
+                for (Map.Entry<Integer, CircleOptions> entry : circleOptionsList.entrySet()) {
+                    CircleOptions circleOptions = entry.getValue();
                     LatLng currentCircleLatLng = circleOptions.getCenter();
                     if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
                         selectedCircleRadius = (double) progress;
@@ -98,9 +111,17 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                selectedCircleRadius = Double.valueOf(progressChangedValue);
-//                Toast.makeText(SwarmActivity.this, "Seek bar progress is :" + progressChangedValue,
-//                        Toast.LENGTH_SHORT).show();
+                int currentRadius = seekBar.getProgress();
+                Toast.makeText(SwarmActivity.this, "Current radius: " + currentRadius,
+                        Toast.LENGTH_SHORT).show();
+                Boolean isUpdated = coppeliaSimApi.callAttr("updateCylinderRadius", sim,
+                        selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
+                if (isUpdated == null) {
+                    Toast.makeText(SwarmActivity.this, "Failed to update the radius!",
+                            Toast.LENGTH_SHORT).show();
+                    seekBar.setProgress(previousRadius);
+                    selectedCircleRadius = previousSelectedCircleRadius;
+                }
             }
         });
     }
@@ -137,28 +158,23 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         .clickable(true);
                 selectedCircleLatLng = latLng;
                 selectedCircleRadius = circleOptions.getRadius();
-                circleOptionsList.add(circleOptions);
+                selectedCircleId = regionsCount;
+                regionsCount += 1;
+                float simCoordinates[] = latLngToSimCoordinates(latLng);
+
+                boolean isCreated = coppeliaSimApi.callAttr("createCylinderRegion", sim,
+                        regionsCount, simCoordinates[0], simCoordinates[1],
+                        mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
+                if (isCreated) {
+                    circleOptionsList.put(regionsCount, circleOptions);
+                }
             }
         });
 
-        swarmMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(@NonNull LatLng latLng) {
-                for (int i = 0; i < circleOptionsList.size(); i++) {
-                    CircleOptions circleOptions = circleOptionsList.get(i);
-                    LatLng center = circleOptions.getCenter();
-                    float[] distance = new float[2];
-                    Location.distanceBetween(latLng.latitude, latLng.longitude, center.latitude,
-                            center.longitude, distance);
-                    // If the long clicked point is inside a circle,
-                    // prompt the region deletion dialog
-                    if( distance[0] <= circleOptions.getRadius() ){
-                        deleteRegionPopup(i);
-                        selectedCircleLatLng = center;
-                        selectedCircleRadius = circleOptions.getRadius();
-                        return;
-                    }
-                }
+        swarmMap.setOnMapLongClickListener(latLng -> {
+            Integer currentRegionId = isRegionInsideCircle(latLng);
+            if (currentRegionId != null) {
+                deleteRegionPopup(currentRegionId);
             }
         });
     }
@@ -168,7 +184,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         leftPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
         rightPointBound = swarmMap.getProjection().toScreenLocation(bottomRightLatLng);
 
-        int width = rightPointBound.x - leftPointBound.x;
+        screenWidth = rightPointBound.x - leftPointBound.x;
+        float[] distances = new float[2];
+        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
+                bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
+        widthInMeters = distances[0];
+
 //        Log.i("SIM: WIDTH",Double.toString(width)); // 1193
 //        Log.i("SIM: Bottom Left x",Double.toString(leftPointBound.x));
 //        Log.i("SIM: Bottom Left y",Double.toString(leftPointBound.y));
@@ -197,13 +218,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             if (locations.size() != 0) {
                 int count = 0;
                 for (String key : locations.keySet()) {
-                    float xCordinate = (((6 + locations.get(key).get(0)) / 12) * width) + leftPointBound.x;
-                    float yCordinate = -(((6 + locations.get(key).get(1)) / 12) * width) + leftPointBound.y;
+                    float xCordinate = (((simOffset + locations.get(key).get(0)) / simSize) * screenWidth) + leftPointBound.x;
+                    float yCordinate = -(((simOffset + locations.get(key).get(1)) / simSize) * screenWidth) + leftPointBound.y;
 
 //                    Log.i("Sim x", Double.toString(xCordinate));
 //                    Log.i("Sim y", Double.toString(yCordinate));
                     LatLng latLng = swarmMap.getProjection().fromScreenLocation(new
-                            Point(Math.round(xCordinate),Math.round(yCordinate)));
+                            Point(Math.round(xCordinate), Math.round(yCordinate)));
                     swarmMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
@@ -213,29 +234,30 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
 
-        for (CircleOptions circleOptions: circleOptionsList) {
+        for (Map.Entry<Integer, CircleOptions> entry : circleOptionsList.entrySet()) {
+            CircleOptions circleOptions = entry.getValue();
             LatLng currentCircleLatLng = circleOptions.getCenter();
             // Change the colour of the selected circle's stroke
             if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
                 circleOptions.strokeColor(circleOptions.getStrokeColor() ^ 0x00ffffff);
                 selectedCircleRadius = circleOptions.getRadius();
+                selectedCircleId = entry.getKey();
             } else {
                 circleOptions.strokeColor(Color.GREEN);
             }
             swarmMap.addCircle(circleOptions);
         }
-        swarmMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
-            @Override
-            public void onCircleClick(Circle circle) {
-                // If the clicked circle is already selected, deselect it
-                if (isSelectedCircleLatLngEquals(circle.getCenter())) {
-                    selectedCircleLatLng = null;
-                    selectedCircleRadius = null;
-                } else {
-                    // If the clicked circle is not already selected, select it
-                    selectedCircleLatLng = circle.getCenter();
-                    selectedCircleRadius = circle.getRadius();
-                }
+        swarmMap.setOnCircleClickListener(circle -> {
+            // If the clicked circle is already selected, deselect it
+            if (isSelectedCircleLatLngEquals(circle.getCenter())) {
+                selectedCircleLatLng = null;
+                selectedCircleRadius = null;
+                selectedCircleId = null;
+            } else {
+                // If the clicked circle is not already selected, select it
+                selectedCircleLatLng = circle.getCenter();
+                selectedCircleRadius = circle.getRadius();
+                selectedCircleId = isRegionInsideCircle(selectedCircleLatLng);
             }
         });
 
@@ -246,16 +268,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             // When a circle is selected, enable the radius seek bar and
             // set the progress to the selected circle's radius
             radiusSeekBar.setEnabled(true);
-            radiusSeekBar.setProgress((int)Math.round(selectedCircleRadius));
+            radiusSeekBar.setProgress((int) Math.round(selectedCircleRadius));
         }
     }
 
-    private void deleteRegionPopup(int index){
+    private void deleteRegionPopup(int regionId) {
         // Create the object of AlertDialog Builder class
         AlertDialog.Builder builder = new AlertDialog.Builder(SwarmActivity.this);
 
         // Set the message show for the Alert time
-        builder.setMessage("Are you sure you want to delete the region " +index + "?");
+        builder.setMessage("Are you sure you want to delete the region " + regionId + "?");
 
         // Set Alert Title
         builder.setTitle("Delete Region Alert !");
@@ -265,9 +287,17 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
-            circleOptionsList.remove(index);
-            selectedCircleLatLng = null;
-            selectedCircleRadius = null;
+            boolean isDeleted = coppeliaSimApi.callAttr("deleteCylinderRegion", sim,
+                    regionId).toBoolean();
+            if (isDeleted) {
+                circleOptionsList.remove(regionId);
+                selectedCircleLatLng = null;
+                selectedCircleRadius = null;
+                selectedCircleId = null;
+            } else {
+                Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
+                        Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
@@ -287,8 +317,40 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 selectedCircleLatLng.latitude == currentCircleLatLng.latitude &&
                 selectedCircleLatLng.longitude == currentCircleLatLng.longitude;
     }
-    public Map<String, ArrayList<Float>> readLocationsFromJson(String jsonStringToBeRead) {
-        Type mapOfStringObjectType = new TypeToken<Map<String, ArrayList<Float>>>() {}.getType();
+
+    private float[] latLngToSimCoordinates(LatLng latLng) {
+        Point screenPoint = swarmMap.getProjection().toScreenLocation(latLng);
+        float simX = (((float) (screenPoint.x - leftPointBound.x) / screenWidth) * simSize)
+                - simOffset;
+        float simY = ((float) (leftPointBound.y - screenPoint.y) / screenWidth * simSize)
+                - simOffset;
+       return new float[]{simX, simY};
+    }
+
+    private Integer isRegionInsideCircle(LatLng latLng) {
+        for (Map.Entry<Integer, CircleOptions> entry : circleOptionsList.entrySet()) {
+            int regionId = entry.getKey();
+            CircleOptions circleOptions = entry.getValue();
+            LatLng center = circleOptions.getCenter();
+            float[] distance = new float[2];
+            Location.distanceBetween(latLng.latitude, latLng.longitude, center.latitude,
+                    center.longitude, distance);
+            // If the long clicked point is inside a circle,
+            // prompt the region deletion dialog
+            if (distance[0] <= circleOptions.getRadius()) {
+                return regionId;
+            }
+        }
+        return null;
+    }
+
+    private float mapDistanceToSimDistance(double mapDistance) {
+        return (float) mapDistance * simSize / widthInMeters;
+    }
+
+    private Map<String, ArrayList<Float>> readLocationsFromJson(String jsonStringToBeRead) {
+        Type mapOfStringObjectType = new TypeToken<Map<String, ArrayList<Float>>>() {
+        }.getType();
         Gson gson = new Gson();
         return gson.fromJson(jsonStringToBeRead, mapOfStringObjectType);
     }
