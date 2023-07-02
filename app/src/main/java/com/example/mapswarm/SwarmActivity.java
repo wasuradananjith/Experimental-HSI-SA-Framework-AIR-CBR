@@ -145,6 +145,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         if (sim != null)
             handler.post(updateMarker);
 
+        // Calculate width of the arena in meters
+        float[] distances = new float[2];
+        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
+                bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
+        widthInMeters = distances[0];
+
+        calculateGraphicsDistances();
+
         swarmMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng latLng) {
@@ -177,18 +185,32 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 deleteRegionPopup(currentRegionId);
             }
         });
+
+        swarmMap.setOnCircleClickListener(circle -> {
+            // If the clicked circle is already selected, deselect it
+            if (isSelectedCircleLatLngEquals(circle.getCenter())) {
+                selectedCircleLatLng = null;
+                selectedCircleRadius = null;
+                selectedCircleId = null;
+            } else {
+                // If the clicked circle is not already selected, select it
+                selectedCircleLatLng = circle.getCenter();
+                selectedCircleRadius = circle.getRadius();
+                selectedCircleId = isRegionInsideCircle(selectedCircleLatLng);
+            }
+        });
+
+        swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
+    }
+
+    private void calculateGraphicsDistances() {
+        leftPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
+        rightPointBound = swarmMap.getProjection().toScreenLocation(bottomRightLatLng);
+        screenWidth = rightPointBound.x - leftPointBound.x;
     }
 
     private void periodicWork() {
         swarmMap.clear();
-        leftPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
-        rightPointBound = swarmMap.getProjection().toScreenLocation(bottomRightLatLng);
-
-        screenWidth = rightPointBound.x - leftPointBound.x;
-        float[] distances = new float[2];
-        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
-                bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
-        widthInMeters = distances[0];
 
 //        Log.i("SIM: WIDTH",Double.toString(width)); // 1193
 //        Log.i("SIM: Bottom Left x",Double.toString(leftPointBound.x));
@@ -247,19 +269,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
             swarmMap.addCircle(circleOptions);
         }
-        swarmMap.setOnCircleClickListener(circle -> {
-            // If the clicked circle is already selected, deselect it
-            if (isSelectedCircleLatLngEquals(circle.getCenter())) {
-                selectedCircleLatLng = null;
-                selectedCircleRadius = null;
-                selectedCircleId = null;
-            } else {
-                // If the clicked circle is not already selected, select it
-                selectedCircleLatLng = circle.getCenter();
-                selectedCircleRadius = circle.getRadius();
-                selectedCircleId = isRegionInsideCircle(selectedCircleLatLng);
-            }
-        });
 
         // When a circle is not selected, disable the radius seek bar
         if (selectedCircleRadius == null) {
