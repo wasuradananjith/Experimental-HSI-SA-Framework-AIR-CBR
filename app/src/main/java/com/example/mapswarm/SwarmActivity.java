@@ -11,54 +11,46 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.ViewConfiguration;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.example.mapswarm.util.Grid;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
+    private Switch switchView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
     private int simOffset = 6;
     private int simSize = 12;
     private boolean isSimStopped = false;
+    private boolean showGrid = false;
     private Map<String, ArrayList<Float>> locations;
     private LatLng bottomLeftLatLng = new LatLng(-35.293925, 149.166375);
     private LatLng bottomRightLatLng = new LatLng(-35.293925, 149.167633);
+    private LatLng topLeftLatLng = new LatLng(-35.292894, 149.166375);
     private LatLng mapCentre = new LatLng(-35.293379, 149.167026);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
@@ -77,6 +69,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             handler.postDelayed(this, 100);
         }
     };
+    private Grid grid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +79,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
-        radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
+        radiusSeekBar = findViewById(R.id.radiusSeekBar);
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -124,6 +117,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         });
+
+        switchView = findViewById(R.id.showGridSwitch);
+        switchView.setOnCheckedChangeListener((buttonView, isChecked) -> showGrid = isChecked);
     }
 
     @Override
@@ -149,8 +145,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         float[] distances = new float[2];
         Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
                 bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
-        widthInMeters = distances[0];
+        widthInMeters = distances[0]; // 114.42835
+        Log.i("SIM: widthInMeters", String.valueOf(widthInMeters));
 
+//        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
+//                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
+//        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
         calculateGraphicsDistances();
 
         swarmMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -201,6 +201,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         });
 
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
+
+        grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 5);
+        grid.initializeGrid();
     }
 
     private void calculateGraphicsDistances() {
@@ -211,6 +214,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void periodicWork() {
         swarmMap.clear();
+
+        if (showGrid)
+            grid.drawGrid();
 
 //        Log.i("SIM: WIDTH",Double.toString(width)); // 1193
 //        Log.i("SIM: Bottom Left x",Double.toString(leftPointBound.x));
