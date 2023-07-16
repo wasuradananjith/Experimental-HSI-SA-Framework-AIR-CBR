@@ -16,7 +16,7 @@ def connect():
     client = RemoteAPIClient(host='192.168.50.133', port=23000)
     #client = RemoteAPIClient(host='localhost', port=23000)
     # ngrok tcp 23000
-    #client = RemoteAPIClient(host='0.tcp.au.ngrok.io', port=12040)
+    #client = RemoteAPIClient(host='0.tcp.au.ngrok.io', port=16945)
     print('Program connected...')
     sim = client.getObject('sim')
     print('Sim retrieved...')
@@ -28,6 +28,10 @@ def isSimStopped(sim):
 def getCuboidsLocations(sim):
     parentScriptHandle = sim.getScript(0)
     return json.dumps(sim.callScriptFunction("getCuboidsLocations", parentScriptHandle))
+
+def getRectangularStaticObstacles(sim):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("getRectangularStaticObstacles", parentScriptHandle)
 
 def createCylinderRegion(sim, regionId, centerX, centerY, radius):
     parentScriptHandle = sim.getScript(0)

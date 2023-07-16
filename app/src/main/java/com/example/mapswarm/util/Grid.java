@@ -7,6 +7,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Grid {
     private ArrayList<LatLng> topLine = new ArrayList<>();
     private ArrayList<LatLng> leftLine = new ArrayList<>();
     private ArrayList<LatLng> rightLine = new ArrayList<>();
+    private ArrayList<Polyline> gridPolylines = new ArrayList<>();
 
     public Grid(LatLng bottomLeftLatLng, LatLng bottomRightLatLng, LatLng topLeftLatLng, GoogleMap googleMap, int size) {
         this.bottomLeftLatLng = bottomLeftLatLng;
@@ -86,17 +88,24 @@ public class Grid {
 
     public void drawGrid() {
         for(int i = 0; i <= this.size; i ++) {
-            this.googleMap.addPolyline((new PolylineOptions()).add(bottomLine.get(i), topLine.get(i))
+            Polyline polyline = this.googleMap.addPolyline((new PolylineOptions()).add(bottomLine.get(i), topLine.get(i))
                     .width(5)
                     .color(Color.GRAY)
                     // below line is to make our poly line geodesic.
                     .geodesic(true));
-            this.googleMap.addPolyline((new PolylineOptions()).add(leftLine.get(i), rightLine.get(i))
+            gridPolylines.add(polyline);
+            polyline = this.googleMap.addPolyline((new PolylineOptions()).add(leftLine.get(i), rightLine.get(i))
                     .width(5)
                     .color(Color.GRAY)
                     // below line is to make our poly line geodesic.
                     .geodesic(true));
+            gridPolylines.add(polyline);
         }
+    }
 
+    public void clearGrid() {
+        for (Polyline polyline: this.gridPolylines) {
+            polyline.remove();
+        }
     }
 }
