@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyException;
@@ -46,9 +47,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private static final int CIRCLE_COLOUR_UNSELECTED = Color.GRAY;
     private static final int CIRCLE_COLOUR_SELECTED = Color.GREEN;
+    private static final String DYNAMIC_OBSTACLES_NOTIFICATION = "newGridCellsToAvoid";
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
     private Switch switchView;
+    private TextView messagesTextView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
     private int simOffset = 6;
@@ -59,6 +62,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng bottomRightLatLng = new LatLng(-35.293925, 149.167633);
     private LatLng topLeftLatLng = new LatLng(-35.292894, 149.166375);
     private LatLng mapCentre = new LatLng(-35.293379, 149.167026);
+    private HashMap<Float, String> regionMapping = new HashMap<>();
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private Double selectedCircleRadius = null;
@@ -79,6 +83,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private boolean showStaticObstacles = true;
     private ArrayList<Marker> robotPositions = new ArrayList<>();
     private HashMap<Integer, Circle> circlesList = new HashMap<>();
+    private HashMap<Integer, String> messages = new HashMap<>();
+    private int messagesCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
+        messagesTextView = (TextView) findViewById(R.id.messagesTextView);
         radiusSeekBar = findViewById(R.id.radiusSeekBar);
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -140,6 +147,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         swarmMap = googleMap;
+        generateRegionMapping();
 
         // Add a marker in UNSW Canberra basketball court and move the camera
 //        swarmMap.addMarker(new MarkerOptions()
@@ -294,13 +302,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             if (locations.size() != 0) {
                 int count = 0;
                 for (String key : locations.keySet()) {
-                    Marker marker = swarmMap.addMarker(new MarkerOptions()
-                            .position(simCoordinatesToLatLng(new float[] {locations.get(key).get(0),
-                                    locations.get(key).get(1) }))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                            .title("Cuboid" + count));
-                    count += 1;
-                    robotPositions.add(marker);
+                    if (!key.equals(DYNAMIC_OBSTACLES_NOTIFICATION)) {
+                        Marker marker = swarmMap.addMarker(new MarkerOptions()
+                                .position(simCoordinatesToLatLng(new float[]{locations.get(key).get(0),
+                                        locations.get(key).get(1)}))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                                .title("Cuboid" + count));
+                        count += 1;
+                        robotPositions.add(marker);
+                        Log.i("SIM: Key", key);
+                    } else {
+                        messagesCount += 1;
+                        messages.put(messagesCount, "Avoid region " + regionMapping.get(locations.get(key).get(0)));
+//                        Toast.makeText(getApplicationContext(), "Avoid region " +
+//                                        regionMapping.get(locations.get(key).get(0)),
+//                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
@@ -314,6 +331,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             radiusSeekBar.setEnabled(true);
             radiusSeekBar.setProgress((int) Math.round(selectedCircleRadius));
         }
+        updateMessagesOnScreen();
+    }
+
+    private void updateMessagesOnScreen() {
+        String message = "";
+        for (Map.Entry<Integer, String> entry : messages.entrySet()) {
+            message += entry.getValue() + "\n";
+        }
+        messagesTextView.setText(message);
     }
 
     private void deleteRegionPopup(int regionId) {
@@ -377,6 +403,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     .strokeColor(Color.GRAY)
                     .fillColor(Color.GRAY));
         }
+    }
+
+    private void generateRegionMapping() {
+        regionMapping.put(1.0F, "C1");
+        regionMapping.put(2.0F, "B1");
+        regionMapping.put(3.0F, "A1");
+        regionMapping.put(4.0F, "A2");
+        regionMapping.put(5.0F, "A3");
+        regionMapping.put(6.0F, "B3");
+        regionMapping.put(7.0F, "C3");
+        regionMapping.put(8.0F, "C2");
+        regionMapping.put(0.0F, "B2");
     }
 
     private boolean isSelectedCircleLatLngEquals(LatLng currentCircleLatLng) {
