@@ -248,7 +248,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
 
-        grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 5);
+        grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 3, this);
         grid.initializeGrid();
 
         if (showStaticObstacles)
