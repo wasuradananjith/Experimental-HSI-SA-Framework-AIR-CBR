@@ -47,7 +47,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private static final int CIRCLE_COLOUR_UNSELECTED = Color.GRAY;
     private static final int CIRCLE_COLOUR_SELECTED = Color.GREEN;
-    private static final String DYNAMIC_OBSTACLES_NOTIFICATION = "newGridCellsToAvoid";
+    private static final String DYNAMIC_OBSTACLE_ADDED_NOTIFICATION = "newGridCellsToAvoid";
+    private static final String DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION = "safeCells";
+    private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
     private Switch switchView;
@@ -300,23 +302,30 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
             // Drawing the cuboids
             if (locations.size() != 0) {
+                ArrayList<Float> deactivatedCuboids = new ArrayList<>();
+                if (locations.containsKey(DEACTIVATED_CUBOIDS_INFO)) {
+                    deactivatedCuboids = locations.get(DEACTIVATED_CUBOIDS_INFO);
+                    locations.remove(DEACTIVATED_CUBOIDS_INFO);
+                }
+
                 int count = 0;
                 for (String key : locations.keySet()) {
-                    if (!key.equals(DYNAMIC_OBSTACLES_NOTIFICATION)) {
+                    if (key.equals(DYNAMIC_OBSTACLE_ADDED_NOTIFICATION)) {
+                        messagesCount += 1;
+                        messages.put(messagesCount, "Avoid region " + regionMapping.get(locations.get(key).get(0)) + " !");
+                    } else if(key.equals(DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION)) {
+                        messagesCount += 1;
+                        messages.put(messagesCount, "Region " + regionMapping.get(locations.get(key).get(0)) + " is safe now!");
+                    } else {
+                        Float iconColour = deactivatedCuboids.contains(Float.parseFloat(key))? BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(new float[]{locations.get(key).get(0),
                                         locations.get(key).get(1)}))
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                                .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 .title("Cuboid" + count));
                         count += 1;
                         robotPositions.add(marker);
                         Log.i("SIM: Key", key);
-                    } else {
-                        messagesCount += 1;
-                        messages.put(messagesCount, "Avoid region " + regionMapping.get(locations.get(key).get(0)));
-//                        Toast.makeText(getApplicationContext(), "Avoid region " +
-//                                        regionMapping.get(locations.get(key).get(0)),
-//                                Toast.LENGTH_SHORT).show();
                     }
                 }
             }
