@@ -11,7 +11,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -31,7 +30,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -52,7 +50,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
-    private Switch switchView;
+    private Switch showGridSwitch;
+    private Switch circlesSwitch;
     private TextView messagesTextView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
@@ -71,6 +70,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng selectedCircleLatLng = null;
     private Integer selectedCircleId = null;
     private int regionsCount = 0;
+    private int breadCrumbsCount = 0;
     private int screenWidth = 0;
     private float widthInMeters = 0;
     Handler handler = new Handler();
@@ -83,7 +83,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     };
     private Grid grid;
     private boolean showStaticObstacles = true;
+    private boolean ciclesEnabled = true;
     private ArrayList<Marker> robotPositions = new ArrayList<>();
+    private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
     private HashMap<Integer, Circle> circlesList = new HashMap<>();
     private HashMap<Integer, String> messages = new HashMap<>();
     private int messagesCount = 0;
@@ -136,13 +138,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        switchView = findViewById(R.id.showGridSwitch);
-        switchView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        showGridSwitch = findViewById(R.id.showGridSwitch);
+        showGridSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 grid.drawGrid();
             } else {
                 grid.clearGrid();
             }
+        });
+
+        circlesSwitch = findViewById(R.id.circlesSwitch);
+        circlesSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            ciclesEnabled = isChecked;
         });
     }
 
@@ -157,6 +164,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //                .title("Marker in UNSW Canberra Main Parade Ground"));
         swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.2f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        swarmMap.getUiSettings().setZoomControlsEnabled(true);
 
         Python py = Python.getInstance();
         coppeliaSimApi = py.getModule("coppeliaSimApi");
@@ -179,47 +187,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
         calculateGraphicsDistances();
 
-        swarmMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull LatLng latLng) {
-                // Add a circle to the space, upon a single click on the map
-                CircleOptions circleOptions = new CircleOptions()
-                        .center(latLng)
-                        .radius(DEFAULT_CIRCLE_RADIUS)
-                        .strokeWidth(10)
-                        .strokeColor(CIRCLE_COLOUR_SELECTED)
-                        .fillColor(Color.argb(128, 255, 0, 0))
-                        .clickable(true);
-                selectedCircleLatLng = latLng;
-                selectedCircleRadius = circleOptions.getRadius();
-                selectedCircleId = regionsCount;
-                regionsCount += 1;
-                float simCoordinates[] = latLngToSimCoordinates(latLng);
-
-                boolean isCreated = coppeliaSimApi.callAttr("createCylinderRegion", sim,
-                        selectedCircleId, simCoordinates[0], simCoordinates[1],
-                        mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
-                Circle newCircle = swarmMap.addCircle(circleOptions);
-                if (isCreated) {
-                    for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-                        entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
-                    }
-                    circlesList.put(selectedCircleId, newCircle);
-                }
-
-//                for (Map.Entry<Integer, CircleOptions> entry : circleOptionsList.entrySet()) {
-//                    CircleOptions circleOptions = entry.getValue();
-//                    LatLng currentCircleLatLng = circleOptions.getCenter();
-//                    // Change the colour of the selected circle's stroke
-//                    if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
-//                        circleOptions.strokeColor(circleOptions.getStrokeColor() ^ 0x00ffffff);
-//                        selectedCircleRadius = circleOptions.getRadius();
-//                        selectedCircleId = entry.getKey();
-//                    } else {
-//                        circleOptions.strokeColor(Color.GREEN);
-//                    }
-//                    swarmMap.addCircle(circleOptions);
-//                }
+        swarmMap.setOnMapClickListener(latLng -> {
+            if (ciclesEnabled) {
+                drawCircle(latLng);
+            } else {
+                drawBreadcrumb(latLng);
             }
         });
 
@@ -231,9 +203,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
                 }
                 circlesList.get(currentRegionId).setStrokeColor(CIRCLE_COLOUR_SELECTED);
-                deleteRegionPopup(currentRegionId);
+                deletePopup(currentRegionId, "Region");
+            } else {
+                Integer breadcrumbId = isCloserToBreadcrumb(latLng);
+                if (breadcrumbId != null) {
+                    deletePopup(breadcrumbId, "Breadcrumb");
+                }
             }
-
         });
 
         swarmMap.setOnCircleClickListener(circle -> {
@@ -256,6 +232,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        swarmMap.setOnMarkerClickListener(marker -> {
+            if (marker.getTag() != null && (Boolean) marker.getTag()) {
+                Toast.makeText(getApplicationContext(), "Marker clicked!",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
+
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 3, this);
@@ -264,6 +249,48 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         if (showStaticObstacles)
             drawRectangularObstacles();
     }
+
+    private void drawCircle(LatLng latLng) {
+        float simCoordinates[] = latLngToSimCoordinates(latLng);
+        boolean isCreated = coppeliaSimApi.callAttr("createCylinderRegion", sim,
+                regionsCount, simCoordinates[0], simCoordinates[1],
+                mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
+        if (isCreated) {
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(latLng)
+                    .radius(DEFAULT_CIRCLE_RADIUS)
+                    .strokeWidth(10)
+                    .strokeColor(CIRCLE_COLOUR_SELECTED)
+                    .fillColor(Color.argb(128, 255, 0, 0))
+                    .clickable(true);
+            selectedCircleLatLng = latLng;
+            selectedCircleRadius = circleOptions.getRadius();
+            selectedCircleId = regionsCount;
+            regionsCount += 1;
+            Circle newCircle = swarmMap.addCircle(circleOptions);
+            for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
+                entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
+            }
+            circlesList.put(selectedCircleId, newCircle);
+        }
+    }
+
+    private void drawBreadcrumb(LatLng latLng) {
+        float simCoordinates[] = latLngToSimCoordinates(latLng);
+
+        boolean isCreated = coppeliaSimApi.callAttr("createBreadcrumb", sim,
+                breadCrumbsCount, simCoordinates[0], simCoordinates[1]).toBoolean();
+        if (isCreated) {
+            Marker marker = swarmMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    .title("Breadcrumb " + breadcrumbsList.size() + 1));
+            marker.setTag(true);
+            breadcrumbsList.put(breadCrumbsCount, marker);
+            breadCrumbsCount += 1;
+        }
+    }
+
 
     private void calculateGraphicsDistances() {
         leftPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
@@ -323,9 +350,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                                         locations.get(key).get(1)}))
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 .title("Cuboid" + count));
+                        marker.setTag(false);
                         count += 1;
                         robotPositions.add(marker);
-                        Log.i("SIM: Key", key);
                     }
                 }
             }
@@ -351,32 +378,44 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         messagesTextView.setText(message);
     }
 
-    private void deleteRegionPopup(int regionId) {
+    private void deletePopup(int id, String type) {
         // Create the object of AlertDialog Builder class
         AlertDialog.Builder builder = new AlertDialog.Builder(SwarmActivity.this);
 
         // Set the message show for the Alert time
-        builder.setMessage("Are you sure you want to delete the region " + regionId + "?");
+        builder.setMessage("Are you sure you want to delete the " + type.toLowerCase() + " " + id + "?");
 
         // Set Alert Title
-        builder.setTitle("Delete Region Alert !");
+        builder.setTitle("Delete " + type + " Alert !");
 
         // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
         builder.setCancelable(false);
 
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
-        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
-            boolean isDeleted = coppeliaSimApi.callAttr("deleteCylinderRegion", sim,
-                    regionId).toBoolean();
-            if (isDeleted) {
-                circlesList.get(regionId).remove();
-                circlesList.remove(regionId);
-                selectedCircleLatLng = null;
-                selectedCircleRadius = null;
-                selectedCircleId = null;
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            if (type.equalsIgnoreCase("region")) {
+                boolean isDeleted = coppeliaSimApi.callAttr("deleteCylinderRegion", sim,
+                        id).toBoolean();
+                if (isDeleted) {
+                    circlesList.get(id).remove();
+                    circlesList.remove(id);
+                    selectedCircleLatLng = null;
+                    selectedCircleRadius = null;
+                    selectedCircleId = null;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
+                            Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
-                        Toast.LENGTH_SHORT).show();
+                boolean isDeleted = coppeliaSimApi.callAttr("deleteBreadcrumb", sim,
+                        id).toBoolean();
+                if (isDeleted) {
+                    breadcrumbsList.get(id).remove();
+                    breadcrumbsList.remove(id);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Breadcrumb deletion unsuccessful!",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -461,6 +500,21 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             // prompt the region deletion dialog
             if (distance[0] <= circle.getRadius()) {
                 return regionId;
+            }
+        }
+        return null;
+    }
+
+    private Integer isCloserToBreadcrumb(LatLng latLng) {
+        for (Map.Entry<Integer, Marker> entry : breadcrumbsList.entrySet()) {
+            int breadcrumbId = entry.getKey();
+            Marker breadcrumb = entry.getValue();
+            float[] distance = new float[2];
+            LatLng position = breadcrumb.getPosition();
+            Location.distanceBetween(latLng.latitude, latLng.longitude, position.latitude,
+                    position.longitude, distance);
+            if (distance[0] <= 4) {
+                return breadcrumbId;
             }
         }
         return null;

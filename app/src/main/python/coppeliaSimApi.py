@@ -45,6 +45,14 @@ def deleteCylinderRegion(sim, regionId):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("deleteCylinderRegion", parentScriptHandle, regionId)
 
+def createBreadcrumb(sim, breadcrumbId, xCord, yCord):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("createBreadcrumb", parentScriptHandle, breadcrumbId, xCord, yCord)
+
+def deleteBreadcrumb(sim, breadcrumbId):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("deleteBreadcrumb", parentScriptHandle, breadcrumbId)
+
 def stopSim(sim):
     sim.stopSimulation()
     

@@ -19,17 +19,17 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         tools:layout="@layout/activity_swarm" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/map"-->
-<!--        android:layout_width="@dimen/_230sdp"-->
-<!--        android:layout_height="@dimen/_230sdp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.131"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.26"-->
-<!--        tools:srcCompat="@tools:sample/avatars" />-->
+    <ImageView
+        android:id="@+id/map"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_230sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.131"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <SeekBar
         android:id="@+id/radiusSeekBar"
@@ -57,10 +57,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.063" />
 
+    <Switch
+        android:id="@+id/circlesSwitch"
+        android:checked="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Circles      "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.179"
+        app:layout_constraintStart_toEndOf="@+id/map"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.113" />
+
     <TextView
         android:id="@+id/messagesTextView"
-        android:layout_width="400sp"
-        android:layout_height="610sp"
+        android:layout_width="401dp"
+        android:layout_height="544dp"
         android:text="None"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
