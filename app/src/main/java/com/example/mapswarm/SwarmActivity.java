@@ -48,10 +48,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DYNAMIC_OBSTACLE_ADDED_NOTIFICATION = "newGridCellsToAvoid";
     private static final String DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION = "safeCells";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
+    private static final String DANGEROUS_REGION_TAG = "dangerous";
+    private static final String ATTRACTIVE_REGION_TAG = "attractive";
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
     private Switch showGridSwitch;
-    private Switch circlesSwitch;
+    private Switch attractorSwitch;
     private TextView messagesTextView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
@@ -83,7 +85,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     };
     private Grid grid;
     private boolean showStaticObstacles = true;
-    private boolean ciclesEnabled = true;
+    private boolean attractorsEnabled = false;
     private ArrayList<Marker> robotPositions = new ArrayList<>();
     private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
     private HashMap<Integer, Circle> circlesList = new HashMap<>();
@@ -127,8 +129,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 int currentRadius = seekBar.getProgress();
                 Toast.makeText(SwarmActivity.this, "Current radius: " + currentRadius,
                         Toast.LENGTH_SHORT).show();
-                Boolean isUpdated = coppeliaSimApi.callAttr("updateCylinderRadius", sim,
-                        selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
+                String selectedCircleTag = (String) circlesList.get(selectedCircleId).getTag();
+                Boolean isUpdated = null;
+                if (selectedCircleTag.equals(DANGEROUS_REGION_TAG)) {
+                    isUpdated = coppeliaSimApi.callAttr("updateDangerousRegionRadius", sim,
+                            selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
+                } else {
+                    isUpdated = coppeliaSimApi.callAttr("updateAttractiveRegionRadius", sim,
+                            selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
+                }
                 if (isUpdated == null) {
                     Toast.makeText(SwarmActivity.this, "Failed to update the radius!",
                             Toast.LENGTH_SHORT).show();
@@ -147,9 +156,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        circlesSwitch = findViewById(R.id.circlesSwitch);
-        circlesSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ciclesEnabled = isChecked;
+        attractorSwitch = findViewById(R.id.attractorSwitch);
+        attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            attractorsEnabled = isChecked;
         });
     }
 
@@ -188,10 +197,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         calculateGraphicsDistances();
 
         swarmMap.setOnMapClickListener(latLng -> {
-            if (ciclesEnabled) {
-                drawCircle(latLng);
+            if (attractorsEnabled) {
+                drawCircle(latLng, true);
             } else {
-                drawBreadcrumb(latLng);
+                drawCircle(latLng, false);
             }
         });
 
@@ -250,24 +259,38 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             drawRectangularObstacles();
     }
 
-    private void drawCircle(LatLng latLng) {
+    private void drawCircle(LatLng latLng, Boolean isAttractor) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
-        boolean isCreated = coppeliaSimApi.callAttr("createCylinderRegion", sim,
-                regionsCount, simCoordinates[0], simCoordinates[1],
-                mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
+        boolean isCreated;
+        int fillCircleColour;
+        String tag;
+        if (!isAttractor) {
+            isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
+                    regionsCount, simCoordinates[0], simCoordinates[1],
+                    mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
+            fillCircleColour = Color.argb(128, 255, 0, 0);
+            tag = DANGEROUS_REGION_TAG;
+        } else {
+            isCreated = coppeliaSimApi.callAttr("createAttractiveRegion", sim,
+                    regionsCount, simCoordinates[0], simCoordinates[1],
+                    mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
+            fillCircleColour = Color.argb(128, 0, 255, 255);
+            tag = ATTRACTIVE_REGION_TAG;
+        }
         if (isCreated) {
             CircleOptions circleOptions = new CircleOptions()
                     .center(latLng)
                     .radius(DEFAULT_CIRCLE_RADIUS)
                     .strokeWidth(10)
                     .strokeColor(CIRCLE_COLOUR_SELECTED)
-                    .fillColor(Color.argb(128, 255, 0, 0))
+                    .fillColor(fillCircleColour)
                     .clickable(true);
             selectedCircleLatLng = latLng;
             selectedCircleRadius = circleOptions.getRadius();
             selectedCircleId = regionsCount;
             regionsCount += 1;
             Circle newCircle = swarmMap.addCircle(circleOptions);
+            newCircle.setTag(tag);
             for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
                 entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
             }
@@ -394,8 +417,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (dialog, which) -> {
             if (type.equalsIgnoreCase("region")) {
-                boolean isDeleted = coppeliaSimApi.callAttr("deleteCylinderRegion", sim,
-                        id).toBoolean();
+                String tag = (String) circlesList.get(id).getTag();
+                boolean isDeleted = false;
+                if (tag.equals(DANGEROUS_REGION_TAG)) {
+                    isDeleted = coppeliaSimApi.callAttr("deleteDangerousRegion", sim,
+                            id).toBoolean();
+                } else {
+                    isDeleted = coppeliaSimApi.callAttr("deleteAttractiveRegion", sim,
+                            id).toBoolean();
+                }
                 if (isDeleted) {
                     circlesList.get(id).remove();
                     circlesList.remove(id);

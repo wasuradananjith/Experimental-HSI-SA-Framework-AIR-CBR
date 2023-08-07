@@ -45,6 +45,31 @@ def deleteCylinderRegion(sim, regionId):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("deleteCylinderRegion", parentScriptHandle, regionId)
 
+def createDangerousRegion(sim, regionId, centerX, centerY, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("createDangerousRegion", parentScriptHandle, regionId, centerX, centerY, radius)
+
+def deleteDangerousRegion(sim, regionId):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("deleteDangerousRegion", parentScriptHandle, regionId)
+
+def updateDangerousRegionRadius(sim, regionId, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("updateDangerousRegionRadius", parentScriptHandle, regionId, radius)
+
+def createAttractiveRegion(sim, regionId, centerX, centerY, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("createAttractiveRegion", parentScriptHandle, regionId, centerX, centerY, radius)
+
+def deleteAttractiveRegion(sim, regionId):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("deleteAttractiveRegion", parentScriptHandle, regionId)
+
+def updateAttractiveRegionRadius(sim, regionId, radius):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("updateAttractiveRegionRadius", parentScriptHandle, regionId, radius)
+
+
 def createBreadcrumb(sim, breadcrumbId, xCord, yCord):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("createBreadcrumb", parentScriptHandle, breadcrumbId, xCord, yCord)
