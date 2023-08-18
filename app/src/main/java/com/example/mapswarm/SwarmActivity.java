@@ -60,6 +60,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int simOffset = 6;
     private int simSize = 12;
     private boolean isSimStopped = false;
+    private boolean isStaticObstaclesRetrieved = false;
+    private boolean isTargetRegionRetrieved = false;
     private Map<String, ArrayList<Float>> locations;
     private LatLng bottomLeftLatLng = new LatLng(-35.293925, 149.166375);
     private LatLng bottomRightLatLng = new LatLng(-35.293925, 149.167633);
@@ -254,6 +256,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 3, this);
         grid.initializeGrid();
+        drawTargetRegion();
 
         if (showStaticObstacles)
             drawRectangularObstacles();
@@ -322,6 +325,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
+        if (!isTargetRegionRetrieved) {
+            drawTargetRegion();
+        }
+        if (!isStaticObstaclesRetrieved) {
+            drawRectangularObstacles();
+        }
         for (Marker marker: robotPositions) {
             marker.remove();
         }
@@ -461,25 +470,70 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         alertDialog.show();
     }
 
-    private void drawRectangularObstacles() {
-        PyObject staticObstacleData = coppeliaSimApi.callAttr("getRectangularStaticObstacles", sim);
-        float[][] rectangularStaticObstacles = staticObstacleData.toJava(float[][].class);
-        for(float[] rectangle: rectangularStaticObstacles) {
-            Log.i("SIM: rectangle", Arrays.toString(rectangle));
-            float xWidth = rectangle[3];
-            float yHeight = rectangle[4];
-            float[] topLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] + yHeight/2 };
-            float[] topRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] + yHeight/2 };
-            float[] bottomRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] - yHeight/2 };
-            float[] bottomLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] - yHeight/2 };
+    private void drawTargetRegion() {
+        PyObject targetRegionData = null;
+        try {
+            // Retrieve the target region
+            targetRegionData = coppeliaSimApi.callAttr("getTargetRegion", sim);
+            Log.i("SIM: TargetRegion", String.valueOf(targetRegionData));
+            isSimStopped = false;
+            isTargetRegionRetrieved = true;
+            float[] targetRegion = targetRegionData.toJava(float[].class);
+            float[] topLeftPoint = { targetRegion[1], targetRegion[2] };
+            float[] topRightPoint = { targetRegion[0], targetRegion[2] };
+            float[] bottomRightPoint = { targetRegion[0], targetRegion[3] };
+            float[] bottomLeftPoint = { targetRegion[1], targetRegion[3] };
             swarmMap.addPolygon(new PolygonOptions()
                     .add(simCoordinatesToLatLng(topLeftPoint),
                             simCoordinatesToLatLng(topRightPoint),
                             simCoordinatesToLatLng(bottomRightPoint),
                             simCoordinatesToLatLng(bottomLeftPoint),
                             simCoordinatesToLatLng(topLeftPoint))
-                    .strokeColor(Color.GRAY)
-                    .fillColor(Color.GRAY));
+                    .strokeColor(Color.GREEN));
+        } catch (PyException e) {
+            if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
+                Log.i("SIM: ", "Sim stopped.....");
+                isSimStopped = true;
+                isTargetRegionRetrieved = false;
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private void drawRectangularObstacles() {
+        PyObject staticObstacleData = null;
+        try {
+            // Retrieve the rectangular obstacles
+            staticObstacleData = coppeliaSimApi.callAttr("getRectangularStaticObstacles", sim);
+            isSimStopped = false;
+            isStaticObstaclesRetrieved = true;
+            float[][] rectangularStaticObstacles = staticObstacleData.toJava(float[][].class);
+            for(float[] rectangle: rectangularStaticObstacles) {
+                Log.i("SIM: rectangle", Arrays.toString(rectangle));
+                float xWidth = rectangle[3];
+                float yHeight = rectangle[4];
+                float[] topLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] + yHeight/2 };
+                float[] topRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] + yHeight/2 };
+                float[] bottomRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] - yHeight/2 };
+                float[] bottomLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] - yHeight/2 };
+                swarmMap.addPolygon(new PolygonOptions()
+                        .add(simCoordinatesToLatLng(topLeftPoint),
+                                simCoordinatesToLatLng(topRightPoint),
+                                simCoordinatesToLatLng(bottomRightPoint),
+                                simCoordinatesToLatLng(bottomLeftPoint),
+                                simCoordinatesToLatLng(topLeftPoint))
+                        .strokeColor(Color.GRAY)
+                        .fillColor(Color.GRAY));
+            }
+        } catch (PyException e) {
+            if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
+                Log.i("SIM: ", "Sim stopped.....");
+                isSimStopped = true;
+                isStaticObstaclesRetrieved = false;
+            } else {
+                throw e;
+            }
         }
     }
 

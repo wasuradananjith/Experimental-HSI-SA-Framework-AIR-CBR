@@ -69,6 +69,9 @@ def updateAttractiveRegionRadius(sim, regionId, radius):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("updateAttractiveRegionRadius", parentScriptHandle, regionId, radius)
 
+def getTargetRegion(sim):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("getTargetRegion", parentScriptHandle)
 
 def createBreadcrumb(sim, breadcrumbId, xCord, yCord):
     parentScriptHandle = sim.getScript(0)
