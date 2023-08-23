@@ -29,6 +29,19 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent"-->
 <!--        app:layout_constraintVertical_bias="0.26"-->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--        tools:layout="@layout/activity_swarm" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/map"-->
+<!--        android:layout_width="@dimen/_230sdp"-->
+<!--        android:layout_height="@dimen/_230sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.131"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.26"-->
 <!--        tools:srcCompat="@tools:sample/avatars" />-->
 
     <SeekBar
@@ -49,13 +62,14 @@
         android:id="@+id/showGridSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="96dp"
         android:text="Show Grid    "
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.174"
+        app:layout_constraintEnd_toStartOf="@+id/timerText"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063" />
+        app:layout_constraintVertical_bias="0.083" />
 
     <Switch
         android:id="@+id/attractorSwitch"
@@ -63,22 +77,48 @@
         android:layout_height="wrap_content"
         android:text="Attractor      "
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.179"
+        app:layout_constraintEnd_toStartOf="@+id/timerText"
+        app:layout_constraintHorizontal_bias="0.589"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.113" />
+        app:layout_constraintVertical_bias="0.148" />
+
+    <TextView
+        android:id="@+id/timerText"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="76dp"
+        android:textAlignment="center"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="5:00" />
 
     <TextView
         android:id="@+id/messagesTextView"
-        android:layout_width="401dp"
-        android:layout_height="544dp"
+        android:layout_width="@dimen/_130sdp"
+        android:layout_height="@dimen/_180sdp"
+        android:layout_marginBottom="124dp"
         android:text="None"
-        android:textSize="30sp"
+        android:textSize="@dimen/_8sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.625"
+        app:layout_constraintHorizontal_bias="0.795"
         app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.465" />
+        app:layout_constraintTop_toBottomOf="@+id/attractorSwitch"
+        app:layout_constraintVertical_bias="0.612" />
+
+    <Button
+        android:id="@+id/simControlButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#009688"
+        android:text="Start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toEndOf="@+id/attractorSwitch"
+        app:layout_constraintTop_toTopOf="@+id/timerText"
+        app:layout_constraintVertical_bias="0.071" />
 </androidx.constraintlayout.widget.ConstraintLayout>

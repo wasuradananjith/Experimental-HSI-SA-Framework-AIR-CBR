@@ -9,8 +9,12 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -21,6 +25,7 @@ import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.example.mapswarm.util.Grid;
+import com.example.mapswarm.util.Timer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,11 +60,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private SeekBar radiusSeekBar;
     private Switch showGridSwitch;
     private Switch attractorSwitch;
+    private Button simControlButton;
+    private TextView timerTextView;
     private TextView messagesTextView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
     private int simOffset = 6;
     private int simSize = 12;
+    private CountDownTimer countDownTimer;
+    private long timeLeftInMilliseconds = 300000;
+    private boolean timerRunning = false;
     private boolean isSimStopped = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
@@ -164,6 +174,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             attractorsEnabled = isChecked;
         });
+
+        timerTextView = findViewById(R.id.timerText);
+        timerTextView.setText("5:00");
     }
 
     @Override
@@ -200,6 +213,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         sim = coppeliaSimApi.callAttr("connect");
         Log.i("SIM: ", sim.toString());
 
+        Timer timer = new Timer(false, timeLeftInMilliseconds, timerTextView);
+        simControlButton = findViewById(R.id.simControlButton);
+        simControlButton.setOnClickListener(view -> {
+            if (simControlButton.getText().equals("Start")) {
+                coppeliaSimApi.callAttr("startSim", sim);
+                simControlButton.setText("Stop");
+                simControlButton.setBackgroundColor(Color.RED);
+                timer.startStop();
+            } else {
+                coppeliaSimApi.callAttr("stopSim", sim);
+                finish();
+                startActivity(getIntent());
+            }
+
+        });
+
         if (sim != null) {
             handler.post(updateMarker);
         }
@@ -211,9 +240,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         widthInMeters = distances[0]; // 114.42835
         Log.i("SIM: widthInMeters", String.valueOf(widthInMeters));
 //
-        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
-                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
-        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
+//        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
+//                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
+//        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
         calculateGraphicsDistances();
 
         swarmMap.setOnMapClickListener(latLng -> {
@@ -280,6 +309,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             drawRectangularObstacles();
     }
 
+
+
     private void drawCircle(LatLng latLng, Boolean isAttractor) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
         boolean isCreated;
@@ -291,12 +322,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
             fillCircleColour = Color.argb(128, 255, 0, 0);
             tag = DANGEROUS_REGION_TAG;
+            Toast.makeText(getApplicationContext(), "createDangerousRegion",
+                    Toast.LENGTH_SHORT).show();
         } else {
             isCreated = coppeliaSimApi.callAttr("createAttractiveRegion", sim,
                     regionsCount, simCoordinates[0], simCoordinates[1],
                     mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
             fillCircleColour = Color.argb(128, 0, 255, 255);
             tag = ATTRACTIVE_REGION_TAG;
+            Toast.makeText(getApplicationContext(), "createAttractiveRegion",
+                    Toast.LENGTH_SHORT).show();
         }
         if (isCreated) {
             CircleOptions circleOptions = new CircleOptions()
