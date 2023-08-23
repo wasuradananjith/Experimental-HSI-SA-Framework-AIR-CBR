@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Chronometer;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,10 +64,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
     private Map<String, ArrayList<Float>> locations;
-    private LatLng bottomLeftLatLng = new LatLng(-35.293925, 149.166375);
-    private LatLng bottomRightLatLng = new LatLng(-35.293925, 149.167633);
-    private LatLng topLeftLatLng = new LatLng(-35.292894, 149.166375);
-    private LatLng mapCentre = new LatLng(-35.293379, 149.167026);
+    private LatLng bottomLeftLatLng = new LatLng(-35.287459, 149.172585);
+    private LatLng bottomRightLatLng = new LatLng(-35.287459, 149.173901);
+    private LatLng topLeftLatLng = new LatLng(-35.2863799728, 149.172585);
+    private LatLng topRightLatLng = new LatLng(-35.2863799728, 149.173901);
+    private LatLng mapCentre = new LatLng(-35.286930, 149.173255);
     private HashMap<Float, String> regionMapping = new HashMap<>();
     private Point leftPointBound = null;
     private Point rightPointBound = null;
@@ -169,6 +171,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap = googleMap;
         generateRegionMapping();
 
+//        swarmMap.addMarker(new MarkerOptions()
+//                .position(bottomLeftLatLng));
+//        swarmMap.addMarker(new MarkerOptions()
+//                .position(bottomRightLatLng));
+//        swarmMap.addMarker(new MarkerOptions()
+//                .position(topLeftLatLng));
+
+        swarmMap.addPolygon(new PolygonOptions()
+                .add(bottomLeftLatLng,
+                       bottomRightLatLng,
+                        topRightLatLng,
+                        topLeftLatLng,
+                        bottomLeftLatLng)
+                        .strokeWidth(5)
+                .strokeColor(Color.DKGRAY));
+
         // Add a marker in UNSW Canberra basketball court and move the camera
 //        swarmMap.addMarker(new MarkerOptions()
 //                .position(mapCentre)
@@ -192,10 +210,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
         widthInMeters = distances[0]; // 114.42835
         Log.i("SIM: widthInMeters", String.valueOf(widthInMeters));
-
-//        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
-//                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
-//        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
+//
+        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
+                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
+        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
         calculateGraphicsDistances();
 
         swarmMap.setOnMapClickListener(latLng -> {
