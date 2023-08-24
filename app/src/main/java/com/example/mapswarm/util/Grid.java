@@ -51,8 +51,8 @@ public class Grid {
 
     public void initializeGrid() {
         double cellSize = Math.abs(bottomLeftLatLng.longitude - bottomRightLatLng.longitude)/size;
-        Log.i("SIM: cellSize ", String.valueOf(cellSize));
-        Log.i("SIM: size ", String.valueOf(this.size));
+        // Log.i("SIM: cellSize ", String.valueOf(cellSize));
+        // Log.i("SIM: size ", String.valueOf(this.size));
 
         bottomLine.add(bottomLeftLatLng);
         topLine.add(topLeftLatLng);
@@ -68,38 +68,6 @@ public class Grid {
             leftLine.add(new LatLng(bottomLeftLatLng.latitude + i*cellSize, bottomLeftLatLng.longitude));
             rightLine.add(new LatLng(bottomRightLatLng.latitude + i*cellSize, bottomRightLatLng.longitude));
         }
-
-//        for (LatLng latLng: bottomLine) {
-//            Log.i("SIM: lat ", String.valueOf(latLng.latitude));
-//            Log.i("SIM: long ", String.valueOf(latLng.longitude));
-//            googleMap.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-//        }
-//
-//        for (LatLng latLng: topLine) {
-//            Log.i("SIM: lat ", String.valueOf(latLng.latitude));
-//            Log.i("SIM: long ", String.valueOf(latLng.longitude));
-//            googleMap.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-//        }
-//
-//        for (LatLng latLng: leftLine) {
-//            Log.i("SIM: lat ", String.valueOf(latLng.latitude));
-//            Log.i("SIM: long ", String.valueOf(latLng.longitude));
-//            googleMap.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-//        }
-//
-//        for (LatLng latLng: rightLine) {
-//            Log.i("SIM: lat ", String.valueOf(latLng.latitude));
-//            Log.i("SIM: long ", String.valueOf(latLng.longitude));
-//            googleMap.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-//        }
     }
 
     public void drawGrid() {

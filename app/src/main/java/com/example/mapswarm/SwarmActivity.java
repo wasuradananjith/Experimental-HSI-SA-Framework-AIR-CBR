@@ -9,13 +9,9 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -42,7 +38,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,9 +62,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private PyObject sim = null;
     private int simOffset = 6;
     private int simSize = 12;
-    private CountDownTimer countDownTimer;
-    private long timeLeftInMilliseconds = 300000;
-    private boolean timerRunning = false;
+    private long timeLeftInMilliseconds = 600000;
     private boolean isSimStopped = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
@@ -114,7 +107,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
-        messagesTextView = (TextView) findViewById(R.id.messagesTextView);
+        messagesTextView = findViewById(R.id.messagesTextView);
         radiusSeekBar = findViewById(R.id.radiusSeekBar);
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -176,20 +169,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         });
 
         timerTextView = findViewById(R.id.timerText);
-        timerTextView.setText("5:00");
+        timerTextView.setText("10:00");
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         swarmMap = googleMap;
         generateRegionMapping();
-
-//        swarmMap.addMarker(new MarkerOptions()
-//                .position(bottomLeftLatLng));
-//        swarmMap.addMarker(new MarkerOptions()
-//                .position(bottomRightLatLng));
-//        swarmMap.addMarker(new MarkerOptions()
-//                .position(topLeftLatLng));
 
         swarmMap.addPolygon(new PolygonOptions()
                 .add(bottomLeftLatLng,
@@ -200,10 +186,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         .strokeWidth(5)
                 .strokeColor(Color.DKGRAY));
 
-        // Add a marker in UNSW Canberra basketball court and move the camera
-//        swarmMap.addMarker(new MarkerOptions()
-//                .position(mapCentre)
-//                .title("Marker in UNSW Canberra Main Parade Ground"));
         swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.2f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
@@ -211,7 +193,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         Python py = Python.getInstance();
         coppeliaSimApi = py.getModule("coppeliaSimApi");
         sim = coppeliaSimApi.callAttr("connect");
-        Log.i("SIM: ", sim.toString());
 
         Timer timer = new Timer(false, timeLeftInMilliseconds, timerTextView);
         simControlButton = findViewById(R.id.simControlButton);
@@ -238,7 +219,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
                 bottomRightLatLng.latitude, bottomRightLatLng.longitude, distances);
         widthInMeters = distances[0]; // 114.42835
-        Log.i("SIM: widthInMeters", String.valueOf(widthInMeters));
+//        Log.i("SIM: widthInMeters", String.valueOf(widthInMeters));
 //
 //        Location.distanceBetween(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude,
 //                topLeftLatLng.latitude, topLeftLatLng.longitude, distances);
@@ -309,8 +290,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             drawRectangularObstacles();
     }
 
-
-
     private void drawCircle(LatLng latLng, Boolean isAttractor) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
         boolean isCreated;
@@ -322,16 +301,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
             fillCircleColour = Color.argb(128, 255, 0, 0);
             tag = DANGEROUS_REGION_TAG;
-            Toast.makeText(getApplicationContext(), "createDangerousRegion",
-                    Toast.LENGTH_SHORT).show();
         } else {
             isCreated = coppeliaSimApi.callAttr("createAttractiveRegion", sim,
                     regionsCount, simCoordinates[0], simCoordinates[1],
                     mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
             fillCircleColour = Color.argb(128, 0, 255, 255);
             tag = ATTRACTIVE_REGION_TAG;
-            Toast.makeText(getApplicationContext(), "createAttractiveRegion",
-                    Toast.LENGTH_SHORT).show();
         }
         if (isCreated) {
             CircleOptions circleOptions = new CircleOptions()
@@ -354,21 +329,21 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void drawBreadcrumb(LatLng latLng) {
-        float simCoordinates[] = latLngToSimCoordinates(latLng);
-
-        boolean isCreated = coppeliaSimApi.callAttr("createBreadcrumb", sim,
-                breadCrumbsCount, simCoordinates[0], simCoordinates[1]).toBoolean();
-        if (isCreated) {
-            Marker marker = swarmMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                    .title("Breadcrumb " + breadcrumbsList.size() + 1));
-            marker.setTag(true);
-            breadcrumbsList.put(breadCrumbsCount, marker);
-            breadCrumbsCount += 1;
-        }
-    }
+//    private void drawBreadcrumb(LatLng latLng) {
+//        float simCoordinates[] = latLngToSimCoordinates(latLng);
+//
+//        boolean isCreated = coppeliaSimApi.callAttr("createBreadcrumb", sim,
+//                breadCrumbsCount, simCoordinates[0], simCoordinates[1]).toBoolean();
+//        if (isCreated) {
+//            Marker marker = swarmMap.addMarker(new MarkerOptions()
+//                    .position(latLng)
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+//                    .title("Breadcrumb " + breadcrumbsList.size() + 1));
+//            marker.setTag(true);
+//            breadcrumbsList.put(breadCrumbsCount, marker);
+//            breadCrumbsCount += 1;
+//        }
+//    }
 
 
     private void calculateGraphicsDistances() {
@@ -388,7 +363,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             marker.remove();
         }
 
-//        Log.i("SIM: WIDTH",Double.toString(width)); // 1193
 //        Log.i("SIM: Bottom Left x",Double.toString(leftPointBound.x));
 //        Log.i("SIM: Bottom Left y",Double.toString(leftPointBound.y));
 //        Log.i("SIM: Bottom Right x",Double.toString(rightPointBound.x));
@@ -528,7 +502,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         try {
             // Retrieve the target region
             targetRegionData = coppeliaSimApi.callAttr("getTargetRegion", sim);
-            Log.i("SIM: TargetRegion", String.valueOf(targetRegionData));
             isSimStopped = false;
             isTargetRegionRetrieved = true;
             float[] targetRegion = targetRegionData.toJava(float[].class);
@@ -563,7 +536,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             isStaticObstaclesRetrieved = true;
             float[][] rectangularStaticObstacles = staticObstacleData.toJava(float[][].class);
             for(float[] rectangle: rectangularStaticObstacles) {
-                Log.i("SIM: rectangle", Arrays.toString(rectangle));
                 float xWidth = rectangle[3];
                 float yHeight = rectangle[4];
                 float[] topLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] + yHeight/2 };
