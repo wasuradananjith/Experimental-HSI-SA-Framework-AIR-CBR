@@ -16,7 +16,7 @@ def connect():
     client = RemoteAPIClient(host='192.168.50.133', port=23000)
     #client = RemoteAPIClient(host='localhost', port=23000)
     # ngrok tcp 23000
-    #client = RemoteAPIClient(host='0.tcp.au.ngrok.io', port=16945)
+    #client = RemoteAPIClient(host='0.tcp.au.ngrok.io', port=17744)
     print('Program connected...')
     sim = client.getObject('sim')
     print('Sim retrieved...')
