@@ -53,10 +53,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(
-                        R.anim.slide_in,  // enter
-                        R.anim.slide_out,  // exit
-                        R.anim.fade_in,   // popEnter
-                        R.anim.slide_out  // popExit
+                        R.anim.slide_in_right,  // enter
+                        R.anim.slide_out_left  // exit
                     )
                     .replace(R.id.container, new NonDrawingFragment())
                     .addToBackStack(null)
