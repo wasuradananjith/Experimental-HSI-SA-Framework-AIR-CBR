@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DrawingActivity">
+    android:layout_height="@dimen/_220sdp"
+    tools:context=".DrawingFragment">
 
     <com.example.mapswarm.DrawingView
         android:id="@+id/drawingView"
@@ -53,28 +53,4 @@
             app:layout_constraintTop_toBottomOf="@+id/pencil" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <Button
-        android:id="@+id/nextBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.33"
-        app:layout_constraintStart_toEndOf="@+id/drawingView"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="0.385" />
-
-    <Button
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.745"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nextBtn"
-        app:layout_constraintVertical_bias="0.362" />
 </androidx.constraintlayout.widget.ConstraintLayout>

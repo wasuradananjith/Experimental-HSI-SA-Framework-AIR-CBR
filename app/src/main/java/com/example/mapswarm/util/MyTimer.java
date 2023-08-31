@@ -3,13 +3,13 @@ package com.example.mapswarm.util;
 import android.os.CountDownTimer;
 import android.widget.TextView;
 
-public class Timer {
+public class MyTimer {
     private CountDownTimer countDownTimer;
     private Boolean timerRunning;
     private long timeLeftInMilliseconds;
     private TextView timerTextView;
 
-    public Timer(Boolean timerRunning, long timeLeftInMilliseconds, TextView textView) {
+    public MyTimer(Boolean timerRunning, long timeLeftInMilliseconds, TextView textView) {
         this.timerRunning = timerRunning;
         this.timeLeftInMilliseconds = timeLeftInMilliseconds;
         this.timerTextView = textView;
@@ -33,14 +33,7 @@ public class Timer {
             @Override
             public void onTick(long l) {
                 timeLeftInMilliseconds = l;
-                int minutes = (int) timeLeftInMilliseconds/60000;
-                int seconds = (int) timeLeftInMilliseconds % 60000 /1000;
-                String timeLeftText;
-                timeLeftText = "" + minutes;
-                timeLeftText += ":";
-                if (seconds < 10) timeLeftText += "0";
-                timeLeftText += seconds;
-                timerTextView.setText(timeLeftText);
+                updateTimer();
             }
 
             @Override
@@ -48,5 +41,18 @@ public class Timer {
 
             }
         }.start();
+
+        timerRunning = true;
+    }
+
+    public void updateTimer() {
+        int minutes = (int) timeLeftInMilliseconds/60000;
+        int seconds = (int) timeLeftInMilliseconds % 60000 /1000;
+        String timeLeftText;
+        timeLeftText = "" + minutes;
+        timeLeftText += ":";
+        if (seconds < 10) timeLeftText += "0";
+        timeLeftText += seconds;
+        timerTextView.setText(timeLeftText);
     }
 }

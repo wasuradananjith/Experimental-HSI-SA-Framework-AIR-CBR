@@ -31,6 +31,7 @@ public class DrawingActivity extends AppCompatActivity {
     private Button pencil;
     private Button eraser;
     private Button nextBtn;
+    private Button backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,9 @@ public class DrawingActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
 
         });
+
+        backBtn = findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(view -> finish());
     }
 
     public void currentColour(int c) {

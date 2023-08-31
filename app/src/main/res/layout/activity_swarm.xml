@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".SwarmActivity">
 
+    <com.example.loadinganimation.LoadingAnimation
+        android:id="@+id/loadingAnim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/_50sdp"
+        app:barType="@drawable/hour_glass"
+        app:boldText="false"
+        app:enlarge="3"
+        app:textColor="@color/white"
+        app:text="Get ready for the questions..."
+        app:isVisible="true"
+        app:textSize="@dimen/_5sdp"
+        android:background="#B5000000"
+        android:visibility="gone"/>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:layout_width="@dimen/_230sdp"
@@ -121,4 +136,16 @@
         app:layout_constraintStart_toEndOf="@+id/attractorSwitch"
         app:layout_constraintTop_toTopOf="@+id/timerText"
         app:layout_constraintVertical_bias="0.071" />
+
+    <Button
+        android:id="@+id/popUpBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Popup"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.582"
+        app:layout_constraintStart_toEndOf="@+id/radiusSeekBar"
+        app:layout_constraintTop_toBottomOf="@+id/messagesTextView"
+        app:layout_constraintVertical_bias="0.663" />
 </androidx.constraintlayout.widget.ConstraintLayout>

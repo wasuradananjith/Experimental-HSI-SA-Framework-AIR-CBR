@@ -5,12 +5,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -20,8 +22,9 @@ import android.widget.Toast;
 import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.example.loadinganimation.LoadingAnimation;
 import com.example.mapswarm.util.Grid;
-import com.example.mapswarm.util.Timer;
+import com.example.mapswarm.util.MyTimer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,6 +43,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -56,6 +61,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Switch showGridSwitch;
     private Switch attractorSwitch;
     private Button simControlButton;
+    private Button popUpBtn;
     private TextView timerTextView;
     private TextView messagesTextView;
     private PyObject coppeliaSimApi;
@@ -98,6 +104,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private HashMap<Integer, Circle> circlesList = new HashMap<>();
     private HashMap<Integer, String> messages = new HashMap<>();
     private int messagesCount = 0;
+    private MyTimer timer;
+    private boolean fromPause = false;
+    private LoadingAnimation loadingAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,7 +178,26 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         });
 
         timerTextView = findViewById(R.id.timerText);
-        timerTextView.setText("10:00");
+        timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
+
+        popUpBtn = findViewById(R.id.popUpBtn);
+        popUpBtn.setOnClickListener(view -> {
+            timer.startStop();
+            fromPause = true;
+            Timer timer = new Timer();
+            loadingAnimation.setVisibility(View.VISIBLE);
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    Intent intent = new Intent(SwarmActivity.this, DrawingActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }, 3000);
+        });
+
+        loadingAnimation = findViewById(R.id.loadingAnim);
+
+        timer.updateTimer();
     }
 
     @Override
@@ -194,7 +222,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         coppeliaSimApi = py.getModule("coppeliaSimApi");
         sim = coppeliaSimApi.callAttr("connect");
 
-        Timer timer = new Timer(false, timeLeftInMilliseconds, timerTextView);
         simControlButton = findViewById(R.id.simControlButton);
         simControlButton.setOnClickListener(view -> {
             if (simControlButton.getText().equals("Start")) {
@@ -638,5 +665,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }.getType();
         Gson gson = new Gson();
         return gson.fromJson(jsonStringToBeRead, mapOfStringObjectType);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (fromPause) {
+            timer.startStop();
+            loadingAnimation.setVisibility(View.GONE);
+        }
     }
 }
