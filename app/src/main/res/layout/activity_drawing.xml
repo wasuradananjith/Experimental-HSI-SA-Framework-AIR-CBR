@@ -18,6 +18,7 @@
         app:layout_constraintVertical_bias="0.502" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="148dp"
         android:layout_height="446dp"
         android:layout_marginStart="112dp"
@@ -52,4 +53,16 @@
             app:layout_constraintTop_toBottomOf="@+id/pencil" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+    <Button
+        android:id="@+id/nextBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.33"
+        app:layout_constraintStart_toEndOf="@+id/drawingView"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintVertical_bias="0.385" />
 </androidx.constraintlayout.widget.ConstraintLayout>
