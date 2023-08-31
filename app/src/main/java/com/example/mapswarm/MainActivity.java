@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         drawViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), DrawingActivity.class);
+                Intent intent = new Intent(view.getContext(), QuestionnaireActivity.class);
                 startActivity(intent);
             }
         });

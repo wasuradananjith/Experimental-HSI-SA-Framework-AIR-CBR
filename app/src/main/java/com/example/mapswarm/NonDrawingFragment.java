@@ -1,12 +1,5 @@
 package com.example.mapswarm;
 
-import static com.example.mapswarm.DrawingView.colourList;
-import static com.example.mapswarm.DrawingView.currentBrush;
-import static com.example.mapswarm.DrawingView.pathList;
-
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,14 +7,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link DrawingFragment#newInstance} factory method to
+ * Use the {@link NonDrawingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DrawingFragment extends Fragment {
+public class NonDrawingFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,12 +24,7 @@ public class DrawingFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public static Path path = new Path();
-    public static Paint paintBrush = new Paint();
-    private Button pencil;
-    private Button eraser;
-
-    public DrawingFragment() {
+    public NonDrawingFragment() {
         // Required empty public constructor
     }
 
@@ -47,11 +34,11 @@ public class DrawingFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment DrawingFragment.
+     * @return A new instance of fragment NonDrawingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DrawingFragment newInstance(String param1, String param2) {
-        DrawingFragment fragment = new DrawingFragment();
+    public static NonDrawingFragment newInstance(String param1, String param2) {
+        NonDrawingFragment fragment = new NonDrawingFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -72,25 +59,6 @@ public class DrawingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_drawing, container, false);
-
-        pencil = root.findViewById(R.id.pencil);
-        eraser = root.findViewById(R.id.eraser);
-        pencil.setOnClickListener(view -> {
-            paintBrush.setColor(Color.GREEN);
-            currentColour(paintBrush.getColor());
-        });
-
-        eraser.setOnClickListener(view -> {
-            pathList.clear();
-            colourList.clear();
-            path.reset();
-        });
-        return root;
-    }
-
-    public void currentColour(int c) {
-        currentBrush = c;
-        path = new Path();
+        return inflater.inflate(R.layout.fragment_non_drawing, container, false);
     }
 }

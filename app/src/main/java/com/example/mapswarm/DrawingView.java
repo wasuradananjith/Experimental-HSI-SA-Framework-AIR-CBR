@@ -1,7 +1,7 @@
 package com.example.mapswarm;
 
-import static com.example.mapswarm.DrawingActivity.paintBrush;
-import static com.example.mapswarm.DrawingActivity.path;
+import static com.example.mapswarm.DrawingFragment.paintBrush;
+import static com.example.mapswarm.DrawingFragment.path;
 
 import android.content.Context;
 import android.graphics.Canvas;

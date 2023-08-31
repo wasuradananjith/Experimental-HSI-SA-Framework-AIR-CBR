@@ -188,7 +188,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             loadingAnimation.setVisibility(View.VISIBLE);
             timer.schedule(new TimerTask() {
                 public void run() {
-                    Intent intent = new Intent(SwarmActivity.this, DrawingActivity.class);
+                    Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }

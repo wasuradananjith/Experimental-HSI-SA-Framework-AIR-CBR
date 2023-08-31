@@ -13,7 +13,7 @@
         android:theme="@style/Theme.MapSwarm"
         tools:targetApi="31">
         <activity
-            android:name=".DrawingActivity"
+            android:name=".QuestionnaireActivity"
             android:exported="false" />
         <activity
             android:name=".SwarmActivity"

@@ -1,58 +1,32 @@
 package com.example.mapswarm;
 
-import static com.example.mapswarm.DrawingView.colourList;
-import static com.example.mapswarm.DrawingView.currentBrush;
-import static com.example.mapswarm.DrawingView.pathList;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+public class QuestionnaireActivity extends AppCompatActivity {
 
-public class DrawingActivity extends AppCompatActivity {
-
-    public static Path path = new Path();
-    public static Paint paintBrush = new Paint();
-    private Button pencil;
-    private Button eraser;
     private Button nextBtn;
     private Button backBtn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_drawing);
+        setContentView(R.layout.activity_questionnaire);
+        getSupportFragmentManager().beginTransaction().add(R.id.container,
+                new DrawingFragment()).commit();
 
-        pencil = findViewById(R.id.pencil);
-        eraser = findViewById(R.id.eraser);
         nextBtn = findViewById(R.id.nextBtn);
-
-        pencil.setOnClickListener(view -> {
-            paintBrush.setColor(Color.GREEN);
-            currentColour(paintBrush.getColor());
-        });
-
-        eraser.setOnClickListener(view -> {
-            pathList.clear();
-            colourList.clear();
-            path.reset();
-        });
-
         nextBtn.setOnClickListener(view -> {
             ContextWrapper cw = new ContextWrapper(getApplicationContext());
             File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -75,17 +49,21 @@ public class DrawingActivity extends AppCompatActivity {
                 }
             }
 
-            Toast.makeText(DrawingActivity.this, directory.getPath(),
+            Toast.makeText(QuestionnaireActivity.this, directory.getPath(),
                     Toast.LENGTH_SHORT).show();
-
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                        R.anim.slide_in,  // enter
+                        R.anim.slide_out,  // exit
+                        R.anim.fade_in,   // popEnter
+                        R.anim.slide_out  // popExit
+                    )
+                    .replace(R.id.container, new NonDrawingFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(view -> finish());
-    }
-
-    public void currentColour(int c) {
-        currentBrush = c;
-        path = new Path();
     }
 }
