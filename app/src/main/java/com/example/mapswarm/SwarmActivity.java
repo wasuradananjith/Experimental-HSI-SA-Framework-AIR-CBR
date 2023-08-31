@@ -85,7 +85,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng selectedCircleLatLng = null;
     private Integer selectedCircleId = null;
     private int regionsCount = 0;
-    private int breadCrumbsCount = 0;
     private int screenWidth = 0;
     private float widthInMeters = 0;
     Handler handler = new Handler();
@@ -364,6 +363,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
+        if (timerTextView.getText().equals("9:30") && !fromPause) {
+            pauseSimulationForQuestions();
+        }
         if (!isTargetRegionRetrieved) {
             drawTargetRegion();
         }
@@ -669,7 +671,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         } else if (state == -1) {
             warningDialog("Error!", "Error when starting the simulation. " +
                     "Please contact the administrator...");
-        } else {
+        } else if (state == 0) {
             warningDialog("Error!", "Operation could not be performed when starting " +
                     "the simulation. Please contact the administrator...");
         }
@@ -677,6 +679,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     public void pauseSimulationForQuestions() {
         Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
+        Log.i("Log: pauseState ", state.toString());
         if (state > 0) {
             timer.startStop();
             fromPause = true;
@@ -692,7 +695,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         } else if (state == -1) {
             warningDialog("Error!", "Error when pausing the simulation. " +
                     "Please contact the administrator...");
-        } else {
+        } else if (state == 0) {
             warningDialog("Error!", "Operation could not be performed when pausing " +
                     "the simulation. Please contact the administrator...");
         }
