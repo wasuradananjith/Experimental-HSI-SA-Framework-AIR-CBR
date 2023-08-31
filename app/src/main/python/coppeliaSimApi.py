@@ -82,10 +82,13 @@ def deleteBreadcrumb(sim, breadcrumbId):
     return sim.callScriptFunction("deleteBreadcrumb", parentScriptHandle, breadcrumbId)
 
 def startSim(sim):
-    sim.startSimulation()
+    return sim.startSimulation()
 
 def stopSim(sim):
-    sim.stopSimulation()
+    return sim.stopSimulation()
+
+def pauseSim(sim):
+    return sim.pauseSimulation()
     
 def stopRobot(sim):
     robot = sim.getObject('./PioneerP3DX[1]')

@@ -182,17 +182,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         popUpBtn = findViewById(R.id.popUpBtn);
         popUpBtn.setOnClickListener(view -> {
-            timer.startStop();
-            fromPause = true;
-            Timer timer = new Timer();
-            loadingAnimation.setVisibility(View.VISIBLE);
-            timer.schedule(new TimerTask() {
-                public void run() {
-                    Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            }, 3000);
+            pauseSimulationForQuestions();
         });
 
         loadingAnimation = findViewById(R.id.loadingAnim);
@@ -225,16 +215,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         simControlButton = findViewById(R.id.simControlButton);
         simControlButton.setOnClickListener(view -> {
             if (simControlButton.getText().equals("Start")) {
-                coppeliaSimApi.callAttr("startSim", sim);
-                simControlButton.setText("Stop");
-                simControlButton.setBackgroundColor(Color.RED);
-                timer.startStop();
+                startSimulation();
             } else {
-                coppeliaSimApi.callAttr("stopSim", sim);
-                finish();
-                startActivity(getIntent());
+                stopSimulation();
             }
-
         });
 
         if (sim != null) {
@@ -671,8 +655,84 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public void onResume() {
         super.onResume();
         if (fromPause) {
-            timer.startStop();
-            loadingAnimation.setVisibility(View.GONE);
+            resumeAfterPause();
         }
+    }
+
+    public void startSimulation() {
+        Integer state = coppeliaSimApi.callAttr("startSim", sim).toInt();
+        if (state > 0) {
+            simControlButton.setText("Stop");
+            simControlButton.setBackgroundColor(Color.RED);
+            loadingAnimation.setVisibility(View.GONE);
+            timer.startStop();
+        } else if (state == -1) {
+            warningDialog("Error!", "Error when starting the simulation. " +
+                    "Please contact the administrator...");
+        } else {
+            warningDialog("Error!", "Operation could not be performed when starting " +
+                    "the simulation. Please contact the administrator...");
+        }
+    }
+
+    public void pauseSimulationForQuestions() {
+        Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
+        if (state > 0) {
+            timer.startStop();
+            fromPause = true;
+            Timer timer = new Timer();
+            loadingAnimation.setVisibility(View.VISIBLE);
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }, 3000);
+        } else if (state == -1) {
+            warningDialog("Error!", "Error when pausing the simulation. " +
+                    "Please contact the administrator...");
+        } else {
+            warningDialog("Error!", "Operation could not be performed when pausing " +
+                    "the simulation. Please contact the administrator...");
+        }
+    }
+
+    public void stopSimulation() {
+        Integer state = coppeliaSimApi.callAttr("stopSim", sim).toInt();
+        if (state > 0) {
+            coppeliaSimApi.callAttr("stopSim", sim);
+            finish();
+            startActivity(getIntent());
+        } else if (state == -1) {
+            warningDialog("Error!", "Error when stopping the simulation. " +
+                    "Please contact the administrator...");
+        } else {
+            warningDialog("Error!", "Operation could not be performed when stopping " +
+                    "the simulation. Please contact the administrator...");
+        }
+    }
+
+    private void resumeAfterPause() {
+        startSimulation();
+    }
+
+    private void warningDialog(String title, String message) {
+        // Create the object of AlertDialog Builder class
+        AlertDialog.Builder builder = new AlertDialog.Builder(SwarmActivity.this);
+
+        // Set the message show for the Alert time
+        builder.setMessage(message);
+
+        // Set Alert Title
+        builder.setTitle(title);
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
     }
 }
