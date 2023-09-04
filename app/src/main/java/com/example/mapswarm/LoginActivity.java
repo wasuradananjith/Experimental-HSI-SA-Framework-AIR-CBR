@@ -1,6 +1,5 @@
 package com.example.mapswarm;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,19 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mapswarm.util.QuestionsBank;
-import com.example.mapswarm.util.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.io.InputStream;
-
 public class LoginActivity extends AppCompatActivity {
 
     TextInputEditText usernameEditText, passwordEditText;
@@ -33,7 +22,6 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     TextView registerTextView;
-    private String databaseRef = "questionsBank";
     private final String EMAIL_DOMAIN = "@test.com";
     private final String TAG = "LoginActivity";
 
@@ -42,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null) {
-            initializeQuestionBankForUser(currentUser);
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
@@ -85,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Login successful.",
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser currentUser = mAuth.getCurrentUser();
-                            initializeQuestionBankForUser(currentUser);
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -103,43 +89,5 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-    }
-
-    public void initializeQuestionBankForUser(FirebaseUser user) {
-        String username = User.getUsernameFromEmail(user.getEmail());
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.child(username).exists()) {
-                    databaseReference.child(username).setValue(databaseRef);
-                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().
-                            getReference(username + "/" + databaseRef);
-                    databaseReference2.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            QuestionsBank questionsBank = new QuestionsBank();
-                            InputStream inputStream = getResources().openRawResource(R.raw.questions);
-                            questionsBank.readAndSetQuestionsFromCsv(inputStream, databaseReference2);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(LoginActivity.this,
-                                    "Fail in initializing the question bank " +
-                                            error, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
     }
 }
