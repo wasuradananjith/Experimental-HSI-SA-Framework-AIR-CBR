@@ -1,0 +1,98 @@
+package com.example.mapswarm.model;
+
+public class Question {
+
+    private String questionContent;
+    private Boolean isDrawing;
+    private String mcqAnswer1;
+    private String mcqAnswer2;
+    private String mcqAnswer3;
+    private String mcqAnswer4;
+    private Integer saLevel;
+    private String markedAnswer;
+    private Integer count;
+
+    public Question(String questionContent, Boolean isDrawing, String mcqAnswer1, String mcqAnswer2,
+                    String mcqAnswer3, String mcqAnswer4, Integer saLevel) {
+        this.questionContent = questionContent;
+        this.isDrawing = isDrawing;
+        this.mcqAnswer1 = mcqAnswer1;
+        this.mcqAnswer2 = mcqAnswer2;
+        this.mcqAnswer3 = mcqAnswer3;
+        this.mcqAnswer4 = mcqAnswer4;
+        this.saLevel = saLevel;
+    }
+
+    public String getQuestionContent() {
+        return questionContent;
+    }
+
+    public void setQuestionContent(String questionContent) {
+        this.questionContent = questionContent;
+    }
+
+    public Boolean isDrawing() {
+        return isDrawing;
+    }
+
+    public void setDrawing(Boolean drawing) {
+        isDrawing = drawing;
+    }
+
+    public String getMcqAnswer1() {
+        return mcqAnswer1;
+    }
+
+    public void setMcqAnswer1(String mcqAnswer1) {
+        this.mcqAnswer1 = mcqAnswer1;
+    }
+
+    public String getMcqAnswer2() {
+        return mcqAnswer2;
+    }
+
+    public void setMcqAnswer2(String mcqAnswer2) {
+        this.mcqAnswer2 = mcqAnswer2;
+    }
+
+    public String getMcqAnswer3() {
+        return mcqAnswer3;
+    }
+
+    public void setMcqAnswer3(String mcqAnswer3) {
+        this.mcqAnswer3 = mcqAnswer3;
+    }
+
+    public String getMcqAnswer4() {
+        return mcqAnswer4;
+    }
+
+    public void setMcqAnswer4(String mcqAnswer4) {
+        this.mcqAnswer4 = mcqAnswer4;
+    }
+
+    public String getMarkedAnswer() {
+        return markedAnswer;
+    }
+
+    public void setMarkedAnswer(String markedAnswer) {
+        this.markedAnswer = markedAnswer;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public Integer getSaLevel() {
+        return saLevel;
+    }
+
+    public void setSaLevel(Integer saLevel) {
+        this.saLevel = saLevel;
+    }
+}
+

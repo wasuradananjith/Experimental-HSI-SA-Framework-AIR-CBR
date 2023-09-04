@@ -27,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     TextView loginTextView;
+    private final String EMAIL_DOMAIN = "@test.com";
     private final String TAG = "RegisterActivity";
 
     @Override
@@ -67,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            mAuth.createUserWithEmailAndPassword(username, password)
+            mAuth.createUserWithEmailAndPassword(username + EMAIL_DOMAIN, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
