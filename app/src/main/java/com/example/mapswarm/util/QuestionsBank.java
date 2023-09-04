@@ -33,7 +33,7 @@ public class QuestionsBank {
                 String[] tokens = line.split(",");
 
                 // Read data
-                Question question = new Question(tokens[0], Boolean.parseBoolean(tokens[1]),
+                Question question = new Question(tokens[0], Integer.parseInt(tokens[1]),
                         tokens[2], tokens[3], tokens[4], tokens[5], Integer.parseInt(tokens[6]));
                 questions.add(question);
             }

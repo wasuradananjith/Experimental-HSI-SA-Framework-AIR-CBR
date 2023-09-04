@@ -3,7 +3,7 @@ package com.example.mapswarm.model;
 public class Question {
 
     private String questionContent;
-    private Boolean isDrawing;
+    private Integer isDrawing;
     private String mcqAnswer1;
     private String mcqAnswer2;
     private String mcqAnswer3;
@@ -12,7 +12,7 @@ public class Question {
     private String markedAnswer;
     private Integer count;
 
-    public Question(String questionContent, Boolean isDrawing, String mcqAnswer1, String mcqAnswer2,
+    public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
                     String mcqAnswer3, String mcqAnswer4, Integer saLevel) {
         this.questionContent = questionContent;
         this.isDrawing = isDrawing;
@@ -31,11 +31,11 @@ public class Question {
         this.questionContent = questionContent;
     }
 
-    public Boolean isDrawing() {
+    public Integer isDrawing() {
         return isDrawing;
     }
 
-    public void setDrawing(Boolean drawing) {
+    public void setDrawing(Integer drawing) {
         isDrawing = drawing;
     }
 
