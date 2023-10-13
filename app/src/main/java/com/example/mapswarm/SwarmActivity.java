@@ -66,8 +66,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private TextView messagesTextView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
-    private int simOffset = 6;
-    private int simSize = 12;
+    private int simOffset = 60;
+    private int simSize = 120;
     private long timeLeftInMilliseconds = 600000;
     private boolean isSimStopped = false;
     private boolean isStaticObstaclesRetrieved = false;
@@ -363,14 +363,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
-        if (timerTextView.getText().equals("9:30") && !fromPause) {
+        if (timerTextView.getText().equals("9:30") && !fromPause) { // temp
             pauseSimulationForQuestions();
         }
         if (!isTargetRegionRetrieved) {
             drawTargetRegion();
         }
         if (!isStaticObstaclesRetrieved) {
-            drawRectangularObstacles();
+            //drawRectangularObstacles();
         }
         for (Marker marker: robotPositions) {
             marker.remove();
