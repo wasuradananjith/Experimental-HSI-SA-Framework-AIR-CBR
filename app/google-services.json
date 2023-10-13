@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "596712580932",
+    "firebase_url": "https://swarmtactix-default-rtdb.firebaseio.com",
     "project_id": "swarmtactix",
     "storage_bucket": "swarmtactix.appspot.com"
   },
