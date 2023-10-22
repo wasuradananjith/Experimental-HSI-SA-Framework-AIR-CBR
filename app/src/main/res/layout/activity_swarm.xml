@@ -79,6 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="96dp"
         android:text="Show Grid    "
+        android:checked="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/timerText"
         app:layout_constraintHorizontal_bias="0.0"
@@ -86,17 +87,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.083" />
 
-    <Switch
-        android:id="@+id/attractorSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Attractor      "
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/timerText"
-        app:layout_constraintHorizontal_bias="0.589"
-        app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.148" />
+<!--    <Switch-->
+<!--        android:id="@+id/attractorSwitch"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Attractor      "-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/timerText"-->
+<!--        app:layout_constraintHorizontal_bias="0.589"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/map"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.148" />-->
 
     <TextView
         android:id="@+id/timerText"
@@ -132,10 +133,10 @@
         android:text="Start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toEndOf="@+id/attractorSwitch"
+        app:layout_constraintHorizontal_bias="0.754"
+        app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.071" />
+        app:layout_constraintVertical_bias="0.078" />
 
     <Button
         android:id="@+id/popUpBtn"

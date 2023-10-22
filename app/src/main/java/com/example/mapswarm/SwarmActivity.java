@@ -171,10 +171,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        attractorSwitch = findViewById(R.id.attractorSwitch);
-        attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            attractorsEnabled = isChecked;
-        });
+//        attractorSwitch = findViewById(R.id.attractorSwitch);
+//        attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            attractorsEnabled = isChecked;
+//        });
 
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
@@ -294,6 +294,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 3, this);
         grid.initializeGrid();
+
+        // draw the grid when the map is loaded for the first time
+        grid.drawGrid();
+
         drawTargetRegion();
 
         if (showStaticObstacles)
