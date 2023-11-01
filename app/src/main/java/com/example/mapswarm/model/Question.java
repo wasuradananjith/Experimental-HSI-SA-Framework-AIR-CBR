@@ -13,7 +13,7 @@ public class Question {
     private Integer count;
 
     public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
-                    String mcqAnswer3, String mcqAnswer4, Integer saLevel) {
+                    String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer count) {
         this.questionContent = questionContent;
         this.isDrawing = isDrawing;
         this.mcqAnswer1 = mcqAnswer1;
@@ -21,6 +21,7 @@ public class Question {
         this.mcqAnswer3 = mcqAnswer3;
         this.mcqAnswer4 = mcqAnswer4;
         this.saLevel = saLevel;
+        this.count = count;
     }
 
     public String getQuestionContent() {

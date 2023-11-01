@@ -34,7 +34,8 @@ public class QuestionsBank {
 
                 // Read data
                 Question question = new Question(tokens[0], Integer.parseInt(tokens[1]),
-                        tokens[2], tokens[3], tokens[4], tokens[5], Integer.parseInt(tokens[6]));
+                        tokens[2], tokens[3], tokens[4], tokens[5], Integer.parseInt(tokens[6]),
+                        0);
                 questions.add(question);
             }
             databaseReference.setValue(questions);

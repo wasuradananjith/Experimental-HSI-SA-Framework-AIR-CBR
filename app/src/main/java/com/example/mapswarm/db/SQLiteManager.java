@@ -1,10 +1,13 @@
 package com.example.mapswarm.db;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.example.mapswarm.model.Question;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.SQLDataException;
+import java.util.ArrayList;
 
 public class SQLiteManager {
 
@@ -28,6 +32,7 @@ public class SQLiteManager {
     static final String ANSWER_3 = "ANSWER_3";
     static final String ANSWER_4 = "ANSWER_4";
     static final String SA_LEVEL = "SA_LEVEL";
+    static final String QUESTION_COUNT = "QUESTION_COUNT";
     private static final String CREATE_QUESTION_BANK_TABLE =
             "CREATE TABLE " + DATABASE_TABLE + " ( "
                     + QUESTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -37,13 +42,14 @@ public class SQLiteManager {
                     + ANSWER_2 + " TEXT NOT NULL, "
                     + ANSWER_3 + " TEXT NOT NULL, "
                     + ANSWER_4 + " TEXT NOT NULL, "
-                    + SA_LEVEL + " INTEGER );";
+                    + SA_LEVEL + " INTEGER,"
+                    + QUESTION_COUNT + " INTEGER DEFAULT 0 );";
 
     public SQLiteManager(Context ctx) {
         this.context = ctx;
     }
 
-    public SQLiteManager open() throws SQLDataException {
+    public SQLiteManager open() {
         sqLiteHelper = new SQLiteHelper(context);
         sqLiteDatabase = sqLiteHelper.getWritableDatabase();
         return this;
@@ -78,6 +84,7 @@ public class SQLiteManager {
                 contentValues.put(ANSWER_3, tokens[4]);
                 contentValues.put(ANSWER_4, tokens[5]);
                 contentValues.put(SA_LEVEL, Integer.parseInt(tokens[6]));
+                contentValues.put(QUESTION_COUNT, 0);
                 sqLiteDatabase.insert(DATABASE_TABLE, null, contentValues);
             }
         } catch (IOException e) {
@@ -86,13 +93,33 @@ public class SQLiteManager {
         }
     }
 
-    public Cursor fetchQuestionBankData() {
-        String[] columns = new String[] {QUESTION_CONTENT, IS_DRAWING, ANSWER_1, ANSWER_2,
-                ANSWER_3, ANSWER_3, SA_LEVEL};
-        Cursor cursor = sqLiteDatabase.query(DATABASE_TABLE, columns, null, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
+    @SuppressLint("Range")
+    public ArrayList<Question> fetchQuestionBankData(int count, int limit) {
+
+        ArrayList<Question> questions = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery( "SELECT * from "+DATABASE_TABLE+" WHERE "
+                + QUESTION_COUNT + " = " + count + " ORDER BY RANDOM()" + " LIMIT "+
+                limit, null );
+        //Cursor cursor = sqLiteDatabase.query(DATABASE_TABLE, columns, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                // on below line we are adding the data from
+                // cursor to our array list.
+                questions.add(new Question(
+                        cursor.getString(cursor.getColumnIndex(QUESTION_CONTENT)),
+                        cursor.getInt(cursor.getColumnIndex(IS_DRAWING)),
+                        cursor.getString(cursor.getColumnIndex(ANSWER_1)),
+                        cursor.getString(cursor.getColumnIndex(ANSWER_2)),
+                        cursor.getString(cursor.getColumnIndex(ANSWER_3)),
+                        cursor.getString(cursor.getColumnIndex(ANSWER_4)),
+                        cursor.getInt(cursor.getColumnIndex(SA_LEVEL)),
+                        cursor.getInt(cursor.getColumnIndex(QUESTION_COUNT))));
+            } while (cursor.moveToNext());
+            // moving our cursor to next.
         }
-        return cursor;
+        // at last closing our cursor
+        // and returning the array list.
+        cursor.close();
+        return questions;
     }
 }

@@ -87,6 +87,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int regionsCount = 0;
     private int screenWidth = 0;
     private float widthInMeters = 0;
+    // private long[] questionTimes = { 480000, 300000, 180000, 0}; // 8min, 5min, 3min, 0min
+    private long[] questionTimes = { 585000, 570000, 555000, 540000}; // 8min, 5min, 3min, 0min
+    private boolean[] questionsAsked = { false, false, false, false};
+    private int questionRound = 0;
     Handler handler = new Handler();
     Runnable updateMarker = new Runnable() {
         @Override
@@ -181,7 +185,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         popUpBtn = findViewById(R.id.popUpBtn);
         popUpBtn.setOnClickListener(view -> {
-            pauseSimulationForQuestions();
+            pauseSimulationForQuestions(0);
         });
 
         loadingAnimation = findViewById(R.id.loadingAnim);
@@ -300,8 +304,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         drawTargetRegion();
 
-        if (showStaticObstacles)
-            drawRectangularObstacles();
+        //if (showStaticObstacles)
+            //drawRectangularObstacles();
     }
 
     private void drawCircle(LatLng latLng, Boolean isAttractor) {
@@ -367,9 +371,24 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
-        if (timerTextView.getText().equals("9:30") && !fromPause) { // temp
-            pauseSimulationForQuestions();
+
+        // Popup the questionnaire in predefined times
+        for (int i = 0; i < questionTimes.length; i++) {
+            if (timer.getTimeLeftInMilliseconds() <= questionTimes[i] && !questionsAsked[i]) {
+                int filterDataCount = 0; // argument to compare the counts of the already asked
+                                         // questions when retrieving from the database
+                if (i == 2) {
+                    filterDataCount += 1;
+                }
+                pauseSimulationForQuestions(filterDataCount);
+                questionsAsked[i] = true;
+                if (i == 3) {
+                    // Stop the simulation after the last questionnaire
+                    stopSimulation();
+                }
+            }
         }
+
         if (!isTargetRegionRetrieved) {
             drawTargetRegion();
         }
@@ -681,7 +700,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    public void pauseSimulationForQuestions() {
+    public void pauseSimulationForQuestions(int filterDataCount) {
         Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
         Log.i("Log: pauseState ", state.toString());
         if (state > 0) {
@@ -692,6 +711,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             timer.schedule(new TimerTask() {
                 public void run() {
                     Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
+                    intent.putExtra("filterDataCount", filterDataCount);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }

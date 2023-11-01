@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             sqLiteManager.createQuestionBank();
             InputStream inputStream = getResources().openRawResource(R.raw.questions);
             sqLiteManager.insertQuestionBankData(inputStream);
+            sqLiteManager.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,1 +1,32 @@
-question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,sa_levelMark the current positions of the robots,1,None,None,None,None,1Mark the position of the target,1,None,None,None,None,1How many robots are near the target?,0,0 to 5,5 to 10,10 to 15,15 to 20,2Mark the positions of the robot after next 5 seconds,1,None,None,None,None,3How many robots can reach the target region within next 10 seconds?,0,0 to 5,5 to 10,10 to 15,15 to 20,3How much time do you have to complete the task?,0,1 to 3 mins,3 to 5 mins,5 to 7 mins,7 to 10 mins,1How much time have elapsed since you have started doing the task?,0,1 to 3 mins,3 to 5 mins,5 to 7 mins,7 to 10 mins,2How many dangerous regions are there currently?,0,0,1,2,3 or more,1Mark the currently activated dangerous regions,1,None,None,None,None,2Mark the  currently activated dangerous regions with the highest radius,1,None,None,None,None,2
+question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,sa_level
+Mark the current positions of the robots,1,None,None,None,None,1
+Mark the position of the target,1,None,None,None,None,1
+How many robots are inside the target region?,0,1 to 5,6 to 10,11 to 15,16 to 20,2
+Mark the positions of the robot after next 10 seconds,1,None,None,None,None,3
+How many robots can reach the target region within next 10 seconds?,0,1 to 5,6 to 10,11 to 15,16 to 20,3
+Choose the robots' moving direction,0,_,|,/,\,1
+What is the robots' moving direction respect to the target,0,Towards the target,Away from the target,Robots are not moving (stuck),Robots have reached the target and stopped,2
+What will be the robots' moving direction after next 10 seconds,0,_,|,/,\,3
+What will be the robots' moving direction respect to the target after next 10 seconds,0,Towards the target,Away from the target,Robots will not move (stuck),Robots will reach the target and stop,3
+How much time do you have to complete the task (in minutes)?,0,7 to 10,5 to 7,2 to 5,Less than 2,1
+How much time have elapsed since you have started doing the task (in minutes)?,0,7 to 10,5 to 7,2 to 5,Less than 2,2
+How much time will be needed for all the active robots to reach the target region?,0,7 to 10,5 to 7,2 to 5,Less than 2,3
+Mark the currently active dangerous regions based on the information received from the notifications.,1,None,None,None,None,1
+How many avoidance regions have you drawn on the map?,0,0,1,2,3 or more,1
+Mark the avoidance regions that you have already drawn on the map.,1,None,None,None,None,1
+Mark the avoidance regions that you have already drawn on the maps sizing them relative to each region's size.,1,None,None,None,None,1
+Mark the currently active dangerous regions based on the information received from the notifications.,1,None,None,None,None,2
+Mark the currently active dangerous regions based on the information received from the notifications sizing them relative to each region's size.,1,None,None,None,None,2
+How many dangerous regions will get activated within next 1 minute based on the information received from the notifications?,0,0,1,2,3 or more,3
+How many drawn dangerous regions can be removed within next 1 minute?,0,0,1,2,3 or more,3
+How many attractive regions have you drawn on the map?,0,0,1,2,3 or more,1
+Mark the attractive regions that you have already drawn on the map.,1,None,None,None,None,1
+Mark the attractive regions that you have already drawn on the maps sizing them relative to each region's size.,1,None,None,None,None,1
+How many drawn attractive regions might need to be drawn within next 1 minute?,0,0,1,2,3 or more,3
+How many drawn attractive regions can be removed within next 1 minute?,0,0,1,2,3 or more,3
+Mark the positions of the deactivated robots,1,None,None,None,None,1
+How many robots are currently deactivated?,0,1 to 5,6 to 10,11 to 15,16 to 20,1
+Mark the region where the most number of deactivated robots are resided in.,1,None,None,None,None,2
+How many robots will get deactivated within next 10 seconds?,0,1 to 5,6 to 10,11 to 15,16 to 20,3
+How many robots are stuck between obstacles and unable to move?,0,1 to 5,6 to 10,11 to 15,16 to 20,2
+How many robots can get stuck between static obstacles within next 10 seconds,0,1 to 5,6 to 10,11 to 15,16 to 20,3

@@ -55,16 +55,16 @@
     <TextView
         android:id="@+id/questionTxt"
         android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_120sdp"
+        android:layout_height="@dimen/_180sdp"
         android:ellipsize="end"
-        android:maxLines="3"
+        android:maxLines="10"
         android:text="Mark the currently activated dangerous regions"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.036"
+        app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.24" />
+        app:layout_constraintVertical_bias="0.341" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
