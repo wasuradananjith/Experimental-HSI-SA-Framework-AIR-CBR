@@ -1,6 +1,6 @@
 package com.example.mapswarm.db;
 
-import static com.example.mapswarm.db.SQLiteManager.DATABASE_TABLE;
+import static com.example.mapswarm.db.Constants.QUESTIONS_BANK_TABLE;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,6 +22,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QUESTIONS_BANK_TABLE);
     }
 }

@@ -1,8 +1,5 @@
 package com.example.mapswarm;
 
-import static com.example.mapswarm.DrawingFragment.paintBrush;
-import static com.example.mapswarm.DrawingFragment.path;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,10 +15,12 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class DrawingView extends View {
-    public static ArrayList<Path> pathList = new ArrayList<>();
-    public static ArrayList<Integer> colourList = new ArrayList<>();
+    public ArrayList<Path> pathList = new ArrayList<>();
+    public ArrayList<Integer> colourList = new ArrayList<>();
     public ViewGroup.LayoutParams params;
-    public static int currentBrush = Color.GREEN;
+    public int currentBrush = Color.GREEN;
+    private Path path = new Path();
+    private Paint paintBrush = new Paint();
 
     public DrawingView(Context context) {
         super(context);
@@ -77,5 +76,45 @@ public class DrawingView extends View {
             canvas.drawPath(pathList.get(i), paintBrush);
             invalidate();
         }
+    }
+
+    public ArrayList<Path> getPathList() {
+        return pathList;
+    }
+
+    public void setPathList(ArrayList<Path> pathList) {
+        this.pathList = pathList;
+    }
+
+    public ArrayList<Integer> getColourList() {
+        return colourList;
+    }
+
+    public void setColourList(ArrayList<Integer> colourList) {
+        this.colourList = colourList;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    public Paint getPaintBrush() {
+        return paintBrush;
+    }
+
+    public void setPaintBrush(Paint paintBrush) {
+        this.paintBrush = paintBrush;
+    }
+
+    public int getCurrentBrush() {
+        return currentBrush;
+    }
+
+    public void setCurrentBrush(int currentBrush) {
+        this.currentBrush = currentBrush;
     }
 }

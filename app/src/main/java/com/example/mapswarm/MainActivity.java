@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
              startActivity(intent);
              finish();
         } else {
-            welcomeText.setText("Welcome "+ user.getEmail() + ", to SwarmTactiX!");
+            welcomeText.setText("Welcome "+ user.getEmail().split("@")[0] + ", to SwarmTactiX!");
         }
 
         logoutButton.setOnClickListener(view -> {

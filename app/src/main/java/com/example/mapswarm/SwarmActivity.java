@@ -23,6 +23,7 @@ import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.example.loadinganimation.LoadingAnimation;
+import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.util.Grid;
 import com.example.mapswarm.util.MyTimer;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,9 +37,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +94,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     // private long[] questionTimes = { 480000, 300000, 180000, 0}; // 8min, 5min, 3min, 0min
     private long[] questionTimes = { 585000, 570000, 555000, 540000}; // 8min, 5min, 3min, 0min
     private boolean[] questionsAsked = { false, false, false, false};
-    private int questionRound = 0;
+    private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
     Runnable updateMarker = new Runnable() {
         @Override
@@ -108,6 +112,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private HashMap<Integer, String> messages = new HashMap<>();
     private int messagesCount = 0;
     private MyTimer timer;
+    private int questionRound = 0;  // Number of times the questionnaire was displayed during
+                                    // one user activity
+    int filterDataCount = 0;    // argument to compare the counts of the already asked
+                                // questions when retrieving from the database
     private boolean fromPause = false;
     private LoadingAnimation loadingAnimation;
 
@@ -218,7 +226,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         simControlButton = findViewById(R.id.simControlButton);
         simControlButton.setOnClickListener(view -> {
             if (simControlButton.getText().equals("Start")) {
-                startSimulation();
+                initializeQuestionBankAndStartSimulation();
             } else {
                 stopSimulation();
             }
@@ -373,20 +381,17 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private void periodicWork() {
 
         // Popup the questionnaire in predefined times
-        for (int i = 0; i < questionTimes.length; i++) {
-            if (timer.getTimeLeftInMilliseconds() <= questionTimes[i] && !questionsAsked[i]) {
-                int filterDataCount = 0; // argument to compare the counts of the already asked
-                                         // questions when retrieving from the database
-                if (i == 2) {
-                    filterDataCount += 1;
-                }
-                pauseSimulationForQuestions(filterDataCount);
-                questionsAsked[i] = true;
-                if (i == 3) {
-                    // Stop the simulation after the last questionnaire
-                    stopSimulation();
-                }
+        if (timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound] && !questionsAsked[questionRound]) {
+            if (questionRound == 2) {
+                filterDataCount += 1;
             }
+            pauseSimulationForQuestions(filterDataCount);
+            questionsAsked[questionRound] = true;
+            if (questionRound == 3) {
+                // Stop the simulation after the last questionnaire
+                stopSimulation();
+            }
+            questionRound += 1;
         }
 
         if (!isTargetRegionRetrieved) {
@@ -684,7 +689,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    public void initializeQuestionBankAndStartSimulation() {
+        initializeQuestionBank();
+        startSimulation();
+    }
+
     public void startSimulation() {
+
         Integer state = coppeliaSimApi.callAttr("startSim", sim).toInt();
         if (state > 0) {
             simControlButton.setText("Stop");
@@ -712,6 +723,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 public void run() {
                     Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
                     intent.putExtra("filterDataCount", filterDataCount);
+                    intent.putExtra("limit", questionRound%2 == 1?15:16);
+                    intent.putExtra("activityRound", activityRound);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
@@ -761,5 +774,28 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         AlertDialog alertDialog = builder.create();
         // Show the Alert Dialog box
         alertDialog.show();
+    }
+
+    /**
+     * Initialise the question bank for the new round
+     */
+    public void initializeQuestionBank() {
+        SQLiteManager sqLiteManager = new SQLiteManager(this);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        try {
+            sqLiteManager.open();
+            sqLiteManager.dropQuestionBankIfAlreadyExists();
+            sqLiteManager.createQuestionBank();
+            InputStream inputStream = getResources().openRawResource(R.raw.questions);
+            sqLiteManager.insertQuestionBankData(inputStream);
+
+            // Update the round number for the user
+            if (currentUser != null) {
+                activityRound = sqLiteManager.updateUserRound(currentUser.getEmail().split("@")[0]);
+            }
+            sqLiteManager.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

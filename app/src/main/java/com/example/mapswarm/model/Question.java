@@ -2,6 +2,7 @@ package com.example.mapswarm.model;
 
 public class Question {
 
+    private Integer questionId;
     private String questionContent;
     private Integer isDrawing;
     private String mcqAnswer1;
@@ -9,11 +10,13 @@ public class Question {
     private String mcqAnswer3;
     private String mcqAnswer4;
     private Integer saLevel;
-    private String markedAnswer;
+    private String mcqAnswer;
+    private byte[] drawingAnswer;
     private Integer count;
 
     public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
-                    String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer count) {
+                    String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer  questionId,
+                    Integer count) {
         this.questionContent = questionContent;
         this.isDrawing = isDrawing;
         this.mcqAnswer1 = mcqAnswer1;
@@ -21,7 +24,16 @@ public class Question {
         this.mcqAnswer3 = mcqAnswer3;
         this.mcqAnswer4 = mcqAnswer4;
         this.saLevel = saLevel;
+        this.questionId = questionId;
         this.count = count;
+    }
+
+    public Integer getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(Integer questionId) {
+        this.questionId = questionId;
     }
 
     public String getQuestionContent() {
@@ -72,12 +84,20 @@ public class Question {
         this.mcqAnswer4 = mcqAnswer4;
     }
 
-    public String getMarkedAnswer() {
-        return markedAnswer;
+    public String getMcqAnswer() {
+        return mcqAnswer;
     }
 
-    public void setMarkedAnswer(String markedAnswer) {
-        this.markedAnswer = markedAnswer;
+    public void setMcqAnswer(String mcqAnswer) {
+        this.mcqAnswer = mcqAnswer;
+    }
+
+    public byte[] getDrawingAnswer() {
+        return drawingAnswer;
+    }
+
+    public void setDrawingAnswer(byte[] drawingAnswer) {
+        this.drawingAnswer = drawingAnswer;
     }
 
     public Integer getCount() {

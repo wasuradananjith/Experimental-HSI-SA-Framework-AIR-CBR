@@ -20,6 +20,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.238" />
 
+    <TextView
+        android:id="@+id/questionNo"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_10sdp"
+        android:text="Question No"
+        android:textSize="@dimen/_7sdp"
+        app:layout_constraintBottom_toTopOf="@+id/questionTxt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.084"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.811" />
+
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="@dimen/_350sdp"

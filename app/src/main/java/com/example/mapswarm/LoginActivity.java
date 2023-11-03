@@ -12,12 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mapswarm.db.SQLiteManager;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.io.InputStream;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        initializeQuestionBank();
     }
 
     @Override
@@ -75,7 +71,6 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             Toast.makeText(LoginActivity.this, "Login successful.",
                                     Toast.LENGTH_SHORT).show();
-                            initializeQuestionBank();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -93,19 +88,5 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-    }
-
-    public void initializeQuestionBank() {
-        SQLiteManager sqLiteManager = new SQLiteManager(this);
-        try {
-            sqLiteManager.open();
-            sqLiteManager.dropQuestionBankIfAlreadyExists();
-            sqLiteManager.createQuestionBank();
-            InputStream inputStream = getResources().openRawResource(R.raw.questions);
-            sqLiteManager.insertQuestionBankData(inputStream);
-            sqLiteManager.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
