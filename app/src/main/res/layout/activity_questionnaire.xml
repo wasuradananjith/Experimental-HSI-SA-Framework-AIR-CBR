@@ -6,6 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".QuestionnaireActivity">
 
+    <com.example.loadinganimation.LoadingAnimation
+        android:id="@+id/ranOutTimeAnim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/_50sdp"
+        app:barType="@drawable/clock"
+        app:boldText="false"
+        app:enlarge="3"
+        app:textColor="@color/white"
+        app:text="Sorry you have run out of time... \n Back to the task!"
+        app:isVisible="true"
+        app:textSize="@dimen/_5sdp"
+        android:background="#B5000000"
+        android:visibility="gone"/>
+
+    <com.example.loadinganimation.LoadingAnimation
+        android:id="@+id/loadingAnim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/_50sdp"
+        app:barType="@drawable/fidget"
+        app:boldText="false"
+        app:enlarge="3"
+        app:textColor="@color/white"
+        app:text="Round complete..."
+        app:isVisible="true"
+        app:textSize="@dimen/_5sdp"
+        android:background="#B5000000"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/timerText"
         android:layout_width="@dimen/_32sdp"
@@ -38,20 +68,20 @@
         android:text="Next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.222"
-        app:layout_constraintStart_toEndOf="@+id/backBtn"
-        app:layout_constraintTop_toBottomOf="@+id/container"
-        app:layout_constraintVertical_bias="0.361" />
-
-    <Button
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.782"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/container"
-        app:layout_constraintVertical_bias="0.361" />
+        app:layout_constraintVertical_bias="0.369" />
+
+    <!--    <Button-->
+<!--        android:id="@+id/backBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Back"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.782"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/container"-->
+<!--        app:layout_constraintVertical_bias="0.361" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

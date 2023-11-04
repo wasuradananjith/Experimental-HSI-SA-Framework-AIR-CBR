@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 import android.widget.TextView;
 
 public class MyTimer {
+
     private CountDownTimer countDownTimer;
     private Boolean timerRunning;
     private long timeLeftInMilliseconds;
@@ -82,5 +83,13 @@ public class MyTimer {
      */
     public long getTimeLeftInMilliseconds() {
         return timeLeftInMilliseconds;
+    }
+
+    /**
+     * Get the count down timer
+     * @return count down timer
+     */
+    public CountDownTimer getCountDownTimer() {
+        return countDownTimer;
     }
 }

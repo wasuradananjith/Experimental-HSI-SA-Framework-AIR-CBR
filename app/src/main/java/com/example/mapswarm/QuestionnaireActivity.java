@@ -5,13 +5,17 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.loadinganimation.LoadingAnimation;
 import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.model.Question;
 import com.example.mapswarm.util.MyTimer;
@@ -21,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class QuestionnaireActivity extends AppCompatActivity {
 
@@ -29,16 +35,30 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private ArrayList<Question> questions;
     private int questionCounter = 0;
     private int activityRound = 0;
+    private int questionRound = 0;
     private Question currentQuestion = null;
     private MyTimer timer;
     private TextView timerTextView;
     private long timeLeftInMilliseconds = 120000;
+    private boolean isTimeOutQuestionsUpdated = false;
+    private LoadingAnimation loadingAnimation;
+    private LoadingAnimation ranOutTimeAnimation;
+    Handler handler = new Handler();
+    Runnable trackTimer = new Runnable() {
+        @Override
+        public void run() {
+            periodicWork();
+            handler.postDelayed(this, 100);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
 
+        loadingAnimation = findViewById(R.id.loadingAnim);
+        ranOutTimeAnimation = findViewById(R.id.ranOutTimeAnim);
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
         timer.updateTimer();
@@ -49,6 +69,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
         if (extras != null) {
             Integer filterDataCount = Integer.valueOf(extras.getInt("filterDataCount"));
             activityRound = Integer.valueOf(extras.getInt("activityRound"));
+            questionRound = Integer.valueOf(extras.getInt("questionRound"));
             questions = retrieveQuestions(filterDataCount);
         }
 
@@ -66,9 +87,6 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         nonDrawingFragment).commit();
             }
-            currentQuestion.setCount(currentQuestion.getCount()+1);
-            updateTheQuestionDataOnNext(currentQuestion);
-            questionCounter += 1;
         }
 
         nextBtn = findViewById(R.id.nextBtn);
@@ -96,12 +114,16 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 }
             }
 
+            currentQuestion.setCount(currentQuestion.getCount()+1);
+            updateTheQuestionDataOnNext(currentQuestion);
+            questionCounter += 1;
+
             // If the question counter has not reached the end of the questions
             if (questionCounter != questions.size()) {
                 currentQuestion = questions.get(questionCounter);
-                questionCounter += 1; // Increment the question counter to get the next question
+                //questionCounter += 1; // Increment the question counter to get the next question
                 if (currentQuestion.isDrawing() == 1) {
-                    DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter,
+                    DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -113,7 +135,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .commit();
                     currentQuestion.setDrawingAnswer(null);
                 } else {
-                    NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter,
+                    NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -125,15 +147,25 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .commit();
                     currentQuestion.setMcqAnswer("test");
                 }
-                currentQuestion.setCount(currentQuestion.getCount()+1);
-                updateTheQuestionDataOnNext(currentQuestion);
+                //currentQuestion.setCount(currentQuestion.getCount()+1);
+                //updateTheQuestionDataOnNext(currentQuestion);
             } else {
-                finish();
+                Timer timer1 = new Timer();
+                loadingAnimation.setVisibility(View.VISIBLE);
+                loadingAnimation.setTextMsg("Thank you! \n Question round " + questionRound +
+                        " completed... Back to the task!");
+                timer1.schedule(new TimerTask() {
+                    public void run() {
+                        finish();
+                        timer.getCountDownTimer().cancel();
+                    }
+                }, 3000);
             }
         });
 
-        backBtn = findViewById(R.id.backBtn);
-        backBtn.setOnClickListener(view -> finish());
+        //backBtn = findViewById(R.id.backBtn);
+        //backBtn.setOnClickListener(view -> finish());
+        handler.post(trackTimer);
     }
 
     /**
@@ -169,5 +201,33 @@ public class QuestionnaireActivity extends AppCompatActivity {
                     question, question.getCount(), activityRound);
         }
         sqLiteManager.close();
+    }
+
+    /**
+     * Periodic work to set timer changes
+     */
+    public void periodicWork() {
+        if (!isTimeOutQuestionsUpdated) {
+            if (timer.getTimeLeftInMilliseconds() <= 10000) {
+                timerTextView.setTextColor(Color.RED);
+                if (timer.getTimeLeftInMilliseconds() <= 1000) {
+                    isTimeOutQuestionsUpdated = true;
+                    Timer timer1 = new Timer();
+                    ranOutTimeAnimation.setVisibility(View.VISIBLE);
+                    for (int i = questionCounter; i < questions.size(); i++) {
+                        currentQuestion = questions.get(i);
+                        currentQuestion.setCount(currentQuestion.getCount() + 1);
+                        currentQuestion.setMcqAnswer("Timeout");
+                        updateTheQuestionDataOnNext(currentQuestion);
+                    }
+                    timer1.schedule(new TimerTask() {
+                        public void run() {
+                            finish();
+                            timer.getCountDownTimer().cancel();
+                        }
+                    }, 3000);
+                }
+            }
+        }
     }
 }

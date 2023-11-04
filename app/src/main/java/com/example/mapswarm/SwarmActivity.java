@@ -72,9 +72,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private PyObject sim = null;
     private int simOffset = 60;
     private int simSize = 120;
-    //private long timeLeftInMilliseconds = 600000;
-    private long timeLeftInMilliseconds = 100000;
+    private long timeLeftInMilliseconds = 600000;
     private boolean isSimStopped = false;
+    private boolean isSimStoppedByTimeout = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
     private Map<String, ArrayList<Float>> locations;
@@ -92,10 +92,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int regionsCount = 0;
     private int screenWidth = 0;
     private float widthInMeters = 0;
-    // private long[] questionTimes = { 480000, 300000, 180000, 0}; // 8min, 5min, 3min, 0min
-    private long[] questionTimes = { timeLeftInMilliseconds-15000
-            , timeLeftInMilliseconds-30000, timeLeftInMilliseconds-45000,
-            timeLeftInMilliseconds-60000}; // 8min, 5min, 3min, 0min
+//    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
+//            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
+//            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
+    private long[] questionTimes = { timeLeftInMilliseconds - 15000
+            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
+            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -121,6 +123,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                                 // questions when retrieving from the database
     private boolean fromPause = false;
     private LoadingAnimation loadingAnimation;
+    private LoadingAnimation endingAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,12 +197,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
 
-        popUpBtn = findViewById(R.id.popUpBtn);
-        popUpBtn.setOnClickListener(view -> {
-            pauseSimulationForQuestions(0);
-        });
+//        popUpBtn = findViewById(R.id.popUpBtn);
+//        popUpBtn.setOnClickListener(view -> {
+//            pauseSimulationForQuestions(0);
+//        });
 
         loadingAnimation = findViewById(R.id.loadingAnim);
+        endingAnimation = findViewById(R.id.endingAnim);
 
         timer.updateTimer();
     }
@@ -382,11 +386,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
-        if (timer.getTimeLeftInMilliseconds() <= 10000) {
+        if (!isSimStopped && timer.getTimeLeftInMilliseconds() <= 10000) {
             timerTextView.setTextColor(Color.RED);
-            Log.i("Sim: timer ", String.valueOf(timer.getTimeLeftInMilliseconds()));
             if (timer.getTimeLeftInMilliseconds() <= 1000) {
-                stopSimulation();
+                isSimStopped = true;
+                isSimStoppedByTimeout = true;
+                Timer timer = new Timer();
+                endingAnimation.setVisibility(View.VISIBLE);
+                timer.schedule(new TimerTask() {
+                    public void run() {
+                        stopSimulation();
+                    }
+                }, 3000);
             }
         }
 
@@ -416,19 +427,23 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //        Log.i("SIM: Bottom Right x",Double.toString(rightPointBound.x));
 //        Log.i("SIM: Bottom Right y",Double.toString(rightPointBound.y));
 
-        // Check the status of the simulation
         PyObject pyObject = null;
-        try {
-            // Retrieve the locations of the robots
-            pyObject = coppeliaSimApi.callAttr("getCuboidsLocations", sim);
-            isSimStopped = false;
-        } catch (PyException e) {
-            if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
-                Log.i("SIM: ", "Sim stopped.....");
-                isSimStopped = true;
-            } else {
-                throw e;
+        if (!isSimStoppedByTimeout) {
+            // Check the status of the simulation
+            try {
+                // Retrieve the locations of the robots
+                pyObject = coppeliaSimApi.callAttr("getCuboidsLocations", sim);
+                isSimStopped = false;
+            } catch (PyException e) {
+                if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
+                    Log.i("SIM: ", "Sim stopped.....");
+                    isSimStopped = true;
+                } else {
+                    throw e;
+                }
             }
+        } else {
+            isSimStopped = true;
         }
 
         if (!isSimStopped) {
@@ -726,11 +741,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             fromPause = true;
             Timer timer = new Timer();
             loadingAnimation.setVisibility(View.VISIBLE);
+            loadingAnimation.setTextMsg("Get ready for questions round " + (questionRound+1) + "...");
             timer.schedule(new TimerTask() {
                 public void run() {
                     Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
                     intent.putExtra("filterDataCount", filterDataCount);
                     intent.putExtra("activityRound", activityRound);
+                    intent.putExtra("questionRound", questionRound);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
@@ -748,8 +765,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         Integer state = coppeliaSimApi.callAttr("stopSim", sim).toInt();
         if (state > 0) {
             coppeliaSimApi.callAttr("stopSim", sim);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            timer.getCountDownTimer().cancel();
             finish();
-            startActivity(getIntent());
         } else if (state == -1) {
             warningDialog("Error!", "Error when stopping the simulation. " +
                     "Please contact the administrator...");

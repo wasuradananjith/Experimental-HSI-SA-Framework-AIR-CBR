@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         welcomeText = findViewById(R.id.welcomeText);
         swarmButton = findViewById(R.id.swarmButton);
-        drawViewButton = findViewById(R.id.drawViewButton);
+        //drawViewButton = findViewById(R.id.drawViewButton);
         logoutButton = findViewById(R.id.logoutBtn);
         user = auth.getCurrentUser();
 
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
              startActivity(intent);
              finish();
         } else {
-            welcomeText.setText("Welcome "+ user.getEmail().split("@")[0] + ", to SwarmTactiX!");
+            welcomeText.setText("Welcome "+ user.getEmail().split("@")[0] + ", to");
         }
 
         logoutButton.setOnClickListener(view -> {
@@ -50,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
-
-        drawViewButton.setOnClickListener(view -> {
-            Intent intent = new Intent(view.getContext(), QuestionnaireActivity.class);
-            startActivity(intent);
-            finish();
-        });
+//
+//
+//        drawViewButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(view.getContext(), QuestionnaireActivity.class);
+//            startActivity(intent);
+//            finish();
+//        });
     }
 }
