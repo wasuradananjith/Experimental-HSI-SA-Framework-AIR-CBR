@@ -72,7 +72,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private PyObject sim = null;
     private int simOffset = 60;
     private int simSize = 120;
-    private long timeLeftInMilliseconds = 600000;
+    //private long timeLeftInMilliseconds = 600000;
+    private long timeLeftInMilliseconds = 100000;
     private boolean isSimStopped = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
@@ -92,7 +93,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int screenWidth = 0;
     private float widthInMeters = 0;
     // private long[] questionTimes = { 480000, 300000, 180000, 0}; // 8min, 5min, 3min, 0min
-    private long[] questionTimes = { 585000, 570000, 555000, 540000}; // 8min, 5min, 3min, 0min
+    private long[] questionTimes = { timeLeftInMilliseconds-15000
+            , timeLeftInMilliseconds-30000, timeLeftInMilliseconds-45000,
+            timeLeftInMilliseconds-60000}; // 8min, 5min, 3min, 0min
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -379,18 +382,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
+        if (timer.getTimeLeftInMilliseconds() <= 10000) {
+            timerTextView.setTextColor(Color.RED);
+            Log.i("Sim: timer ", String.valueOf(timer.getTimeLeftInMilliseconds()));
+            if (timer.getTimeLeftInMilliseconds() <= 1000) {
+                stopSimulation();
+            }
+        }
 
         // Popup the questionnaire in predefined times
-        if (timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound] && !questionsAsked[questionRound]) {
+        if (questionRound != 4 && timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound]
+                && !questionsAsked[questionRound]) {
             if (questionRound == 2) {
                 filterDataCount += 1;
             }
             pauseSimulationForQuestions(filterDataCount);
             questionsAsked[questionRound] = true;
-            if (questionRound == 3) {
-                // Stop the simulation after the last questionnaire
-                stopSimulation();
-            }
             questionRound += 1;
         }
 
@@ -723,7 +730,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 public void run() {
                     Intent intent = new Intent(SwarmActivity.this, QuestionnaireActivity.class);
                     intent.putExtra("filterDataCount", filterDataCount);
-                    intent.putExtra("limit", questionRound%2 == 1?15:16);
                     intent.putExtra("activityRound", activityRound);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

@@ -16,9 +16,10 @@
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.235"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.238" />
+        app:layout_constraintVertical_bias="0.145" />
 
     <TextView
         android:id="@+id/questionNo"
@@ -28,15 +29,15 @@
         android:textSize="@dimen/_7sdp"
         app:layout_constraintBottom_toTopOf="@+id/questionTxt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.084"
+        app:layout_constraintHorizontal_bias="0.039"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.811" />
+        app:layout_constraintVertical_bias="0.773" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="@dimen/_350sdp"
-        android:layout_height="@dimen/_100sdp"
+        android:layout_width="889dp"
+        android:layout_height="295dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.218"

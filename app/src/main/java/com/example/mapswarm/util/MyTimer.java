@@ -1,5 +1,6 @@
 package com.example.mapswarm.util;
 
+import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.widget.TextView;
 
@@ -69,7 +70,9 @@ public class MyTimer {
         String timeLeftText;
         timeLeftText = "" + minutes;
         timeLeftText += ":";
-        if (seconds < 10) timeLeftText += "0";
+        if (seconds < 10) {
+            timeLeftText += "0";
+        }
         timeLeftText += seconds;
         timerTextView.setText(timeLeftText);
     }

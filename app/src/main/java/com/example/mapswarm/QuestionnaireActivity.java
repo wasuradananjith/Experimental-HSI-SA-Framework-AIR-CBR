@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.model.Question;
+import com.example.mapswarm.util.MyTimer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -28,35 +30,45 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private int questionCounter = 0;
     private int activityRound = 0;
     private Question currentQuestion = null;
+    private MyTimer timer;
+    private TextView timerTextView;
+    private long timeLeftInMilliseconds = 120000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
 
+        timerTextView = findViewById(R.id.timerText);
+        timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
+        timer.updateTimer();
+        timer.startStop();
+
         // Retrieve the filter data count passed from the previous activity
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             Integer filterDataCount = Integer.valueOf(extras.getInt("filterDataCount"));
             activityRound = Integer.valueOf(extras.getInt("activityRound"));
-            questions = retrieveQuestions(filterDataCount,
-                    Integer.valueOf(extras.getInt("limit")));
+            questions = retrieveQuestions(filterDataCount);
         }
 
         if (questions.size() != 0) {
             // Display the first question when the fragment is loaded
             currentQuestion = questions.get(0);
             if (currentQuestion.isDrawing() == 1) {
-                DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, 1,
+                DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         drawingFragment).commit();
             } else {
-                NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, 1,
+                NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         nonDrawingFragment).commit();
             }
+            currentQuestion.setCount(currentQuestion.getCount()+1);
+            updateTheQuestionDataOnNext(currentQuestion);
+            questionCounter += 1;
         }
 
         nextBtn = findViewById(R.id.nextBtn);
@@ -85,11 +97,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
             }
 
             // If the question counter has not reached the end of the questions
-            if (questionCounter != questions.size()-1) {
-                questionCounter += 1; // Increment the question counter to get the next question
+            if (questionCounter != questions.size()) {
                 currentQuestion = questions.get(questionCounter);
+                questionCounter += 1; // Increment the question counter to get the next question
                 if (currentQuestion.isDrawing() == 1) {
-                    DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
+                    DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -101,7 +113,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .commit();
                     currentQuestion.setDrawingAnswer(null);
                 } else {
-                    NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
+                    NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -113,11 +125,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .commit();
                     currentQuestion.setMcqAnswer("test");
                 }
+                currentQuestion.setCount(currentQuestion.getCount()+1);
+                updateTheQuestionDataOnNext(currentQuestion);
             } else {
                 finish();
             }
-            currentQuestion.setCount(currentQuestion.getCount()+1);
-            updateTheQuestionDataOnNext(currentQuestion);
         });
 
         backBtn = findViewById(R.id.backBtn);
@@ -128,15 +140,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
      * Retrieve the questions from the database
      * @param filterDataCount  questions to be filtered from the
      *                         database based on the times they occurred
-     * @param limit number of questions to retrieve
      * @return list of questions
      */
-    public ArrayList<Question> retrieveQuestions(int filterDataCount, int limit) {
+    public ArrayList<Question> retrieveQuestions(int filterDataCount) {
         SQLiteManager sqLiteManager = new SQLiteManager(this);
         try {
             sqLiteManager.open();
             ArrayList<Question> questions = sqLiteManager.fetchQuestionBankData(filterDataCount,
-                    limit);
+                    16);
             sqLiteManager.close();
             return  questions;
         } catch (Exception e) {

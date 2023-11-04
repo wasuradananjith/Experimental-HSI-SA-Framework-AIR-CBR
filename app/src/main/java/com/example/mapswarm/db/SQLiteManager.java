@@ -92,8 +92,6 @@ public class SQLiteManager {
 
     /**
      * Retrieve Question Bank Data
-     * @param count times of repeating the same questions
-     * @param limit number of records to retrieve
      * @return
      */
     @SuppressLint("Range")
