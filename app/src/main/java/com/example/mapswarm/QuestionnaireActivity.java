@@ -179,7 +179,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
         try {
             sqLiteManager.open();
             ArrayList<Question> questions = sqLiteManager.fetchQuestionBankData(filterDataCount,
-                    16);
+                    13);
             sqLiteManager.close();
             return  questions;
         } catch (Exception e) {
