@@ -23,6 +23,7 @@ public class Constants {
     static final String USER_ANSWERS_TABLE = "USER_ANSWERS";
     static final String MCQ_ANSWER = "MCQ_ANSWER";
     static final String DRAWING_ANSWER = "DRAWING_ANSWER";
+    static final String ELAPSED_TIME = "ELAPSED_TIME";
 
     static final String CREATE_USER_ROUND_TABLE =
             "CREATE TABLE " + USER_ROUND_TABLE + " ( "
@@ -52,5 +53,6 @@ public class Constants {
                     + SA_LEVEL + " INTEGER,"
                     + QUESTION_COUNT + " INTEGER,"
                     + DRAWING_ANSWER + " BLOB,"
+                    + ELAPSED_TIME + " TEXT,"
                     + MCQ_ANSWER + " TEXT DEFAULT '' );";
 }

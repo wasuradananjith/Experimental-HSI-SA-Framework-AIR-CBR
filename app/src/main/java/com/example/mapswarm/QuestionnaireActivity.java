@@ -1,11 +1,9 @@
 package com.example.mapswarm;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -40,6 +38,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private MyTimer timer;
     private TextView timerTextView;
     private long timeLeftInMilliseconds = 120000;
+    private long questionStartTime = 0;
     private boolean isTimeOutQuestionsUpdated = false;
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation ranOutTimeAnimation;
@@ -51,6 +50,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
             handler.postDelayed(this, 100);
         }
     };
+    private NonDrawingFragment nonDrawingFragment;
+    private DrawingFragment drawingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +77,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
         if (questions.size() != 0) {
             // Display the first question when the fragment is loaded
             currentQuestion = questions.get(0);
+            questionStartTime = timer.getTimeLeftInMilliseconds();
             if (currentQuestion.isDrawing() == 1) {
-                DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
+                drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         drawingFragment).commit();
             } else {
-                NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
+                nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         nonDrawingFragment).commit();
@@ -112,9 +114,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                currentQuestion.setMcqAnswer("drawing");
+            } else {
+                String answer = nonDrawingFragment.getSelectedAnswer();
+                currentQuestion.setMcqAnswer((answer == null)? "skipped": answer);
             }
 
             currentQuestion.setCount(currentQuestion.getCount()+1);
+            currentQuestion.setElapsedTime((questionStartTime - timer.getTimeLeftInMilliseconds())/1000);
             updateTheQuestionDataOnNext(currentQuestion);
             questionCounter += 1;
 
@@ -123,7 +130,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion = questions.get(questionCounter);
                 //questionCounter += 1; // Increment the question counter to get the next question
                 if (currentQuestion.isDrawing() == 1) {
-                    DrawingFragment drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
+                    drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -135,7 +142,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .commit();
                     currentQuestion.setDrawingAnswer(null);
                 } else {
-                    NonDrawingFragment nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
+                    nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
@@ -145,10 +152,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             .replace(R.id.container, nonDrawingFragment)
                             .addToBackStack(null)
                             .commit();
-                    currentQuestion.setMcqAnswer("test");
                 }
-                //currentQuestion.setCount(currentQuestion.getCount()+1);
-                //updateTheQuestionDataOnNext(currentQuestion);
+                questionStartTime = timer.getTimeLeftInMilliseconds();
             } else {
                 Timer timer1 = new Timer();
                 loadingAnimation.setVisibility(View.VISIBLE);

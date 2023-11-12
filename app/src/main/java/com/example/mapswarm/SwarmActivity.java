@@ -94,13 +94,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
 //            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
-//    private long[] questionTimes = { timeLeftInMilliseconds - 15000
-//            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
-//            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
+    private long[] questionTimes = { timeLeftInMilliseconds - 15000
+            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
+            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
 
-    private long[] questionTimes = { timeLeftInMilliseconds - 60000
-            , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
-            timeLeftInMilliseconds - 240000}; // test times (60 second gaps)
+//    private long[] questionTimes = { timeLeftInMilliseconds - 60000
+//            , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
+//            timeLeftInMilliseconds - 240000}; // test times (60 second gaps)
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();

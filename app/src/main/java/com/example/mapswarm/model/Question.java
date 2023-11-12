@@ -13,6 +13,7 @@ public class Question {
     private String mcqAnswer;
     private byte[] drawingAnswer;
     private Integer count;
+    private long elapsedTime;
 
     public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
                     String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer  questionId,
@@ -114,6 +115,14 @@ public class Question {
 
     public void setSaLevel(Integer saLevel) {
         this.saLevel = saLevel;
+    }
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        this.elapsedTime = elapsedTime;
     }
 }
 
