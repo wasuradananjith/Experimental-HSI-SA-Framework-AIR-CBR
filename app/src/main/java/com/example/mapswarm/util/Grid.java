@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -29,49 +28,53 @@ public class Grid {
     private LatLng bottomLeftLatLng;
     private LatLng bottomRightLatLng;
     private GoogleMap googleMap;
-    private int size;
+    private int numberOfCells;
+    private int simSize;
+    private int offset;
     private ArrayList<LatLng> bottomLine = new ArrayList<>();
     private ArrayList<LatLng> topLine = new ArrayList<>();
     private ArrayList<LatLng> leftLine = new ArrayList<>();
     private ArrayList<LatLng> rightLine = new ArrayList<>();
     private ArrayList<Polyline> gridPolylines = new ArrayList<>();
     private ArrayList<Marker> gridMarkers = new ArrayList<>();
-    private int[] letters = {R.drawable.a, R.drawable.b, R.drawable.c};
-    private int[] numbers = {R.drawable.one, R.drawable.two, R.drawable.three};
+    private int[] letters = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f};
+    private int[] numbers = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four, R.drawable.five, R.drawable.six};
 
     public Grid(LatLng bottomLeftLatLng, LatLng bottomRightLatLng, LatLng topLeftLatLng,
-                GoogleMap googleMap, int size, Context context) {
+                GoogleMap googleMap, int numberOfCells, int simSize, int offset, Context context) {
         this.bottomLeftLatLng = bottomLeftLatLng;
         this.bottomRightLatLng = bottomRightLatLng;
         this.topLeftLatLng = topLeftLatLng;
         this.googleMap = googleMap;
-        this.size = size;
+        this.numberOfCells = numberOfCells;
+        this.simSize = simSize;
+        this.offset = offset;
         this.context = context;
     }
 
     public void initializeGrid() {
-        double cellSize = Math.abs(bottomLeftLatLng.longitude - bottomRightLatLng.longitude)/size;
+        double cellSize = Math.abs(bottomLeftLatLng.longitude - bottomRightLatLng.longitude)/ numberOfCells;
         // Log.i("SIM: cellSize ", String.valueOf(cellSize));
         // Log.i("SIM: size ", String.valueOf(this.size));
 
         bottomLine.add(bottomLeftLatLng);
         topLine.add(topLeftLatLng);
-        for(int i = 1; i <= this.size; i ++) {
+        for(int i = 1; i <= this.numberOfCells; i ++) {
             bottomLine.add(new LatLng(bottomLeftLatLng.latitude, bottomLeftLatLng.longitude + i*cellSize));
             topLine.add(new LatLng(topLeftLatLng.latitude, topLeftLatLng.longitude + i*cellSize));
         }
 
-        cellSize = Math.abs(bottomLeftLatLng.latitude - topLeftLatLng.latitude)/size;
+        cellSize = Math.abs(bottomLeftLatLng.latitude - topLeftLatLng.latitude)/ numberOfCells;
         leftLine.add(bottomLeftLatLng);
         rightLine.add(bottomRightLatLng);
-        for(int i = 1; i <= this.size; i ++) {
+        for(int i = 1; i <= this.numberOfCells; i ++) {
             leftLine.add(new LatLng(bottomLeftLatLng.latitude + i*cellSize, bottomLeftLatLng.longitude));
             rightLine.add(new LatLng(bottomRightLatLng.latitude + i*cellSize, bottomRightLatLng.longitude));
         }
     }
 
     public void drawGrid() {
-        for(int i = 0; i <= this.size; i ++) {
+        for(int i = 0; i <= this.numberOfCells; i ++) {
             Polyline polyline = this.googleMap.addPolyline((new PolylineOptions()).add(bottomLine.get(i), topLine.get(i))
                     .width(5)
                     .color(Color.GRAY)
@@ -85,7 +88,7 @@ public class Grid {
                     .geodesic(true));
             gridPolylines.add(polyline);
         }
-        for (int i = 0; i < size; i ++) {
+        for (int i = 0; i < numberOfCells; i ++) {
             LatLng latLng = LatLngBounds.builder().include(bottomLine.get(i)).
                     include(bottomLine.get(i+1)).build().getCenter();
             Marker marker = this.googleMap.addMarker(new MarkerOptions()
@@ -106,6 +109,46 @@ public class Grid {
 
         }
 
+    }
+
+    public String getCellName(float[] simCoordinate) {
+        int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
+        int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));
+        String letterX = "A";
+        switch(x) {
+            case 1:
+                letterX = "A";
+                break;
+            case 2:
+                letterX = "B";
+                break;
+            case 3:
+                letterX = "C";
+                break;
+            case 4:
+                letterX = "D";
+                break;
+            case 5:
+                letterX = "E";
+                break;
+            case 6:
+                letterX = "F";
+                break;
+        }
+        return letterX+y;
+    }
+
+    public float[][] getCellBoundary(float[] simCoordinate) {
+        int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
+        int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));
+
+        float xMax = x*(this.simSize/this.numberOfCells) - offset;
+        float xMin = xMax - this.simSize/this.numberOfCells;
+        float yMax = y*(this.simSize/this.numberOfCells) - offset;
+        float yMin = yMax - this.simSize/this.numberOfCells;
+
+        // topLeft, topRight, bottomLeft, bottomRight
+        return new float[][] {{xMin, yMax}, {xMax, yMax}, {xMin, yMin}, {xMax, yMin}};
     }
 
     public void clearGrid() {

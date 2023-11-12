@@ -77,13 +77,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private boolean isSimStoppedByTimeout = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
-    private Map<String, ArrayList<Float>> locations;
+    private Map<String, ArrayList<Object>> locations;
     private LatLng bottomLeftLatLng = new LatLng(-35.287459, 149.172585);
     private LatLng bottomRightLatLng = new LatLng(-35.287459, 149.173901);
     private LatLng topLeftLatLng = new LatLng(-35.2863799728, 149.172585);
     private LatLng topRightLatLng = new LatLng(-35.2863799728, 149.173901);
     private LatLng mapCentre = new LatLng(-35.286930, 149.173255);
-    private HashMap<Float, String> regionMapping = new HashMap<>();
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private Double selectedCircleRadius = null;
@@ -215,7 +214,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         swarmMap = googleMap;
-        generateRegionMapping();
 
         swarmMap.addPolygon(new PolygonOptions()
                 .add(bottomLeftLatLng,
@@ -315,13 +313,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
 
-        grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap, 3, this);
+        grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap,
+                6, simSize,60, this);
         grid.initializeGrid();
 
         // draw the grid when the map is loaded for the first time
         grid.drawGrid();
-
-        drawTargetRegion();
 
         //if (showStaticObstacles)
             //drawRectangularObstacles();
@@ -415,7 +412,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             questionsAsked[questionRound] = true;
             questionRound += 1;
         }
-
         if (!isTargetRegionRetrieved) {
             drawTargetRegion();
         }
@@ -455,7 +451,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
             // Drawing the cuboids
             if (locations.size() != 0) {
-                ArrayList<Float> deactivatedCuboids = new ArrayList<>();
+                ArrayList<Object> deactivatedCuboids = new ArrayList<>();
                 if (locations.containsKey(DEACTIVATED_CUBOIDS_INFO)) {
                     deactivatedCuboids = locations.get(DEACTIVATED_CUBOIDS_INFO);
                     locations.remove(DEACTIVATED_CUBOIDS_INFO);
@@ -465,15 +461,17 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 for (String key : locations.keySet()) {
                     if (key.equals(DYNAMIC_OBSTACLE_ADDED_NOTIFICATION)) {
                         messagesCount += 1;
-                        messages.put(messagesCount, "Avoid region " + regionMapping.get(locations.get(key).get(0)) + " !");
+                        messages.put(messagesCount, "Avoid region " + locations.get(key).get(0) + " !");
                     } else if(key.equals(DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION)) {
                         messagesCount += 1;
-                        messages.put(messagesCount, "Region " + regionMapping.get(locations.get(key).get(0)) + " is safe now!");
+                        messages.put(messagesCount, "Region " + locations.get(key).get(0) + " is safe now!");
                     } else {
-                        Float iconColour = deactivatedCuboids.contains(Float.parseFloat(key))? BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
+                        Float iconColour = isDeactivated(deactivatedCuboids, key)?
+                                BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
+                        //Float iconColour = deactivatedCuboids.contains(key)? BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
-                                .position(simCoordinatesToLatLng(new float[]{locations.get(key).get(0),
-                                        locations.get(key).get(1)}))
+                                .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
+                                        (double) locations.get(key).get(1)}))
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 .title("Cuboid" + count));
                         marker.setTag(false);
@@ -568,20 +566,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         PyObject targetRegionData = null;
         try {
             // Retrieve the target region
-            targetRegionData = coppeliaSimApi.callAttr("getTargetRegion", sim);
+            targetRegionData = coppeliaSimApi.callAttr("getTargetPosition", sim);
+            Log.i("Sim targetRegionData", String.valueOf(targetRegionData));
             isSimStopped = false;
             isTargetRegionRetrieved = true;
             float[] targetRegion = targetRegionData.toJava(float[].class);
-            float[] topLeftPoint = { targetRegion[1], targetRegion[2] };
-            float[] topRightPoint = { targetRegion[0], targetRegion[2] };
-            float[] bottomRightPoint = { targetRegion[0], targetRegion[3] };
-            float[] bottomLeftPoint = { targetRegion[1], targetRegion[3] };
+            float[][] cellBoundary = grid.getCellBoundary(targetRegion);
             swarmMap.addPolygon(new PolygonOptions()
-                    .add(simCoordinatesToLatLng(topLeftPoint),
-                            simCoordinatesToLatLng(topRightPoint),
-                            simCoordinatesToLatLng(bottomRightPoint),
-                            simCoordinatesToLatLng(bottomLeftPoint),
-                            simCoordinatesToLatLng(topLeftPoint))
+                    .add(simCoordinatesToLatLng(cellBoundary[0]),
+                            simCoordinatesToLatLng(cellBoundary[1]),
+                            simCoordinatesToLatLng(cellBoundary[3]),
+                            simCoordinatesToLatLng(cellBoundary[2]),
+                            simCoordinatesToLatLng(cellBoundary[0]))
                     .strokeColor(Color.GREEN));
         } catch (PyException e) {
             if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
@@ -629,18 +625,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void generateRegionMapping() {
-        regionMapping.put(1.0F, "C1");
-        regionMapping.put(2.0F, "B1");
-        regionMapping.put(3.0F, "A1");
-        regionMapping.put(4.0F, "A2");
-        regionMapping.put(5.0F, "A3");
-        regionMapping.put(6.0F, "B3");
-        regionMapping.put(7.0F, "C3");
-        regionMapping.put(8.0F, "C2");
-        regionMapping.put(0.0F, "B2");
-    }
-
     private boolean isSelectedCircleLatLngEquals(LatLng currentCircleLatLng) {
         return selectedCircleLatLng != null &&
                 selectedCircleLatLng.latitude == currentCircleLatLng.latitude &&
@@ -661,6 +645,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         float yCordinate = -(((simOffset + simCordinates[1]) / simSize) * screenWidth) + leftPointBound.y;
         LatLng latLng = swarmMap.getProjection().fromScreenLocation(new
                 Point(Math.round(xCordinate), Math.round(yCordinate)));
+        return latLng;
+    }
+
+    private LatLng simCoordinatesToLatLng(double[] simCordinates) {
+        double xCordinate = (((simOffset + simCordinates[0]) / simSize) * screenWidth) + leftPointBound.x;
+        double yCordinate = -(((simOffset + simCordinates[1]) / simSize) * screenWidth) + leftPointBound.y;
+        LatLng latLng = swarmMap.getProjection().fromScreenLocation(new
+                Point((int) Math.round(xCordinate), (int) Math.round(yCordinate)));
         return latLng;
     }
 
@@ -700,11 +692,28 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         return (float) mapDistance * simSize / widthInMeters;
     }
 
-    private Map<String, ArrayList<Float>> readLocationsFromJson(String jsonStringToBeRead) {
-        Type mapOfStringObjectType = new TypeToken<Map<String, ArrayList<Float>>>() {
+    private Map<String, ArrayList<Object>> readLocationsFromJson(String jsonStringToBeRead) {
+        Type mapOfStringObjectType = new TypeToken<Map<String, ArrayList<Object>>>() {
         }.getType();
         Gson gson = new Gson();
         return gson.fromJson(jsonStringToBeRead, mapOfStringObjectType);
+    }
+
+    /**
+     * Check whether a particular robot is deactivated
+     * @param deactivatedCuboids the set of deactivated robots
+     * @param robot the particular robot
+     * @return
+     */
+    private boolean isDeactivated(ArrayList<Object> deactivatedCuboids, String robot) {
+        if (deactivatedCuboids != null && deactivatedCuboids.size() != 0) {
+            for (Object deactivatedCuboid: deactivatedCuboids) {
+                if ((double)deactivatedCuboid == (Double.parseDouble(robot))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -718,6 +727,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public void initializeQuestionBankAndStartSimulation() {
         initializeQuestionBank();
         startSimulation();
+        drawTargetRegion();
     }
 
     public void startSimulation() {
