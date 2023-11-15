@@ -94,13 +94,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
 //            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
-    private long[] questionTimes = { timeLeftInMilliseconds - 15000
-            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
-            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
+//    private long[] questionTimes = { timeLeftInMilliseconds - 15000
+//            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
+//            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
 
-//    private long[] questionTimes = { timeLeftInMilliseconds - 60000
-//            , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
-//            timeLeftInMilliseconds - 240000}; // test times (60 second gaps)
+    private long[] questionTimes = { timeLeftInMilliseconds - 60000
+            , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
+            timeLeftInMilliseconds - 240000}; // test times (60 second gaps)
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -314,7 +314,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap,
-                6, simSize,60, this);
+                12, simSize,60, this);
         grid.initializeGrid();
 
         // draw the grid when the map is loaded for the first time
@@ -776,20 +776,24 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     public void stopSimulation() {
-        Integer state = coppeliaSimApi.callAttr("stopSim", sim).toInt();
-        if (state > 0) {
-            coppeliaSimApi.callAttr("stopSim", sim);
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            timer.getCountDownTimer().cancel();
-            finish();
-        } else if (state == -1) {
-            warningDialog("Error!", "Error when stopping the simulation. " +
-                    "Please contact the administrator...");
-        } else {
-            warningDialog("Error!", "Operation could not be performed when stopping " +
-                    "the simulation. Please contact the administrator...");
-        }
+        coppeliaSimApi.callAttr("terminateSim", sim);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        timer.getCountDownTimer().cancel();
+        finish();
+//        if (state > 0) {
+//            coppeliaSimApi.callAttr("stopSim", sim);
+//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//            startActivity(intent);
+//            timer.getCountDownTimer().cancel();
+//            finish();
+//        } else if (state == -1) {
+//            warningDialog("Error!", "Error when stopping the simulation. " +
+//                    "Please contact the administrator...");
+//        } else {
+//            warningDialog("Error!", "Operation could not be performed when stopping " +
+//                    "the simulation. Please contact the administrator...");
+//        }
     }
 
     private void resumeAfterPause() {

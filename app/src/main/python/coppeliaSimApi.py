@@ -84,6 +84,10 @@ def deleteBreadcrumb(sim, breadcrumbId):
 def startSim(sim):
     return sim.startSimulation()
 
+def terminateSim(sim):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("terminateSim", parentScriptHandle)
+
 def stopSim(sim):
     return sim.stopSimulation()
 

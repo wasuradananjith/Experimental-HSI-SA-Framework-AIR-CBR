@@ -37,8 +37,12 @@ public class Grid {
     private ArrayList<LatLng> rightLine = new ArrayList<>();
     private ArrayList<Polyline> gridPolylines = new ArrayList<>();
     private ArrayList<Marker> gridMarkers = new ArrayList<>();
-    private int[] letters = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f};
-    private int[] numbers = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four, R.drawable.five, R.drawable.six};
+    private int[] letters = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e,
+            R.drawable.f, R.drawable.g, R.drawable.h, R.drawable.i, R.drawable.j, R.drawable.k,
+            R.drawable.l};
+    private int[] numbers = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four,
+            R.drawable.five, R.drawable.six, R.drawable.seven, R.drawable.eight, R.drawable.nine,
+            R.drawable.ten, R.drawable.eleven, R.drawable.twelve};
 
     public Grid(LatLng bottomLeftLatLng, LatLng bottomRightLatLng, LatLng topLeftLatLng,
                 GoogleMap googleMap, int numberOfCells, int simSize, int offset, Context context) {
@@ -104,7 +108,7 @@ public class Grid {
                     .icon(BitmapFromVector(
                             this.context,
                             numbers[i]))
-                    .position(new LatLng(latLng.latitude, latLng.longitude - 0.00001)));
+                    .position(new LatLng(latLng.latitude - 0.00002, latLng.longitude - 0.00004)));
             gridMarkers.add(marker);
 
         }
