@@ -91,7 +91,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Double selectedCircleRadius = null;
     private LatLng selectedCircleLatLng = null;
     private Integer selectedCircleId = null;
-    private int regionsCount = 0;
+    private int regionsCount = 1;
     private int screenWidth = 0;
     private float widthInMeters = 0;
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
