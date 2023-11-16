@@ -11,6 +11,9 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,8 +58,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private static final int CIRCLE_COLOUR_UNSELECTED = Color.GRAY;
     private static final int CIRCLE_COLOUR_SELECTED = Color.GREEN;
-    private static final String DYNAMIC_OBSTACLE_ADDED_NOTIFICATION = "newGridCellsToAvoid";
-    private static final String DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION = "safeCells";
+    private static final String NOTIFICATION_MESSAGES = "messages";
+    private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String DANGEROUS_REGION_TAG = "dangerous";
     private static final String ATTRACTIVE_REGION_TAG = "attractive";
@@ -96,7 +99,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
 //    private long[] questionTimes = { timeLeftInMilliseconds - 15000
 //            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
-//            timeLeftInMilliseconds - 60000}; // test times (15 second gaps)
+//            timeLeftInMilliseconds - 60000}; // test times (15 second gaps
 
     private long[] questionTimes = { timeLeftInMilliseconds - 60000
             , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
@@ -117,7 +120,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private ArrayList<Marker> robotPositions = new ArrayList<>();
     private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
     private HashMap<Integer, Circle> circlesList = new HashMap<>();
-    private HashMap<Integer, String> messages = new HashMap<>();
+    private HashMap<String, String> messages = new HashMap<>();
     private int messagesCount = 0;
     private MyTimer timer;
     private int questionRound = 0;  // Number of times the questionnaire was displayed during
@@ -137,6 +140,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         supportMapFragment.getMapAsync(this);
 
         messagesTextView = findViewById(R.id.messagesTextView);
+        messagesTextView.setMovementMethod(new ScrollingMovementMethod());
         radiusSeekBar = findViewById(R.id.radiusSeekBar);
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -459,12 +463,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
                 int count = 0;
                 for (String key : locations.keySet()) {
-                    if (key.equals(DYNAMIC_OBSTACLE_ADDED_NOTIFICATION)) {
-                        messagesCount += 1;
-                        messages.put(messagesCount, "Avoid region " + locations.get(key).get(0) + " !");
-                    } else if(key.equals(DYNAMIC_OBSTACLE_REMOVED_NOTIFICATION)) {
-                        messagesCount += 1;
-                        messages.put(messagesCount, "Region " + locations.get(key).get(0) + " is safe now!");
+                    if (key.equals(NOTIFICATION_MESSAGES) ||
+                            key.equals(NOTIFICATION_MESSAGES_KEYS)) {
+                        updateMessages(locations);
                     } else {
                         Float iconColour = isDeactivated(deactivatedCuboids, key)?
                                 BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
@@ -491,15 +492,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             radiusSeekBar.setEnabled(true);
             radiusSeekBar.setProgress((int) Math.round(selectedCircleRadius));
         }
-        updateMessagesOnScreen();
-    }
-
-    private void updateMessagesOnScreen() {
-        String message = "";
-        for (Map.Entry<Integer, String> entry : messages.entrySet()) {
-            message += entry.getValue() + "\n";
-        }
-        messagesTextView.setText(message);
     }
 
     private void deletePopup(int id, String type) {
@@ -839,6 +831,46 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             sqLiteManager.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Append text with colour
+     * @param tv text view object
+     * @param text  text content
+     * @param color colour of the text
+     */
+    private void appendColoredText(TextView tv, String text, int color) {
+        int start = tv.getText().length();
+        tv.append(text);
+        int end = tv.getText().length();
+
+        Spannable spannableText = (Spannable) tv.getText();
+        spannableText.setSpan(new ForegroundColorSpan(color), start, end, 0);
+    }
+
+    /**
+     * Update the message text in UI
+     * @param regionsDataFromSim data from the simulation
+     */
+    private void updateMessages(Map<String, ArrayList<Object>> regionsDataFromSim) {
+        String newMsg;
+        String colour;
+        ArrayList<Object> regionsDataValuesFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES);
+        ArrayList<Object> regionsDataKeysFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES_KEYS);
+
+        for(int i = 0; i < regionsDataValuesFromSimAsList.size(); i++) {
+            newMsg = (String) regionsDataValuesFromSimAsList.get(i);
+            if (newMsg.contains("Avoid")) {
+                colour = "#b6250f";
+            } else {
+                colour = "#357d24";
+            }
+            if (!messages.containsKey(regionsDataKeysFromSimAsList.get(i))) {
+                messages.put((String) regionsDataKeysFromSimAsList.get(i), newMsg);
+                appendColoredText(messagesTextView, "\n" + newMsg,
+                        Color.parseColor(colour));
+            }
         }
     }
 }
