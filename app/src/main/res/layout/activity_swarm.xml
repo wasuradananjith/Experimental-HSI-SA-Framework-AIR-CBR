@@ -36,7 +36,7 @@
         android:background="#B5000000"
         android:visibility="gone"/>
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/map"
         android:layout_width="@dimen/_230sdp"
         android:layout_height="@dimen/_230sdp"
@@ -46,8 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.26"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        tools:layout="@layout/activity_swarm" />
+        android:name="com.example.mapswarm.OverlayMapFragment" />
 
 <!--    <ImageView-->
 <!--        android:id="@+id/map"-->
@@ -90,9 +89,9 @@
 
     <Switch
         android:id="@+id/showGridSwitch"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_45sdp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
+        android:layout_marginStart="@dimen/_25sdp"
         android:text="Show Grid    "
         android:checked="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,7 +101,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.083" />
 
-<!--    <Switch-->
+    <Switch
+        android:id="@+id/mapLockSwitch"
+        android:layout_width="@dimen/_45sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_25sdp"
+        android:text="Map Lock"
+        android:checked="true"
+        app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
+        app:layout_constraintEnd_toStartOf="@+id/timerText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/map"
+        app:layout_constraintTop_toBottomOf="@+id/showGridSwitch"
+        app:layout_constraintVertical_bias="0.083" />
+
+    <!--    <Switch-->
 <!--        android:id="@+id/attractorSwitch"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
@@ -131,11 +144,12 @@
         android:gravity="bottom"
         android:layout_width="@dimen/_130sdp"
         android:layout_height="@dimen/_180sdp"
+        android:layout_marginStart="@dimen/_25sdp"
         android:layout_marginBottom="124dp"
         android:textSize="@dimen/_8sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toBottomOf="@+id/simControlButton"
         app:layout_constraintVertical_bias="0.184" />
@@ -153,7 +167,8 @@
         app:layout_constraintTop_toTopOf="@+id/timerText"
         app:layout_constraintVertical_bias="0.078" />
 
-<!--    <Button-->
+
+    <!--    <Button-->
 <!--        android:id="@+id/popUpBtn"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->

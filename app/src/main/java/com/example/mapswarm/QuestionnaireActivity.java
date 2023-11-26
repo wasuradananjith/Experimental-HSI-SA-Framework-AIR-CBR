@@ -20,6 +20,7 @@ import com.example.mapswarm.util.MyTimer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -94,26 +95,34 @@ public class QuestionnaireActivity extends AppCompatActivity {
         nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(view -> {
             if (currentQuestion.isDrawing() == 1) {
-                ContextWrapper cw = new ContextWrapper(getApplicationContext());
-                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-                Long tsLong = System.currentTimeMillis() / 1000;
-                String ts = tsLong.toString();
-                File file = new File(directory, ts + "UniqueFileName" + ".jpg");
-                if (!file.exists()) {
-                    Log.d("path", file.toString());
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(file);
-                        View drawingView = findViewById(R.id.drawingView);
-                        drawingView.setDrawingCacheEnabled(true);
-                        Bitmap bitmap = drawingView.getDrawingCache();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        fos.flush();
-                        fos.close();
-                    } catch (java.io.IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                View drawingView = findViewById(R.id.drawingView);
+                drawingView.setDrawingCacheEnabled(true);
+                Bitmap bitmap = drawingView.getDrawingCache();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] img = byteArrayOutputStream.toByteArray();
+                currentQuestion.setDrawingAnswer(img);
+
+//                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+//                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+//                Long tsLong = System.currentTimeMillis() / 1000;
+//                String ts = tsLong.toString();
+//                File file = new File(directory, ts + "UniqueFileName" + ".jpg");
+//                if (!file.exists()) {
+//                    Log.d("path", file.toString());
+//                    FileOutputStream fos = null;
+//                    try {
+//                        fos = new FileOutputStream(file);
+//                        View drawingView = findViewById(R.id.drawingView);
+//                        drawingView.setDrawingCacheEnabled(true);
+//                        Bitmap bitmap = drawingView.getDrawingCache();
+//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                        fos.flush();
+//                        fos.close();
+//                    } catch (java.io.IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 currentQuestion.setMcqAnswer("drawing");
             } else {
                 String answer = nonDrawingFragment.getSelectedAnswer();

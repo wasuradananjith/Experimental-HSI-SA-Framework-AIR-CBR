@@ -3,20 +3,25 @@ package com.example.mapswarm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentContainerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,7 +37,6 @@ import com.example.mapswarm.util.MyTimer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -63,14 +67,17 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String DANGEROUS_REGION_TAG = "dangerous";
     private static final String ATTRACTIVE_REGION_TAG = "attractive";
+    private static final float MIN_SWIPE_DISTANCE = 10;
     private GoogleMap swarmMap;
     private SeekBar radiusSeekBar;
     private Switch showGridSwitch;
     private Switch attractorSwitch;
+    private Switch mapLockSwitch;
     private Button simControlButton;
     private Button popUpBtn;
     private TextView timerTextView;
     private TextView messagesTextView;
+    private FragmentContainerView mapView;
     private PyObject coppeliaSimApi;
     private PyObject sim = null;
     private int simOffset = 60;
@@ -88,6 +95,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng mapCentre = new LatLng(-35.286930, 149.173255);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
+    private Point bottomPointBound = null;
+    private Point topPointBound = null;
     private Double selectedCircleRadius = null;
     private LatLng selectedCircleLatLng = null;
     private Integer selectedCircleId = null;
@@ -130,13 +139,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private boolean fromPause = false;
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation endingAnimation;
+    private boolean sameInterval = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swarm);
 
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        OverlayMapFragment supportMapFragment = (OverlayMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
         messagesTextView = findViewById(R.id.messagesTextView);
@@ -196,6 +206,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        mapLockSwitch = findViewById(R.id.mapLockSwitch);
+        mapLockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                swarmMap.getUiSettings().setScrollGesturesEnabled(false);
+            } else {
+                swarmMap.getUiSettings().setScrollGesturesEnabled(true);
+            }
+        });
+
 //        attractorSwitch = findViewById(R.id.attractorSwitch);
 //        attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
 //            attractorsEnabled = isChecked;
@@ -213,6 +232,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         endingAnimation = findViewById(R.id.endingAnim);
 
         timer.updateTimer();
+
+        supportMapFragment.setOnFlingListener(new OverlayMapFragment.OnFlingListener() {
+            @Override
+            public void onFling(float x1, float y1, float x2, float y2) {
+                if (isWithinBounds(new Point((int) x1, (int) y1))) {
+                    float[] startPos = screenPointToSimCoordinates(x1, y1);
+                    float[] endPos = screenPointToSimCoordinates(x2, y2);
+                    coppeliaSimApi.callAttr("createSwipeForce", sim, startPos[0], startPos[1],
+                            endPos[0], endPos[1]);
+                }
+            }
+        });
     }
 
     @Override
@@ -306,16 +337,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        swarmMap.setOnMarkerClickListener(marker -> {
-            if (marker.getTag() != null && (Boolean) marker.getTag()) {
-                Toast.makeText(getApplicationContext(), "Marker clicked!",
-                        Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            return false;
-        });
-
         swarmMap.setOnCameraMoveListener(this::calculateGraphicsDistances);
+        swarmMap.setOnMarkerClickListener(marker -> true);
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap,
                 12, simSize,60, this);
@@ -323,9 +346,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // draw the grid when the map is loaded for the first time
         grid.drawGrid();
+        swarmMap.getUiSettings().setScrollGesturesEnabled(false);
 
         //if (showStaticObstacles)
             //drawRectangularObstacles();
+
+
     }
 
     private void drawCircle(LatLng latLng, Boolean isAttractor) {
@@ -387,6 +413,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private void calculateGraphicsDistances() {
         leftPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
         rightPointBound = swarmMap.getProjection().toScreenLocation(bottomRightLatLng);
+        topPointBound = swarmMap.getProjection().toScreenLocation(topLeftLatLng);
+        bottomPointBound = swarmMap.getProjection().toScreenLocation(bottomLeftLatLng);
         screenWidth = rightPointBound.x - leftPointBound.x;
     }
 
@@ -467,15 +495,15 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                             key.equals(NOTIFICATION_MESSAGES_KEYS)) {
                         updateMessages(locations);
                     } else {
-                        Float iconColour = isDeactivated(deactivatedCuboids, key)?
-                                BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
+                        Float iconColour = isDeactivated(deactivatedCuboids, key) ?
+                                BitmapDescriptorFactory.HUE_CYAN : BitmapDescriptorFactory.HUE_BLUE;
                         //Float iconColour = deactivatedCuboids.contains(key)? BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
                                         (double) locations.get(key).get(1)}))
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 .title("Cuboid" + count));
-                        marker.setTag(false);
+                        marker.setTag(key);
                         count += 1;
                         robotPositions.add(marker);
                     }
@@ -582,6 +610,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Check whether a point within the map bounds
+     * @param point point to check
+     * @return whether within the bounds or not
+     */
+    private boolean isWithinBounds(Point point) {
+        return ((point.x <= rightPointBound.x && point.x >= leftPointBound.x) ||
+                (point.y >= topPointBound.y && point.y <= bottomPointBound.y));
+    }
+
     private void drawRectangularObstacles() {
         PyObject staticObstacleData = null;
         try {
@@ -630,6 +668,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         float simY = ((float) (leftPointBound.y - screenPoint.y) / screenWidth * simSize)
                 - simOffset;
        return new float[]{simX, simY};
+    }
+
+    private float[] screenPointToSimCoordinates(float x, float y) {
+        LatLng coord = swarmMap.getProjection().fromScreenLocation(new Point((int) x, (int) y));
+        return latLngToSimCoordinates(coord);
     }
 
     private LatLng simCoordinatesToLatLng(float[] simCordinates) {
@@ -838,15 +881,24 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
      * Append text with colour
      * @param tv text view object
      * @param text  text content
-     * @param color colour of the text
      */
-    private void appendColoredText(TextView tv, String text, int color) {
+    private void appendColoredText(TextView tv, String text) {
         int start = tv.getText().length();
         tv.append(text);
         int end = tv.getText().length();
 
         Spannable spannableText = (Spannable) tv.getText();
-        spannableText.setSpan(new ForegroundColorSpan(color), start, end, 0);
+        if (!sameInterval) {
+            spannableText.setSpan(new AbsoluteSizeSpan(50), 0, start, 0); // set size
+            spannableText.setSpan(new ForegroundColorSpan(Color.parseColor("#808080")),
+                    0, start, 0);
+            spannableText.setSpan(new AbsoluteSizeSpan(60), start, end, 0); // set size
+            spannableText.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
+            sameInterval = true;
+        } else {
+            spannableText.setSpan(new AbsoluteSizeSpan(60), start, end, 0); // set size
+            spannableText.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
+        }
     }
 
     /**
@@ -855,22 +907,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
      */
     private void updateMessages(Map<String, ArrayList<Object>> regionsDataFromSim) {
         String newMsg;
-        String colour;
         ArrayList<Object> regionsDataValuesFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES);
         ArrayList<Object> regionsDataKeysFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES_KEYS);
 
         for(int i = 0; i < regionsDataValuesFromSimAsList.size(); i++) {
             newMsg = (String) regionsDataValuesFromSimAsList.get(i);
-            if (newMsg.contains("Avoid")) {
-                colour = "#b6250f";
-            } else {
-                colour = "#357d24";
-            }
             if (!messages.containsKey(regionsDataKeysFromSimAsList.get(i))) {
                 messages.put((String) regionsDataKeysFromSimAsList.get(i), newMsg);
-                appendColoredText(messagesTextView, "\n" + newMsg,
-                        Color.parseColor(colour));
+                appendColoredText(messagesTextView, "\n" + newMsg);
             }
         }
+        sameInterval = false;
     }
 }
