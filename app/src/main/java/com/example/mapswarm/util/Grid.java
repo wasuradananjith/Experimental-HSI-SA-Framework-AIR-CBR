@@ -84,12 +84,14 @@ public class Grid {
                     .color(Color.GRAY)
                     // below line is to make our poly line geodesic.
                     .geodesic(true));
+            polyline.setZIndex(1);
             gridPolylines.add(polyline);
             polyline = this.googleMap.addPolyline((new PolylineOptions()).add(leftLine.get(i), rightLine.get(i))
                     .width(5)
                     .color(Color.GRAY)
                     // below line is to make our poly line geodesic.
                     .geodesic(true));
+            polyline.setZIndex(1);
             gridPolylines.add(polyline);
         }
         for (int i = 0; i < numberOfCells; i ++) {
@@ -118,27 +120,8 @@ public class Grid {
     public String getCellName(float[] simCoordinate) {
         int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
         int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));
-        String letterX = "A";
-        switch(x) {
-            case 1:
-                letterX = "A";
-                break;
-            case 2:
-                letterX = "B";
-                break;
-            case 3:
-                letterX = "C";
-                break;
-            case 4:
-                letterX = "D";
-                break;
-            case 5:
-                letterX = "E";
-                break;
-            case 6:
-                letterX = "F";
-                break;
-        }
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String letterX = alphabet.substring(x-1, x);
         return letterX+y;
     }
 
@@ -150,9 +133,12 @@ public class Grid {
         float xMin = xMax - this.simSize/this.numberOfCells;
         float yMax = y*(this.simSize/this.numberOfCells) - offset;
         float yMin = yMax - this.simSize/this.numberOfCells;
+        float centerX = (xMin + xMax)/2;
+        float centerY = (yMin + yMax)/2;
 
         // topLeft, topRight, bottomLeft, bottomRight
-        return new float[][] {{xMin, yMax}, {xMax, yMax}, {xMin, yMin}, {xMax, yMin}};
+        return new float[][] {{xMin, yMax}, {xMax, yMax}, {xMin, yMin}, {xMax, yMin},
+                {centerX, centerY}};
     }
 
     public void clearGrid() {

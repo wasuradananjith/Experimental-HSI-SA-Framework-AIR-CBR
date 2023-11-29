@@ -45,17 +45,13 @@ def deleteCylinderRegion(sim, regionId):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("deleteCylinderRegion", parentScriptHandle, regionId)
 
-def createDangerousRegion(sim, regionId, centerX, centerY, radius):
+def createDangerousRegion(sim, regionId, centerX, centerY):
     parentScriptHandle = sim.getScript(0)
-    return sim.callScriptFunction("createDangerousRegion", parentScriptHandle, regionId, centerX, centerY, radius)
+    return sim.callScriptFunction("createDangerousRegion", parentScriptHandle, regionId, centerX, centerY)
 
 def deleteDangerousRegion(sim, regionId):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("deleteDangerousRegion", parentScriptHandle, regionId)
-
-def updateDangerousRegionRadius(sim, regionId, radius):
-    parentScriptHandle = sim.getScript(0)
-    return sim.callScriptFunction("updateDangerousRegionRadius", parentScriptHandle, regionId, radius)
 
 def createSwipeForce(sim, startX, startY, endX, endY):
     parentScriptHandle = sim.getScript(0)

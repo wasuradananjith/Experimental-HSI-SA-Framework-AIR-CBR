@@ -3,13 +3,18 @@ package com.example.mapswarm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentContainerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +26,6 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -37,12 +41,14 @@ import com.example.mapswarm.util.MyTimer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,8 +66,8 @@ import java.util.TimerTask;
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
-    private static final int CIRCLE_COLOUR_UNSELECTED = Color.GRAY;
-    private static final int CIRCLE_COLOUR_SELECTED = Color.GREEN;
+    private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);;
+    private static final int SQUARE_COLOUR_SELECTED = Color.GREEN;
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
@@ -97,9 +103,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Point rightPointBound = null;
     private Point bottomPointBound = null;
     private Point topPointBound = null;
-    private Double selectedCircleRadius = null;
-    private LatLng selectedCircleLatLng = null;
-    private Integer selectedCircleId = null;
+    private String selectedSquareName = null;
+    private Integer selectedSquareId = null;
     private int regionsCount = 1;
     private int screenWidth = 0;
     private float widthInMeters = 0;
@@ -124,11 +129,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     };
     private Grid grid;
-    private boolean showStaticObstacles = true;
-    private boolean attractorsEnabled = false;
     private ArrayList<Marker> robotPositions = new ArrayList<>();
     private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
-    private HashMap<Integer, Circle> circlesList = new HashMap<>();
+    private HashMap<Integer, Polygon> squaresList = new HashMap<>();
     private HashMap<String, String> messages = new HashMap<>();
     private int messagesCount = 0;
     private MyTimer timer;
@@ -140,7 +143,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation endingAnimation;
     private boolean sameInterval = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,51 +153,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         messagesTextView = findViewById(R.id.messagesTextView);
         messagesTextView.setMovementMethod(new ScrollingMovementMethod());
-        radiusSeekBar = findViewById(R.id.radiusSeekBar);
-
-        radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            int previousRadius = 0;
-            Double previousSelectedCircleRadius = 0.0;
-
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                previousRadius = seekBar.getProgress();
-                previousSelectedCircleRadius = selectedCircleRadius;
-                for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-                    Circle circle = entry.getValue();
-                    LatLng currentCircleLatLng = circle.getCenter();
-                    if (isSelectedCircleLatLngEquals(currentCircleLatLng)) {
-                        selectedCircleRadius = (double) progress;
-                        circle.setRadius(selectedCircleRadius);
-                    }
-                }
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //seekBar.setProgress((int) Math.round(selectedCircleRadius));
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int currentRadius = seekBar.getProgress();
-                Toast.makeText(SwarmActivity.this, "Current radius: " + currentRadius,
-                        Toast.LENGTH_SHORT).show();
-                String selectedCircleTag = (String) circlesList.get(selectedCircleId).getTag();
-                Boolean isUpdated = null;
-                if (selectedCircleTag.equals(DANGEROUS_REGION_TAG)) {
-                    isUpdated = coppeliaSimApi.callAttr("updateDangerousRegionRadius", sim,
-                            selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
-                } else {
-                    isUpdated = coppeliaSimApi.callAttr("updateAttractiveRegionRadius", sim,
-                            selectedCircleId, mapDistanceToSimDistance(selectedCircleRadius)).toBoolean();
-                }
-                if (isUpdated == null) {
-                    Toast.makeText(SwarmActivity.this, "Failed to update the radius!",
-                            Toast.LENGTH_SHORT).show();
-                    seekBar.setProgress(previousRadius);
-                    selectedCircleRadius = previousSelectedCircleRadius;
-                }
-            }
-        });
 
         showGridSwitch = findViewById(R.id.showGridSwitch);
         showGridSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -214,11 +171,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 swarmMap.getUiSettings().setScrollGesturesEnabled(true);
             }
         });
-
-//        attractorSwitch = findViewById(R.id.attractorSwitch);
-//        attractorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            attractorsEnabled = isChecked;
-//        });
 
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
@@ -293,47 +245,41 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         calculateGraphicsDistances();
 
         swarmMap.setOnMapClickListener(latLng -> {
-            if (attractorsEnabled) {
-                drawCircle(latLng, true);
-            } else {
-                drawCircle(latLng, false);
-            }
+            markSquare(latLng);
         });
 
         swarmMap.setOnMapLongClickListener(latLng -> {
-            Integer currentRegionId = isRegionInsideCircle(latLng);
-            if (currentRegionId != null) {
-                for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-                    if (!currentRegionId.equals(entry.getKey()))
-                        entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
-                }
-                circlesList.get(currentRegionId).setStrokeColor(CIRCLE_COLOUR_SELECTED);
-                deletePopup(currentRegionId, "Region");
-            } else {
-                Integer breadcrumbId = isCloserToBreadcrumb(latLng);
-                if (breadcrumbId != null) {
-                    deletePopup(breadcrumbId, "Breadcrumb");
+            float[] simCoordinates = latLngToSimCoordinates(latLng);
+            String cellName = grid.getCellName(simCoordinates);
+            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                if (!cellName.equals(entry.getValue().getTag())) {
+                    entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+                } else {
+                    selectedSquareId = entry.getKey();
+                    selectedSquareName = (String) entry.getValue().getTag();
+                    deletePopup(selectedSquareId, "Region");
                 }
             }
         });
 
-        swarmMap.setOnCircleClickListener(circle -> {
-            // If the clicked circle is already selected, deselect it
-            if (isSelectedCircleLatLngEquals(circle.getCenter())) {
-                selectedCircleLatLng = null;
-                selectedCircleRadius = null;
-                selectedCircleId = null;
-                circle.setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
+        swarmMap.setOnPolygonClickListener(square -> {
+            // If the clicked square is already selected, deselect it
+            if (selectedSquareName == square.getTag()) {
+                selectedSquareName = null;
+                selectedSquareId = null;
+                square.setStrokeColor(SQUARE_COLOUR_UNSELECTED);
             } else {
-                // If the clicked circle is not already selected, select it
-                selectedCircleLatLng = circle.getCenter();
-                selectedCircleRadius = circle.getRadius();
-                selectedCircleId = isRegionInsideCircle(selectedCircleLatLng);
-                for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-                    if (!selectedCircleId.equals(entry.getKey()))
-                        entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
+                // If the clicked square is not already selected, select it
+                selectedSquareName = (String) square.getTag();
+                for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                    if (selectedSquareName == entry.getValue().getTag()) {
+                        selectedSquareId = entry.getKey();
+                        entry.getValue().setStrokeColor(SQUARE_COLOUR_SELECTED);
+                    } else {
+                        entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+                    }
                 }
-                circle.setStrokeColor(CIRCLE_COLOUR_SELECTED);
+                square.setStrokeColor(SQUARE_COLOUR_SELECTED);
             }
         });
 
@@ -354,60 +300,36 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     }
 
-    private void drawCircle(LatLng latLng, Boolean isAttractor) {
+    private void markSquare(LatLng latLng) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
+        float[][] cellBoundary = grid.getCellBoundary(simCoordinates);
+        String cellName = grid.getCellName(simCoordinates);
         boolean isCreated;
-        int fillCircleColour;
-        String tag;
-        if (!isAttractor) {
-            isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
-                    regionsCount, simCoordinates[0], simCoordinates[1],
-                    mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
-            fillCircleColour = Color.argb(128, 255, 0, 0);
-            tag = DANGEROUS_REGION_TAG;
-        } else {
-            isCreated = coppeliaSimApi.callAttr("createAttractiveRegion", sim,
-                    regionsCount, simCoordinates[0], simCoordinates[1],
-                    mapDistanceToSimDistance(DEFAULT_CIRCLE_RADIUS)).toBoolean();
-            fillCircleColour = Color.argb(128, 0, 255, 255);
-            tag = ATTRACTIVE_REGION_TAG;
-        }
+        isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
+                regionsCount, cellBoundary[4][0], cellBoundary[4][1]).toBoolean();
         if (isCreated) {
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(latLng)
-                    .radius(DEFAULT_CIRCLE_RADIUS)
+            PolygonOptions squareOptions = new PolygonOptions()
+                    .add(simCoordinatesToLatLng(cellBoundary[0]),
+                            simCoordinatesToLatLng(cellBoundary[1]),
+                            simCoordinatesToLatLng(cellBoundary[3]),
+                            simCoordinatesToLatLng(cellBoundary[2]),
+                            simCoordinatesToLatLng(cellBoundary[0]))
                     .strokeWidth(10)
-                    .strokeColor(CIRCLE_COLOUR_SELECTED)
-                    .fillColor(fillCircleColour)
-                    .clickable(true);
-            selectedCircleLatLng = latLng;
-            selectedCircleRadius = circleOptions.getRadius();
-            selectedCircleId = regionsCount;
-            regionsCount += 1;
-            Circle newCircle = swarmMap.addCircle(circleOptions);
-            newCircle.setTag(tag);
-            for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-                entry.getValue().setStrokeColor(CIRCLE_COLOUR_UNSELECTED);
+                    .clickable(true)
+                    .fillColor(Color.argb(128, 255, 0, 0))
+                    .strokeColor(SQUARE_COLOUR_SELECTED);
+            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
             }
-            circlesList.put(selectedCircleId, newCircle);
+            selectedSquareName = cellName;
+            selectedSquareId = regionsCount;
+            Polygon newSquare = swarmMap.addPolygon(squareOptions);
+            newSquare.setTag(cellName);
+            newSquare.setZIndex(10);
+            squaresList.put(selectedSquareId, newSquare);
+            regionsCount += 1;
         }
     }
-
-//    private void drawBreadcrumb(LatLng latLng) {
-//        float simCoordinates[] = latLngToSimCoordinates(latLng);
-//
-//        boolean isCreated = coppeliaSimApi.callAttr("createBreadcrumb", sim,
-//                breadCrumbsCount, simCoordinates[0], simCoordinates[1]).toBoolean();
-//        if (isCreated) {
-//            Marker marker = swarmMap.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//                    .title("Breadcrumb " + breadcrumbsList.size() + 1));
-//            marker.setTag(true);
-//            breadcrumbsList.put(breadCrumbsCount, marker);
-//            breadCrumbsCount += 1;
-//        }
-//    }
 
 
     private void calculateGraphicsDistances() {
@@ -510,16 +432,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         }
-
-        // When a circle is not selected, disable the radius seek bar
-        if (selectedCircleRadius == null) {
-            radiusSeekBar.setEnabled(false);
-        } else {
-            // When a circle is selected, enable the radius seek bar and
-            // set the progress to the selected circle's radius
-            radiusSeekBar.setEnabled(true);
-            radiusSeekBar.setProgress((int) Math.round(selectedCircleRadius));
-        }
     }
 
     private void deletePopup(int id, String type) {
@@ -538,21 +450,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (dialog, which) -> {
             if (type.equalsIgnoreCase("region")) {
-                String tag = (String) circlesList.get(id).getTag();
-                boolean isDeleted = false;
-                if (tag.equals(DANGEROUS_REGION_TAG)) {
-                    isDeleted = coppeliaSimApi.callAttr("deleteDangerousRegion", sim,
-                            id).toBoolean();
-                } else {
-                    isDeleted = coppeliaSimApi.callAttr("deleteAttractiveRegion", sim,
-                            id).toBoolean();
-                }
+                boolean isDeleted = coppeliaSimApi.callAttr("deleteDangerousRegion", sim,
+                        id).toBoolean();
                 if (isDeleted) {
-                    circlesList.get(id).remove();
-                    circlesList.remove(id);
-                    selectedCircleLatLng = null;
-                    selectedCircleRadius = null;
-                    selectedCircleId = null;
+                    squaresList.get(id).remove();
+                    squaresList.remove(id);
+                    selectedSquareName = null;
+                    selectedSquareId = null;
                 } else {
                     Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
                             Toast.LENGTH_SHORT).show();
@@ -655,12 +559,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private boolean isSelectedCircleLatLngEquals(LatLng currentCircleLatLng) {
-        return selectedCircleLatLng != null &&
-                selectedCircleLatLng.latitude == currentCircleLatLng.latitude &&
-                selectedCircleLatLng.longitude == currentCircleLatLng.longitude;
-    }
-
     private float[] latLngToSimCoordinates(LatLng latLng) {
         Point screenPoint = swarmMap.getProjection().toScreenLocation(latLng);
         float simX = (((float) (screenPoint.x - leftPointBound.x) / screenWidth) * simSize)
@@ -691,18 +589,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         return latLng;
     }
 
-    private Integer isRegionInsideCircle(LatLng latLng) {
-        for (Map.Entry<Integer, Circle> entry : circlesList.entrySet()) {
-            int regionId = entry.getKey();
-            Circle circle = entry.getValue();
-            LatLng center = circle.getCenter();
-            float[] distance = new float[2];
-            Location.distanceBetween(latLng.latitude, latLng.longitude, center.latitude,
-                    center.longitude, distance);
-            // If the long clicked point is inside a circle,
-            // prompt the region deletion dialog
-            if (distance[0] <= circle.getRadius()) {
-                return regionId;
+    private Integer getSquareIdFromName(String squareName) {
+        for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+            if (entry.getValue().getTag() == squareName) {
+                return entry.getKey();
             }
         }
         return null;
@@ -918,5 +808,36 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
         sameInterval = false;
+    }
+
+    private BitmapDescriptor BitmapFromVector(Context context, int vectorResId)
+    {
+        // below line is use to generate a drawable.
+        Drawable vectorDrawable = ContextCompat.getDrawable(
+                context, vectorResId);
+
+        // below line is use to set bounds to our vector
+        // drawable.
+        vectorDrawable.setBounds(
+                0, 0, vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight());
+
+        // below line is use to create a bitmap for our
+        // drawable which we have added.
+        Bitmap bitmap = Bitmap.createBitmap(
+                vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        // below line is use to add bitmap in our canvas.
+        Canvas canvas = new Canvas(bitmap);
+
+        // below line is use to draw our
+        // vector drawable in canvas.
+        vectorDrawable.draw(canvas);
+
+        // after generating our bitmap we are returning our
+        // bitmap.
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

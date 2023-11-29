@@ -73,19 +73,19 @@
 <!--        app:layout_constraintVertical_bias="0.26"-->
 <!--        tools:srcCompat="@tools:sample/avatars" />-->
 
-    <SeekBar
-        android:id="@+id/radiusSeekBar"
-        android:layout_width="@dimen/_230sdp"
-        android:layout_height="@dimen/_15sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.146"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map"
-        app:layout_constraintVertical_bias="0.4"
-        android:max="25"
-        android:min="1"
-        android:progress="5"/>
+<!--    <SeekBar-->
+<!--        android:id="@+id/radiusSeekBar"-->
+<!--        android:layout_width="@dimen/_230sdp"-->
+<!--        android:layout_height="@dimen/_15sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.146"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/map"-->
+<!--        app:layout_constraintVertical_bias="0.4"-->
+<!--        android:max="25"-->
+<!--        android:min="1"-->
+<!--        android:progress="5"/>-->
 
     <Switch
         android:id="@+id/showGridSwitch"
@@ -146,7 +146,9 @@
         android:layout_height="@dimen/_180sdp"
         android:layout_marginStart="@dimen/_25sdp"
         android:layout_marginBottom="124dp"
+        android:background="@drawable/message_area"
         android:textSize="@dimen/_8sdp"
+        android:paddingLeft="@dimen/_5sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
