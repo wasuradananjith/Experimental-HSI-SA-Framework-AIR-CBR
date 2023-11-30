@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -133,6 +134,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
     private HashMap<Integer, Polygon> squaresList = new HashMap<>();
     private HashMap<String, String> messages = new HashMap<>();
+    private ArrayList<String> messageList = new ArrayList<>();
+    private RecyclerView messageView;
+    private MessageListAdapter messageListAdapter;
     private int messagesCount = 0;
     private MyTimer timer;
     private int questionRound = 0;  // Number of times the questionnaire was displayed during
@@ -151,8 +155,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         OverlayMapFragment supportMapFragment = (OverlayMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
-        messagesTextView = findViewById(R.id.messagesTextView);
-        messagesTextView.setMovementMethod(new ScrollingMovementMethod());
+        //messagesTextView = findViewById(R.id.messagesTextView);
+        //messagesTextView.setMovementMethod(new ScrollingMovementMethod());
+        messageView = findViewById(R.id.messagesTextView);
+        messageListAdapter = new MessageListAdapter(messageList, this);
+        messageView.setAdapter(messageListAdapter);
 
         showGridSwitch = findViewById(R.id.showGridSwitch);
         showGridSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -211,7 +218,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         .strokeWidth(5)
                 .strokeColor(Color.DKGRAY));
 
-        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.2f));
+        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.4f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
 
@@ -800,14 +807,24 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         ArrayList<Object> regionsDataValuesFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES);
         ArrayList<Object> regionsDataKeysFromSimAsList = regionsDataFromSim.get(NOTIFICATION_MESSAGES_KEYS);
 
+        newMsg = "";
         for(int i = 0; i < regionsDataValuesFromSimAsList.size(); i++) {
-            newMsg = (String) regionsDataValuesFromSimAsList.get(i);
+            String readMsg = (String) regionsDataValuesFromSimAsList.get(i);
             if (!messages.containsKey(regionsDataKeysFromSimAsList.get(i))) {
-                messages.put((String) regionsDataKeysFromSimAsList.get(i), newMsg);
-                appendColoredText(messagesTextView, "\n" + newMsg);
+                messages.put((String) regionsDataKeysFromSimAsList.get(i), readMsg);
+                //appendColoredText(messagesTextView, "\n" + newMsg);
+                if (newMsg.length() != 0)
+                    newMsg = newMsg + "\n" + readMsg;
+                else
+                    newMsg = readMsg;
             }
         }
-        sameInterval = false;
+        if (newMsg.length() != 0) {
+            messageList.add(newMsg);
+            messageListAdapter.notifyDataSetChanged();
+            messageView.smoothScrollToPosition(messageListAdapter.getItemCount() - 1);
+        }
+        //sameInterval = false;
     }
 
     private BitmapDescriptor BitmapFromVector(Context context, int vectorResId)

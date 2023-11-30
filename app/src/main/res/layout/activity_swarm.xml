@@ -38,40 +38,15 @@
 
     <fragment
         android:id="@+id/map"
-        android:layout_width="@dimen/_230sdp"
-        android:layout_height="@dimen/_230sdp"
+        android:layout_width="@dimen/_250sdp"
+        android:layout_height="@dimen/_250sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.131"
+        app:layout_constraintHorizontal_bias="0.132"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.26"
+        tools:layout="@layout/activity_swarm"
         android:name="com.example.mapswarm.OverlayMapFragment" />
-
-<!--    <ImageView-->
-<!--        android:id="@+id/map"-->
-<!--        android:layout_width="@dimen/_230sdp"-->
-<!--        android:layout_height="@dimen/_230sdp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.131"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.26"-->
-<!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
-<!--        tools:layout="@layout/activity_swarm" />-->
-
-<!--    <ImageView-->
-<!--        android:id="@+id/map"-->
-<!--        android:layout_width="@dimen/_230sdp"-->
-<!--        android:layout_height="@dimen/_230sdp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.131"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.26"-->
-<!--        tools:srcCompat="@tools:sample/avatars" />-->
 
 <!--    <SeekBar-->
 <!--        android:id="@+id/radiusSeekBar"-->
@@ -86,6 +61,18 @@
 <!--        android:max="25"-->
 <!--        android:min="1"-->
 <!--        android:progress="5"/>-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/map"-->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--        android:layout_width="@dimen/_250sdp"-->
+<!--        android:layout_height="@dimen/_250sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.132"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:layout="@layout/activity_swarm" />-->
 
     <Switch
         android:id="@+id/showGridSwitch"
@@ -127,34 +114,51 @@
 <!--        app:layout_constraintTop_toTopOf="parent"-->
 <!--        app:layout_constraintVertical_bias="0.148" />-->
 
+    <!--    <TextView-->
+<!--        android:id="@+id/messagesTextView"-->
+<!--        android:gravity="bottom"-->
+<!--        android:layout_width="@dimen/_130sdp"-->
+<!--        android:layout_height="@dimen/_180sdp"-->
+<!--        android:layout_marginStart="@dimen/_25sdp"-->
+<!--        android:layout_marginBottom="124dp"-->
+<!--        android:background="@drawable/message_area"-->
+<!--        android:textSize="@dimen/_8sdp"-->
+<!--        android:paddingLeft="@dimen/_5sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/map"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/simControlButton"-->
+<!--        app:layout_constraintVertical_bias="0.184" />-->
+
     <TextView
         android:id="@+id/timerText"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_15sdp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="76dp"
+        android:layout_marginTop="@dimen/_21sdp"
+        android:layout_marginEnd="@dimen/_21sdp"
         android:textAlignment="center"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10:00" />
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesTextView"
-        android:gravity="bottom"
-        android:layout_width="@dimen/_130sdp"
-        android:layout_height="@dimen/_180sdp"
-        android:layout_marginStart="@dimen/_25sdp"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_200sdp"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginBottom="124dp"
         android:background="@drawable/message_area"
-        android:textSize="@dimen/_8sdp"
-        android:paddingLeft="@dimen/_5sdp"
+        android:gravity="bottom"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toBottomOf="@+id/simControlButton"
-        app:layout_constraintVertical_bias="0.184" />
+        app:layout_constraintVertical_bias="0.384" />
 
     <Button
         android:id="@+id/simControlButton"
