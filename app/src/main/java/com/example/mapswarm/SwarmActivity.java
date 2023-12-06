@@ -502,7 +502,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             isSimStopped = false;
             isTargetRegionRetrieved = true;
             float[] targetRegion = targetRegionData.toJava(float[].class);
-            float[][] cellBoundary = grid.getCellBoundary(targetRegion);
+            float[][] cellBoundary = grid.getNearestRandomCellBoundary(targetRegion);
             swarmMap.addPolygon(new PolygonOptions()
                     .add(simCoordinatesToLatLng(cellBoundary[0]),
                             simCoordinatesToLatLng(cellBoundary[1]),

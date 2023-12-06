@@ -51,11 +51,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_5sdp"
-                android:maxWidth="@dimen/_100sdp"
+                android:maxWidth="@dimen/_90sdp"
                 android:paddingLeft="@dimen/_5sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingRight="@dimen/_5sdp"
                 android:text="Message"
+                android:maxLines="5"
                 android:textColor="#000000"
                 android:textSize="@dimen/_5sdp" />
         </LinearLayout>

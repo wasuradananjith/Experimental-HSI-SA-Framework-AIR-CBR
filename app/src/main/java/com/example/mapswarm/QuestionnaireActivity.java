@@ -38,7 +38,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private Question currentQuestion = null;
     private MyTimer timer;
     private TextView timerTextView;
-    private long timeLeftInMilliseconds = 120000;
+    private long timeLeftInMilliseconds = 60000;
     private long questionStartTime = 0;
     private boolean isTimeOutQuestionsUpdated = false;
     private LoadingAnimation loadingAnimation;

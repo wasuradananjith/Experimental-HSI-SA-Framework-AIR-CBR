@@ -29,6 +29,7 @@ public class Grid {
     private LatLng bottomRightLatLng;
     private GoogleMap googleMap;
     private int numberOfCells;
+    private int numberOfCellsForRandomness = 2;
     private int simSize;
     private int offset;
     private ArrayList<LatLng> bottomLine = new ArrayList<>();
@@ -133,6 +134,22 @@ public class Grid {
         float xMin = xMax - this.simSize/this.numberOfCells;
         float yMax = y*(this.simSize/this.numberOfCells) - offset;
         float yMin = yMax - this.simSize/this.numberOfCells;
+        float centerX = (xMin + xMax)/2;
+        float centerY = (yMin + yMax)/2;
+
+        // topLeft, topRight, bottomLeft, bottomRight
+        return new float[][] {{xMin, yMax}, {xMax, yMax}, {xMin, yMin}, {xMax, yMin},
+                {centerX, centerY}};
+    }
+
+    public float[][] getNearestRandomCellBoundary(float[] simCoordinate){
+        int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCellsForRandomness));
+        int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCellsForRandomness));
+
+        float xMax = x*(this.simSize/this.numberOfCellsForRandomness) - offset;
+        float xMin = xMax - this.simSize/this.numberOfCellsForRandomness;
+        float yMax = y*(this.simSize/this.numberOfCellsForRandomness) - offset;
+        float yMin = yMax - this.simSize/this.numberOfCellsForRandomness;
         float centerX = (xMin + xMax)/2;
         float centerY = (yMin + yMax)/2;
 
