@@ -30,8 +30,8 @@
 <!--    -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/drawingMapView"
-            android:layout_width="@dimen/_200sdp"
-            android:layout_height="@dimen/_200sdp"
+            android:layout_width="@dimen/_220sdp"
+            android:layout_height="@dimen/_220sdp"
             android:layout_marginStart="@dimen/_180sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
