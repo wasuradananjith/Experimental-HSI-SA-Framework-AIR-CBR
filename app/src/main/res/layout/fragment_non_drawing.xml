@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_220sdp"
-    tools:context=".NonDrawingFragment">
+    tools:context=".NonMarkingFragment">
 
     <TextView
         android:id="@+id/questionTxt"

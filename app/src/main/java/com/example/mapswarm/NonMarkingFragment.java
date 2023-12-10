@@ -16,7 +16,7 @@ import com.example.mapswarm.model.Question;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NonDrawingFragment extends Fragment {
+public class NonMarkingFragment extends Fragment {
 
     private Question question;
     private int questionNo;
@@ -31,7 +31,7 @@ public class NonDrawingFragment extends Fragment {
     private RadioButton selectedRadioButton;
     private View root;
 
-    public NonDrawingFragment(Question question, int questionNo, int totalQuestions) {
+    public NonMarkingFragment(Question question, int questionNo, int totalQuestions) {
         this.question = question;
         this.questionNo = questionNo;
         this.totalQuestions = totalQuestions;

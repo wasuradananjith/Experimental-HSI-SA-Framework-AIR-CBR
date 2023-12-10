@@ -220,6 +220,8 @@ public class SQLiteManager {
         contentValues.put(Constants.QUESTION_COUNT, questionCount);
         contentValues.put(Constants.MCQ_ANSWER, question.getMcqAnswer());
         contentValues.put(Constants.DRAWING_ANSWER, question.getDrawingAnswer());
+        contentValues.put(Constants.MARKED_CELLS, question.getMarkedCells());
+        contentValues.put(Constants.NO_OF_MARKED_CELLS, question.getNumberOfMarkedCells());
         contentValues.put(Constants.ELAPSED_TIME, question.getElapsedTime());
         return sqLiteDatabase.insert(userAnswersTableName, null, contentValues);
     }

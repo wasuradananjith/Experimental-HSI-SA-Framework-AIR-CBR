@@ -12,6 +12,8 @@ public class Question {
     private Integer saLevel;
     private String mcqAnswer;
     private byte[] drawingAnswer;
+    private int numberOfMarkedCells;
+    private String markedCells;
     private Integer count;
     private long elapsedTime;
 
@@ -123,6 +125,22 @@ public class Question {
 
     public void setElapsedTime(long elapsedTime) {
         this.elapsedTime = elapsedTime;
+    }
+
+    public int getNumberOfMarkedCells() {
+        return numberOfMarkedCells;
+    }
+
+    public void setNumberOfMarkedCells(int numberOfMarkedCells) {
+        this.numberOfMarkedCells = numberOfMarkedCells;
+    }
+
+    public String getMarkedCells() {
+        return markedCells;
+    }
+
+    public void setMarkedCells(String markedCells) {
+        this.markedCells = markedCells;
     }
 }
 

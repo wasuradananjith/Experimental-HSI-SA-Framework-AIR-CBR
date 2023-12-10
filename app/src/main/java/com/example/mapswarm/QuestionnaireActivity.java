@@ -2,17 +2,12 @@ package com.example.mapswarm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.example.loadinganimation.LoadingAnimation;
 import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.model.Question;
@@ -20,9 +15,6 @@ import com.example.mapswarm.util.MyTimer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,8 +43,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
             handler.postDelayed(this, 100);
         }
     };
-    private NonDrawingFragment nonDrawingFragment;
-    private DrawingFragment drawingFragment;
+    private NonMarkingFragment nonDrawingFragment;
+    private MapMarkingFragment mapMarkingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,12 +72,12 @@ public class QuestionnaireActivity extends AppCompatActivity {
             currentQuestion = questions.get(0);
             questionStartTime = timer.getTimeLeftInMilliseconds();
             if (currentQuestion.isDrawing() == 1) {
-                drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
+                mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
-                        drawingFragment).commit();
+                        mapMarkingFragment).commit();
             } else {
-                nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
+                nonDrawingFragment = new NonMarkingFragment(currentQuestion, questionCounter+1,
                         questions.size());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         nonDrawingFragment).commit();
@@ -95,14 +87,18 @@ public class QuestionnaireActivity extends AppCompatActivity {
         nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(view -> {
             if (currentQuestion.isDrawing() == 1) {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                View drawingView = findViewById(R.id.drawingView);
-                drawingView.setDrawingCacheEnabled(true);
-                Bitmap bitmap = drawingView.getDrawingCache();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] img = byteArrayOutputStream.toByteArray();
-                currentQuestion.setDrawingAnswer(img);
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                View drawingView = findViewById(R.id.drawingView);
+//                drawingView.setDrawingCacheEnabled(true);
+//                Bitmap bitmap = drawingView.getDrawingCache();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//                byte[] img = byteArrayOutputStream.toByteArray();
+//                currentQuestion.setDrawingAnswer(img);
+                currentQuestion.setDrawingAnswer(null); // This is from an old implementation (can be removed in future)
 
+                String markedCells = mapMarkingFragment.getMarkedCellNames();
+                currentQuestion.setMarkedCells((markedCells.isEmpty())? "skipped": markedCells);
+                currentQuestion.setNumberOfMarkedCells(mapMarkingFragment.getCurrentMarkingsCount());
 //                ContextWrapper cw = new ContextWrapper(getApplicationContext());
 //                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
 //                Long tsLong = System.currentTimeMillis() / 1000;
@@ -127,10 +123,20 @@ public class QuestionnaireActivity extends AppCompatActivity {
             } else {
                 String answer = nonDrawingFragment.getSelectedAnswer();
                 currentQuestion.setMcqAnswer((answer == null)? "skipped": answer);
+                currentQuestion.setMarkedCells("mcq");
+                currentQuestion.setNumberOfMarkedCells(0);
             }
 
             currentQuestion.setCount(currentQuestion.getCount()+1);
             currentQuestion.setElapsedTime((questionStartTime - timer.getTimeLeftInMilliseconds())/1000);
+
+            // Update the csv file in the simulation side
+            SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
+                    currentQuestion.getQuestionId(), currentQuestion.getQuestionContent(),
+                    currentQuestion.getMcqAnswer(), currentQuestion.getMarkedCells(),
+                    currentQuestion.getNumberOfMarkedCells(), currentQuestion.getElapsedTime());
+
+            // update the database
             updateTheQuestionDataOnNext(currentQuestion);
             questionCounter += 1;
 
@@ -139,19 +145,19 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion = questions.get(questionCounter);
                 //questionCounter += 1; // Increment the question counter to get the next question
                 if (currentQuestion.isDrawing() == 1) {
-                    drawingFragment = new DrawingFragment(currentQuestion, questionCounter+1,
+                    mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
                                     R.anim.slide_in_right,  // enter
                                     R.anim.slide_out_left  // exit
                             )
-                            .replace(R.id.container, drawingFragment)
+                            .replace(R.id.container, mapMarkingFragment)
                             .addToBackStack(null)
                             .commit();
                     currentQuestion.setDrawingAnswer(null);
                 } else {
-                    nonDrawingFragment = new NonDrawingFragment(currentQuestion, questionCounter+1,
+                    nonDrawingFragment = new NonMarkingFragment(currentQuestion, questionCounter+1,
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(

@@ -67,7 +67,7 @@ import java.util.TimerTask;
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final double DEFAULT_CIRCLE_RADIUS = 5;
-    private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);;
+    private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);
     private static final int SQUARE_COLOUR_SELECTED = Color.GREEN;
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
@@ -85,21 +85,21 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private TextView timerTextView;
     private TextView messagesTextView;
     private FragmentContainerView mapView;
-    private PyObject coppeliaSimApi;
-    private PyObject sim = null;
-    private int simOffset = 60;
-    private int simSize = 120;
-    private long timeLeftInMilliseconds = 600000;
+    public static PyObject coppeliaSimApi;
+    public static PyObject sim = null;
+    public static int simOffset = 60;
+    public static int simSize = 120;
+    private long timeLeftInMilliseconds = 300000;
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
     private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
     private Map<String, ArrayList<Object>> locations;
-    private LatLng bottomLeftLatLng = new LatLng(-35.287459, 149.172585);
-    private LatLng bottomRightLatLng = new LatLng(-35.287459, 149.173901);
-    private LatLng topLeftLatLng = new LatLng(-35.2863799728, 149.172585);
-    private LatLng topRightLatLng = new LatLng(-35.2863799728, 149.173901);
-    private LatLng mapCentre = new LatLng(-35.286930, 149.173255);
+    public static LatLng bottomLeftLatLng = new LatLng(-35.287459, 149.172585);
+    public static LatLng bottomRightLatLng = new LatLng(-35.287459, 149.173901);
+    public static LatLng topLeftLatLng = new LatLng(-35.2863799728, 149.172585);
+    public static LatLng topRightLatLng = new LatLng(-35.2863799728, 149.173901);
+    public static LatLng mapCentre = new LatLng(-35.286930, 149.173255);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private Point bottomPointBound = null;
@@ -116,9 +116,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
 //            timeLeftInMilliseconds - 60000}; // test times (15 second gaps
 
-    private long[] questionTimes = { timeLeftInMilliseconds - 60000
-            , timeLeftInMilliseconds - 120000, timeLeftInMilliseconds - 180000,
-            timeLeftInMilliseconds - 240000}; // test times (60 second gaps)
+    private long[] questionTimes = { timeLeftInMilliseconds - 10000
+            , timeLeftInMilliseconds - 300000}; // test times (60 second gaps)
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -264,7 +263,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 } else {
                     selectedSquareId = entry.getKey();
                     selectedSquareName = (String) entry.getValue().getTag();
-                    deletePopup(selectedSquareId, "Region");
+                    entry.getValue().setStrokeColor(SQUARE_COLOUR_SELECTED);
+                    deletePopup(selectedSquareId, selectedSquareName);
                 }
             }
         });
@@ -294,7 +294,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.setOnMarkerClickListener(marker -> true);
 
         grid = new Grid(bottomLeftLatLng, bottomRightLatLng, topLeftLatLng, swarmMap,
-                12, simSize,60, this);
+                12, simSize,simOffset, this);
         grid.initializeGrid();
 
         // draw the grid when the map is loaded for the first time
@@ -441,44 +441,33 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void deletePopup(int id, String type) {
+    private void deletePopup(int id, String cellName) {
         // Create the object of AlertDialog Builder class
         AlertDialog.Builder builder = new AlertDialog.Builder(SwarmActivity.this);
 
         // Set the message show for the Alert time
-        builder.setMessage("Are you sure you want to delete the " + type.toLowerCase() + " " + id + "?");
+        builder.setMessage("Are you sure you want to delete " + cellName + "?");
 
         // Set Alert Title
-        builder.setTitle("Delete " + type + " Alert !");
+        builder.setTitle("Delete region " + " Alert !");
 
         // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
         builder.setCancelable(false);
 
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (dialog, which) -> {
-            if (type.equalsIgnoreCase("region")) {
-                boolean isDeleted = coppeliaSimApi.callAttr("deleteDangerousRegion", sim,
-                        id).toBoolean();
-                if (isDeleted) {
-                    squaresList.get(id).remove();
-                    squaresList.remove(id);
-                    selectedSquareName = null;
-                    selectedSquareId = null;
-                } else {
-                    Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
-                            Toast.LENGTH_SHORT).show();
-                }
+            boolean isDeleted = coppeliaSimApi.callAttr("deleteDangerousRegion", sim,
+                    id).toBoolean();
+            if (isDeleted) {
+                squaresList.get(id).remove();
+                squaresList.remove(id);
+                selectedSquareName = null;
+                selectedSquareId = null;
             } else {
-                boolean isDeleted = coppeliaSimApi.callAttr("deleteBreadcrumb", sim,
-                        id).toBoolean();
-                if (isDeleted) {
-                    breadcrumbsList.get(id).remove();
-                    breadcrumbsList.remove(id);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Breadcrumb deletion unsuccessful!",
-                            Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getApplicationContext(), "Region deletion unsuccessful!",
+                        Toast.LENGTH_SHORT).show();
             }
+
         });
 
         // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.

@@ -1,7 +1,6 @@
 package com.example.mapswarm;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
 
@@ -15,10 +14,8 @@ import android.widget.TextView;
 
 import com.example.mapswarm.model.Question;
 
-import org.w3c.dom.Text;
-
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link DrawingFragment} subclass.
  */
 public class DrawingFragment extends Fragment {
     private Button pencil;

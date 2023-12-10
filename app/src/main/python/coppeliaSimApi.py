@@ -57,6 +57,13 @@ def createSwipeForce(sim, startX, startY, endX, endY):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("createSwipeForce", parentScriptHandle, startX, startY, endX, endY)
 
+def recordQuestionAnswer(sim,questionId, questionContent, mcqAnswer, markedCellsAnswer,
+                         numberOfMarkedCells, elapsedTimeToAnswer):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("recordQuestionAnswer", parentScriptHandle, questionId,
+                                  questionContent, mcqAnswer, markedCellsAnswer,
+                                  numberOfMarkedCells, elapsedTimeToAnswer)
+
 def createAttractiveRegion(sim, regionId, centerX, centerY, radius):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("createAttractiveRegion", parentScriptHandle, regionId, centerX, centerY, radius)

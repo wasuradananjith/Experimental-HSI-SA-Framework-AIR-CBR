@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_220sdp"
+    tools:context=".MapMarkingFragment">
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/map"-->
+    <!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
+    <!--        android:layout_width="@dimen/_250sdp"-->
+    <!--        android:layout_height="@dimen/_250sdp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.132"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        tools:layout="@layout/activity_swarm" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/drawingView"-->
+<!--        android:layout_width="@dimen/_200sdp"-->
+<!--        android:layout_height="@dimen/_200sdp"-->
+<!--        android:layout_marginStart="@dimen/_180sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment" />-->
+<!--    -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/drawingMapView"
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="@dimen/_200sdp"
+            android:layout_marginStart="@dimen/_180sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            tools:layout="@layout/fragment_map_drawing"/>
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout"-->
+<!--        android:layout_width="@dimen/_25sdp"-->
+<!--        android:layout_height="@dimen/_70sdp"-->
+<!--        android:layout_marginStart="48dp"-->
+<!--        android:background="@drawable/tools_design"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/drawingView"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.964">-->
+
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/pencil"-->
+<!--            android:layout_width="@dimen/_15sdp"-->
+<!--            android:layout_height="@dimen/_15sdp"-->
+<!--            android:background="@drawable/pencil"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.466"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.181" />-->
+
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/eraser"-->
+<!--            android:layout_width="@dimen/_15sdp"-->
+<!--            android:layout_height="@dimen/_15sdp"-->
+<!--            android:background="@drawable/eraser"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/pencil" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <TextView
+        android:id="@+id/questionTxt"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_150sdp"
+        android:ellipsize="end"
+        android:maxLines="10"
+        android:text="Mark the currently activated dangerous regions"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.039"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.366" />
+
+    <TextView
+        android:id="@+id/questionNo"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_10sdp"
+        android:text="Question No"
+        android:textSize="@dimen/_7sdp"
+        app:layout_constraintBottom_toTopOf="@+id/questionTxt"
+        app:layout_constraintEnd_toStartOf="@+id/drawingMapView"
+        app:layout_constraintHorizontal_bias="0.366"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.772" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
