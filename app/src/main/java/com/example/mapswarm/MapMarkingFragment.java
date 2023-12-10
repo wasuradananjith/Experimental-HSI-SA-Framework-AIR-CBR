@@ -109,6 +109,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         grid.drawGrid();
 
         swarmMap.setOnMapClickListener(latLng -> {
+            calculateGraphicsDistances();
             markSquare(latLng);
         });
 
