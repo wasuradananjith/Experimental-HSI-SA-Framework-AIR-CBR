@@ -223,6 +223,7 @@ public class SQLiteManager {
         contentValues.put(Constants.MARKED_CELLS, question.getMarkedCells());
         contentValues.put(Constants.NO_OF_MARKED_CELLS, question.getNumberOfMarkedCells());
         contentValues.put(Constants.ELAPSED_TIME, question.getElapsedTime());
+        contentValues.put(Constants.QUESTION_ROUND_TIME, question.getQuestionRoundTime());
         return sqLiteDatabase.insert(userAnswersTableName, null, contentValues);
     }
 

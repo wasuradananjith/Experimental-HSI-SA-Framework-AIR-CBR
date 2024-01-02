@@ -15,7 +15,8 @@ public class Question {
     private int numberOfMarkedCells;
     private String markedCells;
     private Integer count;
-    private long elapsedTime;
+    private long elapsedTime = 0;
+    private long questionRoundTime;
 
     public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
                     String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer  questionId,
@@ -141,6 +142,14 @@ public class Question {
 
     public void setMarkedCells(String markedCells) {
         this.markedCells = markedCells;
+    }
+
+    public long getQuestionRoundTime() {
+        return questionRoundTime;
+    }
+
+    public void setQuestionRoundTime(long questionRoundTime) {
+        this.questionRoundTime = questionRoundTime;
     }
 }
 

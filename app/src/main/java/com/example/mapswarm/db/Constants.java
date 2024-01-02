@@ -26,6 +26,7 @@ public class Constants {
     static final String MARKED_CELLS = "MARKED_CELLS";
     static final String NO_OF_MARKED_CELLS = "NO_OF_MARKED_CELLS";
     static final String ELAPSED_TIME = "ELAPSED_TIME";
+    static final String QUESTION_ROUND_TIME = "QUESTION_ROUND_TIME";
 
     static final String CREATE_USER_ROUND_TABLE =
             "CREATE TABLE " + USER_ROUND_TABLE + " ( "
@@ -58,5 +59,6 @@ public class Constants {
                     + MARKED_CELLS + " TEXT,"
                     + NO_OF_MARKED_CELLS + " INTEGER,"
                     + ELAPSED_TIME + " TEXT,"
+                    + QUESTION_ROUND_TIME + " TEXT,"
                     + MCQ_ANSWER + " TEXT DEFAULT '' );";
 }

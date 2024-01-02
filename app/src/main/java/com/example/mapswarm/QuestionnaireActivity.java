@@ -45,6 +45,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
     };
     private NonMarkingFragment nonDrawingFragment;
     private MapMarkingFragment mapMarkingFragment;
+    private long questionRoundTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +65,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
             Integer filterDataCount = Integer.valueOf(extras.getInt("filterDataCount"));
             activityRound = Integer.valueOf(extras.getInt("activityRound"));
             questionRound = Integer.valueOf(extras.getInt("questionRound"));
+            questionRoundTime = Long.valueOf(extras.getLong("questionRoundTime"));
             questions = retrieveQuestions(filterDataCount);
         }
 
         if (questions.size() != 0) {
             // Display the first question when the fragment is loaded
             currentQuestion = questions.get(0);
+            currentQuestion.setQuestionRoundTime(questionRoundTime);
             questionStartTime = timer.getTimeLeftInMilliseconds();
             if (currentQuestion.isDrawing() == 1) {
                 mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
@@ -86,6 +89,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
         nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(view -> {
+            currentQuestion.setQuestionRoundTime(questionRoundTime);
             if (currentQuestion.isDrawing() == 1) {
 //                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 //                View drawingView = findViewById(R.id.drawingView);
@@ -132,9 +136,10 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
             // Update the csv file in the simulation side
             SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
-                    currentQuestion.getQuestionId(), currentQuestion.getQuestionContent(),
-                    currentQuestion.getMcqAnswer(), currentQuestion.getMarkedCells(),
-                    currentQuestion.getNumberOfMarkedCells(), currentQuestion.getElapsedTime());
+                    questionRound, currentQuestion.getQuestionId(),
+                    currentQuestion.getQuestionContent(), currentQuestion.getMcqAnswer(),
+                    currentQuestion.getMarkedCells(), currentQuestion.getNumberOfMarkedCells(),
+                    currentQuestion.getElapsedTime());
 
             // update the database
             updateTheQuestionDataOnNext(currentQuestion);
@@ -236,8 +241,27 @@ public class QuestionnaireActivity extends AppCompatActivity {
                     ranOutTimeAnimation.setVisibility(View.VISIBLE);
                     for (int i = questionCounter; i < questions.size(); i++) {
                         currentQuestion = questions.get(i);
+                        currentQuestion.setQuestionRoundTime(questionRoundTime);
+                        if (currentQuestion.isDrawing() == 1) {
+                            currentQuestion.setMcqAnswer("drawing");
+                            currentQuestion.setMarkedCells("timeout");
+                            currentQuestion.setNumberOfMarkedCells(0);
+                        } else {
+                            currentQuestion.setMcqAnswer("timeout");
+                            currentQuestion.setMarkedCells("mcq");
+                            currentQuestion.setNumberOfMarkedCells(0);
+                        }
                         currentQuestion.setCount(currentQuestion.getCount() + 1);
-                        currentQuestion.setMcqAnswer("Timeout");
+
+                        // Update the csv file in the simulation side
+                        SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
+                                questionRound, currentQuestion.getQuestionId(),
+                                currentQuestion.getQuestionContent(), currentQuestion.getMcqAnswer(),
+                                currentQuestion.getMarkedCells(), currentQuestion.getNumberOfMarkedCells(),
+                                currentQuestion.getElapsedTime());
+
+                        // update the database
+
                         updateTheQuestionDataOnNext(currentQuestion);
                     }
                     timer1.schedule(new TimerTask() {

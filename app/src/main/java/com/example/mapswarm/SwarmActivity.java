@@ -112,12 +112,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
 //            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
-//    private long[] questionTimes = { timeLeftInMilliseconds - 15000
-//            , timeLeftInMilliseconds - 30000, timeLeftInMilliseconds - 45000,
-//            timeLeftInMilliseconds - 60000}; // test times (15 second gaps
-
     private long[] questionTimes = { timeLeftInMilliseconds - 10000
-            , timeLeftInMilliseconds - 300000}; // test times (60 second gaps)
+        , timeLeftInMilliseconds - 20000}; // test times (10 second gaps)
+
+//    private long[] questionTimes = { timeLeftInMilliseconds - 120000
+//            , timeLeftInMilliseconds - 270000}; // test times (60 second gaps)
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -364,12 +363,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         // Popup the questionnaire in predefined times
-        if (questionRound != 4 && timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound]
+        if (questionRound != 2 && timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound]
                 && !questionsAsked[questionRound]) {
             if (questionRound == 2) {
                 filterDataCount += 1;
             }
-            pauseSimulationForQuestions(filterDataCount);
+            pauseSimulationForQuestions(filterDataCount, timeLeftInMilliseconds - timer.getTimeLeftInMilliseconds());
             questionsAsked[questionRound] = true;
             questionRound += 1;
         }
@@ -668,7 +667,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    public void pauseSimulationForQuestions(int filterDataCount) {
+    public void pauseSimulationForQuestions(int filterDataCount, long questionRoundTime) {
         Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
         Log.i("Log: pauseState ", state.toString());
         if (state > 0) {
@@ -683,6 +682,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     intent.putExtra("filterDataCount", filterDataCount);
                     intent.putExtra("activityRound", activityRound);
                     intent.putExtra("questionRound", questionRound);
+                    intent.putExtra("questionRoundTime", questionRoundTime/1000);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
