@@ -136,8 +136,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
             // Update the csv file in the simulation side
             SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
-                    questionRound, currentQuestion.getQuestionId(),
-                    currentQuestion.getQuestionContent(), currentQuestion.getMcqAnswer(),
+                    questionRound, currentQuestion.getQuestionId(), currentQuestion.getMcqAnswer(),
                     currentQuestion.getMarkedCells(), currentQuestion.getNumberOfMarkedCells(),
                     currentQuestion.getElapsedTime());
 
@@ -256,8 +255,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
                         // Update the csv file in the simulation side
                         SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
                                 questionRound, currentQuestion.getQuestionId(),
-                                currentQuestion.getQuestionContent(), currentQuestion.getMcqAnswer(),
-                                currentQuestion.getMarkedCells(), currentQuestion.getNumberOfMarkedCells(),
+                                currentQuestion.getMcqAnswer(), currentQuestion.getMarkedCells(),
+                                currentQuestion.getNumberOfMarkedCells(),
                                 currentQuestion.getElapsedTime());
 
                         // update the database

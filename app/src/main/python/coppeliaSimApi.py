@@ -13,7 +13,8 @@ def main():
 
 def connect():
     print('Program started...')
-    client = RemoteAPIClient(host='192.168.50.133', port=23000)
+    #client = RemoteAPIClient(host='192.168.50.133', port=23000)
+    client = RemoteAPIClient(host='192.168.1.10', port=23000)
     #client = RemoteAPIClient(host='localhost', port=23000)
     # ngrok tcp 23000
     #client = RemoteAPIClient(host='0.tcp.au.ngrok.io', port=17744)
@@ -57,11 +58,11 @@ def createSwipeForce(sim, startX, startY, endX, endY):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("createSwipeForce", parentScriptHandle, startX, startY, endX, endY)
 
-def recordQuestionAnswer(sim, questionRound, questionId, questionContent, mcqAnswer, markedCellsAnswer,
+def recordQuestionAnswer(sim, questionRound, questionId, mcqAnswer, markedCellsAnswer,
                          numberOfMarkedCells, elapsedTimeToAnswer):
     parentScriptHandle = sim.getScript(0)
     return sim.callScriptFunction("recordQuestionAnswer", parentScriptHandle, questionRound,
-                                  questionId, questionContent, mcqAnswer, markedCellsAnswer,
+                                  questionId, mcqAnswer, markedCellsAnswer,
                                   numberOfMarkedCells, elapsedTimeToAnswer)
 
 def createAttractiveRegion(sim, regionId, centerX, centerY, radius):
@@ -99,7 +100,12 @@ def stopSim(sim):
     return sim.stopSimulation()
 
 def pauseSim(sim):
-    return sim.pauseSimulation()
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("pauseSim", parentScriptHandle)
+
+def resumeSim(sim):
+    parentScriptHandle = sim.getScript(0)
+    return sim.callScriptFunction("resumeSim", parentScriptHandle)
     
 def stopRobot(sim):
     robot = sim.getObject('./PioneerP3DX[1]')

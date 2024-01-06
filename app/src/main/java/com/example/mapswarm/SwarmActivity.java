@@ -640,7 +640,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public void onResume() {
         super.onResume();
         if (fromPause) {
-            resumeAfterPause();
+            resumeSimulation();
         }
     }
 
@@ -651,7 +651,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     public void startSimulation() {
-
         Integer state = coppeliaSimApi.callAttr("startSim", sim).toInt();
         if (state > 0) {
             simControlButton.setText("Stop");
@@ -663,6 +662,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     "Please contact the administrator...");
         } else if (state == 0) {
             warningDialog("Error!", "Operation could not be performed when starting " +
+                    "the simulation. Please contact the administrator...");
+        }
+    }
+
+    public void resumeSimulation() {
+        Integer state = coppeliaSimApi.callAttr("resumeSim", sim).toInt();
+        if (state > 0) {
+            simControlButton.setText("Stop");
+            simControlButton.setBackgroundColor(Color.RED);
+            loadingAnimation.setVisibility(View.GONE);
+            timer.startStop();
+        } else if (state == -1) {
+            warningDialog("Error!", "Error when resuming the simulation. " +
+                    "Please contact the administrator...");
+        } else if (state == 0) {
+            warningDialog("Error!", "Operation could not be performed when resuming " +
                     "the simulation. Please contact the administrator...");
         }
     }
@@ -715,10 +730,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //            warningDialog("Error!", "Operation could not be performed when stopping " +
 //                    "the simulation. Please contact the administrator...");
 //        }
-    }
-
-    private void resumeAfterPause() {
-        startSimulation();
     }
 
     private void warningDialog(String title, String message) {
