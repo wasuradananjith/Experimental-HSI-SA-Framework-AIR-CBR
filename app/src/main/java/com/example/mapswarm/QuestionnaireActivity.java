@@ -22,7 +22,6 @@ import java.util.TimerTask;
 public class QuestionnaireActivity extends AppCompatActivity {
 
     private Button nextBtn;
-    private Button backBtn;
     private ArrayList<Question> questions;
     private int questionCounter = 0;
     private int activityRound = 0;
@@ -91,38 +90,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
         nextBtn.setOnClickListener(view -> {
             currentQuestion.setQuestionRoundTime(questionRoundTime);
             if (currentQuestion.isDrawing() == 1) {
-//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//                View drawingView = findViewById(R.id.drawingView);
-//                drawingView.setDrawingCacheEnabled(true);
-//                Bitmap bitmap = drawingView.getDrawingCache();
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-//                byte[] img = byteArrayOutputStream.toByteArray();
-//                currentQuestion.setDrawingAnswer(img);
                 currentQuestion.setDrawingAnswer(null); // This is from an old implementation (can be removed in future)
 
                 String markedCells = mapMarkingFragment.getMarkedCellNames();
                 currentQuestion.setMarkedCells((markedCells.isEmpty())? "skipped": markedCells);
                 currentQuestion.setNumberOfMarkedCells(mapMarkingFragment.getCurrentMarkingsCount());
-//                ContextWrapper cw = new ContextWrapper(getApplicationContext());
-//                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-//                Long tsLong = System.currentTimeMillis() / 1000;
-//                String ts = tsLong.toString();
-//                File file = new File(directory, ts + "UniqueFileName" + ".jpg");
-//                if (!file.exists()) {
-//                    Log.d("path", file.toString());
-//                    FileOutputStream fos = null;
-//                    try {
-//                        fos = new FileOutputStream(file);
-//                        View drawingView = findViewById(R.id.drawingView);
-//                        drawingView.setDrawingCacheEnabled(true);
-//                        Bitmap bitmap = drawingView.getDrawingCache();
-//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//                        fos.flush();
-//                        fos.close();
-//                    } catch (java.io.IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
                 currentQuestion.setMcqAnswer("drawing");
             } else {
                 String answer = nonDrawingFragment.getSelectedAnswer();
@@ -147,7 +119,6 @@ public class QuestionnaireActivity extends AppCompatActivity {
             // If the question counter has not reached the end of the questions
             if (questionCounter != questions.size()) {
                 currentQuestion = questions.get(questionCounter);
-                //questionCounter += 1; // Increment the question counter to get the next question
                 if (currentQuestion.isDrawing() == 1) {
                     mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
                             questions.size());
@@ -187,8 +158,6 @@ public class QuestionnaireActivity extends AppCompatActivity {
             }
         });
 
-        //backBtn = findViewById(R.id.backBtn);
-        //backBtn.setOnClickListener(view -> finish());
         handler.post(trackTimer);
     }
 

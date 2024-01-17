@@ -66,25 +66,16 @@ import java.util.TimerTask;
 
 public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private static final double DEFAULT_CIRCLE_RADIUS = 5;
     private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);
     private static final int SQUARE_COLOUR_SELECTED = Color.GREEN;
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
-    private static final String DANGEROUS_REGION_TAG = "dangerous";
-    private static final String ATTRACTIVE_REGION_TAG = "attractive";
-    private static final float MIN_SWIPE_DISTANCE = 10;
     private GoogleMap swarmMap;
-    private SeekBar radiusSeekBar;
     private Switch showGridSwitch;
-    private Switch attractorSwitch;
     private Switch mapLockSwitch;
     private Button simControlButton;
-    private Button popUpBtn;
     private TextView timerTextView;
-    private TextView messagesTextView;
-    private FragmentContainerView mapView;
     public static PyObject coppeliaSimApi;
     public static PyObject sim = null;
     public static int simOffset = 60;
@@ -92,7 +83,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private long timeLeftInMilliseconds = 300000;
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
-    private boolean isStaticObstaclesRetrieved = false;
     private boolean isTargetRegionRetrieved = false;
     private Map<String, ArrayList<Object>> locations;
     public static LatLng bottomLeftLatLng = new LatLng(-35.287459, 149.172585);
@@ -155,8 +145,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         OverlayMapFragment supportMapFragment = (OverlayMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
-        //messagesTextView = findViewById(R.id.messagesTextView);
-        //messagesTextView.setMovementMethod(new ScrollingMovementMethod());
         messageView = findViewById(R.id.messagesTextView);
         messageListAdapter = new MessageListAdapter(messageList, this);
         messageView.setAdapter(messageListAdapter);
@@ -181,11 +169,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
-
-//        popUpBtn = findViewById(R.id.popUpBtn);
-//        popUpBtn.setOnClickListener(view -> {
-//            pauseSimulationForQuestions(0);
-//        });
 
         loadingAnimation = findViewById(R.id.loadingAnim);
         endingAnimation = findViewById(R.id.endingAnim);
@@ -302,9 +285,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         grid.drawGrid();
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
 
-        //if (showStaticObstacles)
-            //drawRectangularObstacles();
-
     }
 
     private void markSquare(LatLng latLng) {
@@ -377,12 +357,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         if (!isTargetRegionRetrieved) {
             drawTargetRegion();
         }
-        if (!isStaticObstaclesRetrieved) {
-            //drawRectangularObstacles();
-        }
+
         if (questionTimes == null || questionTimes.length == 0) {
             questionTimes = getQuestionnaireTimes();
         }
+
         for (Marker marker: robotPositions) {
             marker.remove();
         }
@@ -430,7 +409,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     } else {
                         Float iconColour = isDeactivated(deactivatedCuboids, key) ?
                                 BitmapDescriptorFactory.HUE_CYAN : BitmapDescriptorFactory.HUE_BLUE;
-                        //Float iconColour = deactivatedCuboids.contains(key)? BitmapDescriptorFactory.HUE_CYAN: BitmapDescriptorFactory.HUE_BLUE;
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
                                         (double) locations.get(key).get(1)}))
@@ -540,41 +518,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 (point.y >= topPointBound.y && point.y <= bottomPointBound.y));
     }
 
-    private void drawRectangularObstacles() {
-        PyObject staticObstacleData = null;
-        try {
-            // Retrieve the rectangular obstacles
-            staticObstacleData = coppeliaSimApi.callAttr("getRectangularStaticObstacles", sim);
-            isSimStopped = false;
-            isStaticObstaclesRetrieved = true;
-            float[][] rectangularStaticObstacles = staticObstacleData.toJava(float[][].class);
-            for(float[] rectangle: rectangularStaticObstacles) {
-                float xWidth = rectangle[3];
-                float yHeight = rectangle[4];
-                float[] topLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] + yHeight/2 };
-                float[] topRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] + yHeight/2 };
-                float[] bottomRightPoint = { rectangle[0] + xWidth/2,  rectangle[1] - yHeight/2 };
-                float[] bottomLeftPoint = { rectangle[0] - xWidth/2,  rectangle[1] - yHeight/2 };
-                swarmMap.addPolygon(new PolygonOptions()
-                        .add(simCoordinatesToLatLng(topLeftPoint),
-                                simCoordinatesToLatLng(topRightPoint),
-                                simCoordinatesToLatLng(bottomRightPoint),
-                                simCoordinatesToLatLng(bottomLeftPoint),
-                                simCoordinatesToLatLng(topLeftPoint))
-                        .strokeColor(Color.GRAY)
-                        .fillColor(Color.GRAY));
-            }
-        } catch (PyException e) {
-            if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
-                Log.i("SIM: ", "Sim stopped.....");
-                isSimStopped = true;
-                isStaticObstaclesRetrieved = false;
-            } else {
-                throw e;
-            }
-        }
-    }
-
     private float[] latLngToSimCoordinates(LatLng latLng) {
         Point screenPoint = swarmMap.getProjection().toScreenLocation(latLng);
         float simX = (((float) (screenPoint.x - leftPointBound.x) / screenWidth) * simSize)
@@ -612,25 +555,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
         return null;
-    }
-
-    private Integer isCloserToBreadcrumb(LatLng latLng) {
-        for (Map.Entry<Integer, Marker> entry : breadcrumbsList.entrySet()) {
-            int breadcrumbId = entry.getKey();
-            Marker breadcrumb = entry.getValue();
-            float[] distance = new float[2];
-            LatLng position = breadcrumb.getPosition();
-            Location.distanceBetween(latLng.latitude, latLng.longitude, position.latitude,
-                    position.longitude, distance);
-            if (distance[0] <= 4) {
-                return breadcrumbId;
-            }
-        }
-        return null;
-    }
-
-    private float mapDistanceToSimDistance(double mapDistance) {
-        return (float) mapDistance * simSize / widthInMeters;
     }
 
     private Map<String, ArrayList<Object>> readLocationsFromJson(String jsonStringToBeRead) {
@@ -738,19 +662,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         startActivity(intent);
         timer.getCountDownTimer().cancel();
         finish();
-//        if (state > 0) {
-//            coppeliaSimApi.callAttr("stopSim", sim);
-//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//            startActivity(intent);
-//            timer.getCountDownTimer().cancel();
-//            finish();
-//        } else if (state == -1) {
-//            warningDialog("Error!", "Error when stopping the simulation. " +
-//                    "Please contact the administrator...");
-//        } else {
-//            warningDialog("Error!", "Operation could not be performed when stopping " +
-//                    "the simulation. Please contact the administrator...");
-//        }
     }
 
     private void warningDialog(String title, String message) {
@@ -845,7 +756,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             messageListAdapter.notifyDataSetChanged();
             messageView.smoothScrollToPosition(messageListAdapter.getItemCount() - 1);
         }
-        //sameInterval = false;
     }
 
     private BitmapDescriptor BitmapFromVector(Context context, int vectorResId)

@@ -101,7 +101,6 @@ public class SQLiteManager {
         Cursor cursor = sqLiteDatabase.rawQuery( "SELECT * from "+ Constants.QUESTIONS_BANK_TABLE +" WHERE "
                 + Constants.QUESTION_COUNT + " = '" + count + "' ORDER BY RANDOM()" + " LIMIT "+
                 limit, null );
-        //Cursor cursor = sqLiteDatabase.query(DATABASE_TABLE, columns, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 // on below line we are adding the data from
