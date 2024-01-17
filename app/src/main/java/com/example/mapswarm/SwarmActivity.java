@@ -112,11 +112,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
 //            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
-    private long[] questionTimes = { timeLeftInMilliseconds - 10000
-        , timeLeftInMilliseconds - 20000}; // test times (10 second gaps)
+//    private long[] questionTimes = { timeLeftInMilliseconds - 10000
+//        , timeLeftInMilliseconds - 20000}; // test times (10 second gaps)
 
-//    private long[] questionTimes = { timeLeftInMilliseconds - 120000
-//            , timeLeftInMilliseconds - 270000}; // test times (60 second gaps)
+   //private long[] questionTimes = { timeLeftInMilliseconds - 120000
+   //         , timeLeftInMilliseconds - 270000}; // test times (60 second gaps)
+
+    private long[] questionTimes = {};
     private boolean[] questionsAsked = { false, false, false, false};
     private int activityRound = 0;  // Number of times the user performed the same task
     Handler handler = new Handler();
@@ -303,7 +305,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         //if (showStaticObstacles)
             //drawRectangularObstacles();
 
-
     }
 
     private void markSquare(LatLng latLng) {
@@ -347,6 +348,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
+
         if (!isSimStopped && timer.getTimeLeftInMilliseconds() <= 10000) {
             timerTextView.setTextColor(Color.RED);
             if (timer.getTimeLeftInMilliseconds() <= 1000) {
@@ -363,7 +365,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         // Popup the questionnaire in predefined times
-        if (questionRound != 2 && timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound]
+        if (questionTimes != null && questionTimes.length > 0 && questionRound != 2 && timer.getTimeLeftInMilliseconds() <= questionTimes[questionRound]
                 && !questionsAsked[questionRound]) {
             if (questionRound == 2) {
                 filterDataCount += 1;
@@ -377,6 +379,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
         if (!isStaticObstaclesRetrieved) {
             //drawRectangularObstacles();
+        }
+        if (questionTimes == null || questionTimes.length == 0) {
+            questionTimes = getQuestionnaireTimes();
         }
         for (Marker marker: robotPositions) {
             marker.remove();
@@ -507,6 +512,22 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 throw e;
             }
         }
+    }
+
+    private long[] getQuestionnaireTimes() {
+        long[] questionnaireTimes = null;
+        try {
+            // Retrieve the target region
+            questionnaireTimes = coppeliaSimApi.callAttr("getQuestionnaireTimeSeeds", sim)
+                    .toJava(long[].class);
+        } catch (PyException e) {
+            if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
+                Log.i("SIM: ", "Sim stopped.....");
+            } else {
+                throw e;
+            }
+        }
+        return questionnaireTimes;
     }
 
     /**

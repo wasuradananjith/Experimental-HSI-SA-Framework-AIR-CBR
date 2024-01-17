@@ -73,14 +73,14 @@ public class SQLiteManager {
                 String[] tokens = line.split(",");
 
                 ContentValues contentValues = new ContentValues();
-                contentValues.put(Constants.QUESTION_CONTENT, tokens[0]);
-                contentValues.put(Constants.IS_DRAWING, Integer.parseInt(tokens[1]));
-                contentValues.put(Constants.ANSWER_1, tokens[2]);
-                contentValues.put(Constants.ANSWER_2, tokens[3]);
-                contentValues.put(Constants.ANSWER_3, tokens[4]);
-                contentValues.put(Constants.ANSWER_4, tokens[5]);
-                contentValues.put(Constants.SA_LEVEL, Integer.parseInt(tokens[6]));
-                contentValues.put(Constants.QUESTION_ID, count);
+                contentValues.put(Constants.QUESTION_ID, Integer.parseInt(tokens[0]));
+                contentValues.put(Constants.QUESTION_CONTENT, tokens[1]);
+                contentValues.put(Constants.IS_DRAWING, Integer.parseInt(tokens[2]));
+                contentValues.put(Constants.ANSWER_1, tokens[3]);
+                contentValues.put(Constants.ANSWER_2, tokens[4]);
+                contentValues.put(Constants.ANSWER_3, tokens[5]);
+                contentValues.put(Constants.ANSWER_4, tokens[6]);
+                contentValues.put(Constants.SA_LEVEL, Integer.parseInt(tokens[7]));
                 contentValues.put(Constants.QUESTION_COUNT, 0);
                 sqLiteDatabase.insert(Constants.QUESTIONS_BANK_TABLE, null, contentValues);
             }
