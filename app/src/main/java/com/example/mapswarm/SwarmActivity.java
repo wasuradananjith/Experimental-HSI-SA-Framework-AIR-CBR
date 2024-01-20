@@ -64,7 +64,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);
     private static final int SQUARE_COLOUR_SELECTED = Color.GREEN;
@@ -284,7 +284,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // draw the grid when the map is loaded for the first time
         grid.drawGrid();
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
-
+        googleMap.setOnMarkerClickListener(this);
     }
 
     private void markSquare(LatLng latLng) {
@@ -787,5 +787,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // after generating our bitmap we are returning our
         // bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        markSquare(marker.getPosition());
+        return true;
     }
 }
