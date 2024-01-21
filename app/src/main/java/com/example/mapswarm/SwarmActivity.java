@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -20,14 +19,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
-import android.text.method.ScrollingMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,8 +42,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,7 +60,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int SQUARE_COLOUR_UNSELECTED = Color.argb(0, 255, 0, 0);
     private static final int SQUARE_COLOUR_SELECTED = Color.GREEN;
@@ -186,6 +182,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         });
+
+        supportMapFragment.setOnTouchListener(new OverlayMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch(MotionEvent event) {
+                float[] touchPoint = screenPointToSimCoordinates(event.getX(), event.getY());
+                markSquare(simCoordinatesToLatLng(touchPoint));
+            }
+        });
     }
 
     @Override
@@ -234,10 +238,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //        Log.i("SIM: heightInMeters", String.valueOf(distances[0]));
         calculateGraphicsDistances();
 
-        swarmMap.setOnMapClickListener(latLng -> {
-            markSquare(latLng);
-        });
-
         swarmMap.setOnMapLongClickListener(latLng -> {
             float[] simCoordinates = latLngToSimCoordinates(latLng);
             String cellName = grid.getCellName(simCoordinates);
@@ -284,37 +284,45 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // draw the grid when the map is loaded for the first time
         grid.drawGrid();
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
-        googleMap.setOnMarkerClickListener(this);
     }
 
     private void markSquare(LatLng latLng) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
         float[][] cellBoundary = grid.getCellBoundary(simCoordinates);
         String cellName = grid.getCellName(simCoordinates);
-        boolean isCreated;
-        isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
-                regionsCount, cellBoundary[4][0], cellBoundary[4][1]).toBoolean();
-        if (isCreated) {
-            PolygonOptions squareOptions = new PolygonOptions()
-                    .add(simCoordinatesToLatLng(cellBoundary[0]),
-                            simCoordinatesToLatLng(cellBoundary[1]),
-                            simCoordinatesToLatLng(cellBoundary[3]),
-                            simCoordinatesToLatLng(cellBoundary[2]),
-                            simCoordinatesToLatLng(cellBoundary[0]))
-                    .strokeWidth(10)
-                    .clickable(true)
-                    .fillColor(Color.argb(128, 255, 0, 0))
-                    .strokeColor(SQUARE_COLOUR_SELECTED);
-            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-                entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+        boolean alreadyMarked = false;
+        for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+            if (entry.getValue().getTag().equals(cellName)) {
+                alreadyMarked = true;
+                break;
             }
-            selectedSquareName = cellName;
-            selectedSquareId = regionsCount;
-            Polygon newSquare = swarmMap.addPolygon(squareOptions);
-            newSquare.setTag(cellName);
-            newSquare.setZIndex(10);
-            squaresList.put(selectedSquareId, newSquare);
-            regionsCount += 1;
+        }
+        if (!alreadyMarked) {
+            boolean isCreated;
+            isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
+                    regionsCount, cellBoundary[4][0], cellBoundary[4][1]).toBoolean();
+            if (isCreated) {
+                PolygonOptions squareOptions = new PolygonOptions()
+                        .add(simCoordinatesToLatLng(cellBoundary[0]),
+                                simCoordinatesToLatLng(cellBoundary[1]),
+                                simCoordinatesToLatLng(cellBoundary[3]),
+                                simCoordinatesToLatLng(cellBoundary[2]),
+                                simCoordinatesToLatLng(cellBoundary[0]))
+                        .strokeWidth(10)
+                        .clickable(true)
+                        .fillColor(Color.argb(128, 255, 0, 0))
+                        .strokeColor(SQUARE_COLOUR_SELECTED);
+                for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                    entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+                }
+                selectedSquareName = cellName;
+                selectedSquareId = regionsCount;
+                Polygon newSquare = swarmMap.addPolygon(squareOptions);
+                newSquare.setTag(cellName);
+                newSquare.setZIndex(10);
+                squaresList.put(selectedSquareId, newSquare);
+                regionsCount += 1;
+            }
         }
     }
 
@@ -412,7 +420,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
                                         (double) locations.get(key).get(1)}))
+                                        .anchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
+                                // .icon(BitmapFromVector(getApplicationContext(), R.drawable.blue_marker))
                                 .title("Cuboid" + count));
                         marker.setTag(key);
                         count += 1;
@@ -787,11 +797,5 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // after generating our bitmap we are returning our
         // bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    @Override
-    public boolean onMarkerClick(@NonNull Marker marker) {
-        markSquare(marker.getPosition());
-        return true;
     }
 }
