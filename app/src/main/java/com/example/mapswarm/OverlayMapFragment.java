@@ -63,9 +63,6 @@ public class OverlayMapFragment extends SupportMapFragment {
         public boolean dispatchTouchEvent(MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (touchListener != null) {
-                        touchListener.onTouch(event);
-                    }
                     swipeX1 = event.getX();
                     swipeY1 = event.getY();
                     return super.dispatchTouchEvent(event);
@@ -76,6 +73,10 @@ public class OverlayMapFragment extends SupportMapFragment {
                     float deltaY = swipeY2 - swipeY1;
                     if (Math.abs(deltaX) > MIN_SWIPE_DISTANCE || Math.abs(deltaY) > MIN_SWIPE_DISTANCE) {
                         flingListener.onFling(swipeX1, swipeY1, swipeX2, swipeY2);
+                    } else {
+                        if (touchListener != null) {
+                            touchListener.onTouch(event);
+                        }
                     }
                     swipeX1 = 0f;
                     swipeX2 = 0f;
