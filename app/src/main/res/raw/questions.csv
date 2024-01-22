@@ -1,10 +1,10 @@
 question_id,question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,sa_level
 1,Mark the current positions of the robots,1,None,None,None,None,1
 2,Mark the cell where the target exactly reside,1,None,None,None,None,2
-3,How many robots are currently within the green-bordered target area?,0,0 to 5,6 to 10,11 to 15,16 to 20,2
-4,How many robots are inside the cell where the target exactly reside?,0,0 to 5,6 to 10,11 to 15,16 to 20,2
+3,How many robots are currently within the green-bordered target area?,0,0,1 to 5,6 to 10,11 or more,2
+4,How many robots are inside the cell where the target exactly reside?,0,0,1 to 5,6 to 10,11 or more,2
 5,Mark the positions of the robot after next 10 seconds,1,None,None,None,None,3
-6,How many robots can reach the target region within next 10 seconds?,0,0 to 5,6 to 10,11 to 15,16 to 20,3
+6,How many robots can reach the target region within next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,3
 7,Choose the robots' moving direction,0,Not moving,Horizontally,Vertically,Diagonally,1
 8,What is the robots' moving direction respect to the target,0,Towards the target,Away from the target,Robots are not moving (stuck),All the robots have reached the target and stopped,2
 9,What will be the robots' moving direction after next 10 seconds,0,Not moving,Horizontally,Vertically,Diagonally,3
@@ -13,14 +13,13 @@ question_id,question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,sa_l
 12,How much time have elapsed since you have started doing the task (in minutes)?,0,4 to 5,3 to 4,2 to 3,Less than 2,2
 13,How much time will be needed for all the active robots to reach the target region?,0,4 to 5,3 to 4,2 to 3,Less than 2,3
 14,Mark the currently active dangerous regions based on the information received from the notifications.,1,None,None,None,None,1
-15,How many avoidance regions have you drawn on the map?,0,0,1,2,3 or more,1
+15,How many avoidance regions have you drawn on the map?,0,0,1 to 5,6 to 10,11 or more,1
 16,Mark the avoidance regions that you have already drawn on the map.,1,None,None,None,None,1
-17,Mark the currently active dangerous regions based on the information received from the notifications.,1,None,None,None,None,2
-18,How many dangerous regions will get activated within next 1 minute based on the information received from the notifications?,0,0,1,2,3 or more,3
-19,How many drawn avoidance regions can be removed (in other words mark as safe) within next 1 minute?,0,0,1,2,3 or more,3
-20,Mark the positions of the deactivated robots,1,None,None,None,None,1
-21,How many robots are currently deactivated?,0,0 to 5,6 to 10,11 to 15,16 to 20,1
-22,Mark the region(s) where the most number of deactivated robots are resided in.,1,None,None,None,None,2
-23,How many robots will get deactivated within next 10 seconds?,0,0 to 5,6 to 10,11 to 15,16 to 20,3
-24,How many robots are stuck between obstacles and unable to move?,0,0 to 5,6 to 10,11 to 15,16 to 20,2
-25,How many robots can get stuck between obstacles within next 10 seconds,0,0 to 5,6 to 10,11 to 15,16 to 20,3
+17,How many dangerous regions will get activated within next 1 minute based on the information received from the notifications?,0,0,1 to 5,6 to 10,11 or more,3
+18,"How many drawn avoidance regions can be removed (in other words, mark as safe) within next 1 minute?",0,0,1 to 5,6 to 10,11 or more,3
+19,Mark the positions of the deactivated robots,1,None,None,None,None,1
+20,How many robots are currently deactivated?,0,0,1 to 5,6 to 10,11 or more,1
+21,Mark the region(s) where the most number of deactivated robots are resided in.,1,None,None,None,None,2
+22,How many robots will get deactivated within next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,3
+23,How many robots are stuck between obstacles and unable to move?,0,0,1 to 5,6 to 10,11 or more,2
+24,How many robots can get stuck between obstacles within next 10 seconds,0,0,1 to 5,6 to 10,11 or more,3
