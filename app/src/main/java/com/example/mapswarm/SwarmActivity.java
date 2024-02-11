@@ -205,9 +205,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         .strokeWidth(5)
                 .strokeColor(Color.DKGRAY));
 
-        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.4f));
+        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.35f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
+        swarmMap.getUiSettings().setRotateGesturesEnabled(false);
 
         Python py = Python.getInstance();
         coppeliaSimApi = py.getModule("coppeliaSimApi");

@@ -75,7 +75,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
             questionStartTime = timer.getTimeLeftInMilliseconds();
             if (currentQuestion.isDrawing() == 1) {
                 mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
-                        questions.size());
+                        questions.size(), currentQuestion.getQuestionId());
                 getSupportFragmentManager().beginTransaction().add(R.id.container,
                         mapMarkingFragment).commit();
             } else {
@@ -93,13 +93,23 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion.setDrawingAnswer(null); // This is from an old implementation (can be removed in future)
 
                 String markedCells = mapMarkingFragment.getMarkedCellNames();
-                currentQuestion.setMarkedCells((markedCells.isEmpty())? "skipped": markedCells);
+                if ((markedCells.isEmpty())) {
+                    String specialAnswer = mapMarkingFragment.getSelectedAnswer();
+                    if (specialAnswer == null) {
+                        currentQuestion.setMarkedCells("skipped");
+                    } else {
+                        currentQuestion.setMarkedCells(specialAnswer);
+                    }
+                } else {
+                    currentQuestion.setMarkedCells(markedCells);
+                }
+
                 currentQuestion.setNumberOfMarkedCells(mapMarkingFragment.getCurrentMarkingsCount());
-                currentQuestion.setMcqAnswer("drawing");
+                currentQuestion.setMcqAnswer("-");
             } else {
                 String answer = nonDrawingFragment.getSelectedAnswer();
                 currentQuestion.setMcqAnswer((answer == null)? "skipped": answer);
-                currentQuestion.setMarkedCells("mcq");
+                currentQuestion.setMarkedCells("-");
                 currentQuestion.setNumberOfMarkedCells(0);
             }
 
@@ -121,7 +131,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion = questions.get(questionCounter);
                 if (currentQuestion.isDrawing() == 1) {
                     mapMarkingFragment = new MapMarkingFragment(currentQuestion, questionCounter+1,
-                            questions.size());
+                            questions.size(), currentQuestion.getQuestionId());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
                                     R.anim.slide_in_right,  // enter

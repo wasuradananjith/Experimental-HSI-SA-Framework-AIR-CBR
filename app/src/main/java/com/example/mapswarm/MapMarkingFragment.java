@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,8 +42,11 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     private final Question question;
     private final int questionNo;
     private final int totalQuestions;
+    private final int questionId;
     private TextView questionText;
     private TextView questionNoText;
+    private RadioButton specialAnswer;
+    private RadioGroup radioGroup;
     private GoogleMap swarmMap;
     private Grid grid;
     private Point leftPointBound = null;
@@ -53,11 +58,13 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     private int markingsCount = 0;
     private Integer selectedSquareId = null;
     private String selectedSquareName = null;
+    private View root;
 
-    public MapMarkingFragment(Question question, int questionNo, int totalQuestions) {
+    public MapMarkingFragment(Question question, int questionNo, int totalQuestions, int questionId) {
         this.question = question;
         this.questionNo = questionNo;
         this.totalQuestions = totalQuestions;
+        this.questionId = questionId;
     }
 
     @Override
@@ -70,9 +77,21 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_map_drawing, container, false);
+        root = inflater.inflate(R.layout.fragment_map_drawing, container, false);
         questionText = root.findViewById(R.id.questionTxt);
         questionText.setText(question.getQuestionContent());
+        radioGroup = root.findViewById(R.id.radioGroup);
+
+        specialAnswer = root.findViewById(R.id.specialAnswer);
+        if (questionId == 17) {
+            specialAnswer.setText("No avoidance regions drawn yet");
+        } else if (questionId == 20 || questionId == 22) {
+            specialAnswer.setText("No robots are deactivated yet");
+        } else if (questionId == 25) {
+            specialAnswer.setText("No robots are stuck yet");
+        } else {
+            specialAnswer.setVisibility(View.GONE);
+        }
 
         questionNoText = root.findViewById(R.id.questionNo);
         questionNoText.setText("Question " + questionNo + " out of " + totalQuestions);
@@ -226,5 +245,16 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
 
     public int getCurrentMarkingsCount() {
         return squaresList.size();
+    }
+
+    public String getSelectedAnswer() {
+        // get selected radio button from radioGroup
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        if (selectedId == -1)
+            return null;
+
+        // find the radiobutton by returned id
+        RadioButton selectedRadioButton = root.findViewById(selectedId);
+        return (String) selectedRadioButton.getText();
     }
 }

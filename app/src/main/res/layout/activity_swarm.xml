@@ -38,8 +38,8 @@
 
     <fragment
         android:id="@+id/map"
-        android:layout_width="@dimen/_250sdp"
-        android:layout_height="@dimen/_250sdp"
+        android:layout_width="@dimen/_280sdp"
+        android:layout_height="@dimen/_280sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.132"
@@ -65,8 +65,8 @@
 <!--    <ImageView-->
 <!--        android:id="@+id/map"-->
 <!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
-<!--        android:layout_width="@dimen/_250sdp"-->
-<!--        android:layout_height="@dimen/_250sdp"-->
+<!--        android:layout_width="@dimen/_270sdp"-->
+<!--        android:layout_height="@dimen/_270sdp"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintHorizontal_bias="0.132"-->
@@ -76,7 +76,7 @@
 
     <Switch
         android:id="@+id/showGridSwitch"
-        android:layout_width="@dimen/_45sdp"
+        android:layout_width="@dimen/_50sdp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_25sdp"
         android:text="Show Grid    "
@@ -86,20 +86,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.083" />
-
-    <Switch
-        android:id="@+id/mapLockSwitch"
-        android:layout_width="@dimen/_45sdp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_25sdp"
-        android:text="Map Lock"
-        android:checked="true"
-        app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
-        app:layout_constraintEnd_toStartOf="@+id/timerText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/showGridSwitch"
         app:layout_constraintVertical_bias="0.083" />
 
     <!--    <Switch-->
@@ -131,6 +117,20 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/simControlButton"-->
 <!--        app:layout_constraintVertical_bias="0.184" />-->
 
+    <Switch
+        android:id="@+id/mapLockSwitch"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_25sdp"
+        android:checked="true"
+        android:text="Map Lock"
+        app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
+        app:layout_constraintEnd_toStartOf="@+id/timerText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/map"
+        app:layout_constraintTop_toBottomOf="@+id/showGridSwitch"
+        app:layout_constraintVertical_bias="0.465" />
+
     <TextView
         android:id="@+id/timerText"
         android:layout_width="@dimen/_50sdp"
@@ -145,8 +145,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesTextView"
-        android:layout_width="@dimen/_120sdp"
-        android:layout_height="@dimen/_200sdp"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_215sdp"
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginBottom="124dp"
@@ -168,10 +168,10 @@
         android:text="Start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.754"
+        app:layout_constraintHorizontal_bias="0.834"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintVertical_bias="0.081" />
 
 
     <!--    <Button-->
