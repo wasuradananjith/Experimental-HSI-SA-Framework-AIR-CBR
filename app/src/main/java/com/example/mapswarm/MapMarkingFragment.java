@@ -115,7 +115,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
                 .strokeWidth(5)
                 .strokeColor(Color.DKGRAY));
 
-        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SwarmActivity.mapCentre, 19.2f));
+        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SwarmActivity.mapCentre, 19.0f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
 

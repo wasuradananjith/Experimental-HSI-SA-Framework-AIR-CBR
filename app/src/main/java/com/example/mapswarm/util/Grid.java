@@ -194,6 +194,6 @@ public class Grid {
 
         // after generating our bitmap we are returning our
         // bitmap.
-        return BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 40, 40, false));
+        return BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 30, 30, false));
     }
 }

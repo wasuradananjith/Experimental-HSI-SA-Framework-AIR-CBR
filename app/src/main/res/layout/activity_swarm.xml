@@ -76,10 +76,11 @@
 
     <Switch
         android:id="@+id/showGridSwitch"
-        android:layout_width="@dimen/_50sdp"
+        android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_25sdp"
         android:text="Show Grid    "
+        android:textSize="@dimen/_8sdp"
         android:checked="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/timerText"
@@ -119,11 +120,12 @@
 
     <Switch
         android:id="@+id/mapLockSwitch"
-        android:layout_width="@dimen/_50sdp"
+        android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_25sdp"
         android:checked="true"
         android:text="Map Lock"
+        android:textSize="@dimen/_8sdp"
         app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
         app:layout_constraintEnd_toStartOf="@+id/timerText"
         app:layout_constraintHorizontal_bias="0.0"
@@ -134,14 +136,14 @@
     <TextView
         android:id="@+id/timerText"
         android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_15sdp"
-        android:layout_marginTop="@dimen/_21sdp"
-        android:layout_marginEnd="@dimen/_21sdp"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="40dp"
         android:textAlignment="center"
-        android:textSize="@dimen/_12sdp"
+        android:textSize="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="10:00" />
+        tools:text="5:00" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesTextView"
@@ -166,12 +168,13 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#009688"
         android:text="Start"
+        android:textSize="@dimen/_7sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.834"
+        app:layout_constraintHorizontal_bias="0.854"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.081" />
+        app:layout_constraintVertical_bias="0.08" />
 
 
     <!--    <Button-->

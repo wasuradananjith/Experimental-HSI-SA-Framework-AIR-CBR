@@ -78,52 +78,51 @@
     <TextView
         android:id="@+id/questionTxt"
         android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_150sdp"
+        android:layout_height="@dimen/_100sdp"
         android:ellipsize="end"
         android:maxLines="10"
-        android:text="Mark the currently activated dangerous regions"
-        android:textSize="@dimen/_10sdp"
+        android:text="question content?"
+        android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.039"
+        app:layout_constraintHorizontal_bias="0.087"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366" />
+        app:layout_constraintVertical_bias="0.24" />
 
     <TextView
         android:id="@+id/questionNo"
-        android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_10sdp"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_15sdp"
         android:text="Question No"
-        android:textSize="@dimen/_7sdp"
+        android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@+id/questionTxt"
-        app:layout_constraintEnd_toStartOf="@+id/drawingMapView"
-        app:layout_constraintHorizontal_bias="0.366"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.772" />
+        app:layout_constraintVertical_bias="0.722" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_20sdp"
+        android:layout_height="@dimen/_50sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintHorizontal_bias="0.087"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questionTxt"
-        app:layout_constraintVertical_bias="0.297">
+        app:layout_constraintVertical_bias="0.36">
 
         <RadioButton
             android:id="@+id/specialAnswer"
-            android:layout_width="@dimen/_300sdp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
             android:layout_gravity="left"
             android:checked="false"
             android:padding="@dimen/_2sdp"
             android:text="Special Answer"
-            android:textSize="@dimen/_10sdp"/>
-
+            android:textSize="@dimen/_10sdp" />
     </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

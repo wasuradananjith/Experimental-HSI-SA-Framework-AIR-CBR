@@ -29,7 +29,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private Question currentQuestion = null;
     private MyTimer timer;
     private TextView timerTextView;
-    private long timeLeftInMilliseconds = 120000;
+    private long timeLeftInMilliseconds = 150000;
     private long questionStartTime = 0;
     private boolean isTimeOutQuestionsUpdated = false;
     private LoadingAnimation loadingAnimation;
@@ -134,8 +134,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             questions.size(), currentQuestion.getQuestionId());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
-                                    R.anim.slide_in_right,  // enter
-                                    R.anim.slide_out_left  // exit
+                                    R.anim.enter_from_right, R.anim.exit_to_left,
+                                    R.anim.enter_from_left, R.anim.exit_to_right
                             )
                             .replace(R.id.container, mapMarkingFragment)
                             .addToBackStack(null)
@@ -146,8 +146,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                             questions.size());
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(
-                                    R.anim.slide_in_right,  // enter
-                                    R.anim.slide_out_left  // exit
+                                    R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right
                             )
                             .replace(R.id.container, nonDrawingFragment)
                             .addToBackStack(null)
