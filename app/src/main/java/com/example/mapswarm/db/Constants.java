@@ -17,6 +17,7 @@ public class Constants {
     static final String ANSWER_3 = "ANSWER_3";
     static final String ANSWER_4 = "ANSWER_4";
     static final String SA_LEVEL = "SA_LEVEL";
+    static final String QUESTION_ROUND = "QUESTION_ROUND";
     static final String QUESTION_COUNT = "QUESTION_COUNT";
 
     // User Answers table related constants (this uses most of the constants in Question Bank table)
@@ -42,6 +43,7 @@ public class Constants {
                     + ANSWER_3 + " TEXT NOT NULL, "
                     + ANSWER_4 + " TEXT NOT NULL, "
                     + SA_LEVEL + " INTEGER,"
+                    + QUESTION_ROUND + " INTEGER,"
                     + QUESTION_COUNT + " INTEGER DEFAULT 0 );";
 
     static final String CREATE_USER_ANSWERS_TABLE =

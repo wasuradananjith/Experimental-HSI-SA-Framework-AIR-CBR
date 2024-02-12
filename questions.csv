@@ -16,7 +16,7 @@ question_id,question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,sa_l
 15,How many avoidance regions have you drawn on the map?,0,0,1 to 5,6 to 10,11 or more,1
 16,Mark the avoidance regions that you have already drawn on the map.,1,None,None,None,None,1
 17,How many dangerous regions will get activated within next 1 minute based on the information received from the notifications?,0,0,1 to 5,6 to 10,11 or more,3
-18,"How many drawn avoidance regions can be removed (in other words, mark as safe) within next 1 minute?",0,0,1 to 5,6 to 10,11 or more,3
+18,How many drawn avoidance regions can be removed (in other words, mark as safe) within next 1 minute?,0,0,1 to 5,6 to 10,11 or more,3
 19,Mark the positions of the deactivated robots,1,None,None,None,None,1
 20,How many robots are currently deactivated?,0,0,1 to 5,6 to 10,11 or more,1
 21,How many robots are currently deactivated?,1,None,None,None,None,2

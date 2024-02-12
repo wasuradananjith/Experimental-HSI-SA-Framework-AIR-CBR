@@ -65,7 +65,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
             activityRound = Integer.valueOf(extras.getInt("activityRound"));
             questionRound = Integer.valueOf(extras.getInt("questionRound"));
             questionRoundTime = Long.valueOf(extras.getLong("questionRoundTime"));
-            questions = retrieveQuestions(filterDataCount);
+            questions = retrieveQuestions(questionRound);
         }
 
         if (questions.size() != 0) {
@@ -172,15 +172,15 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
     /**
      * Retrieve the questions from the database
-     * @param filterDataCount  questions to be filtered from the
-     *                         database based on the times they occurred
+     * @param questionRound  questions to be filtered from the
+     *                       database based on the question round
      * @return list of questions
      */
-    public ArrayList<Question> retrieveQuestions(int filterDataCount) {
+    public ArrayList<Question> retrieveQuestions(int questionRound) {
         SQLiteManager sqLiteManager = new SQLiteManager(this);
         try {
             sqLiteManager.open();
-            ArrayList<Question> questions = sqLiteManager.fetchQuestionBankData(filterDataCount,
+            ArrayList<Question> questions = sqLiteManager.fetchQuestionBankData(questionRound,
                     13);
             sqLiteManager.close();
             return  questions;

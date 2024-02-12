@@ -82,6 +82,7 @@ public class SQLiteManager {
                 contentValues.put(Constants.ANSWER_4, tokens[6]);
                 contentValues.put(Constants.SA_LEVEL, Integer.parseInt(tokens[7]));
                 contentValues.put(Constants.QUESTION_COUNT, 0);
+                contentValues.put(Constants.QUESTION_ROUND, Integer.parseInt(tokens[8]));
                 sqLiteDatabase.insert(Constants.QUESTIONS_BANK_TABLE, null, contentValues);
             }
         } catch (IOException e) {
@@ -95,11 +96,11 @@ public class SQLiteManager {
      * @return
      */
     @SuppressLint("Range")
-    public ArrayList<Question> fetchQuestionBankData(int count, int limit) {
+    public ArrayList<Question> fetchQuestionBankData(int questionRound, int limit) {
 
         ArrayList<Question> questions = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery( "SELECT * from "+ Constants.QUESTIONS_BANK_TABLE +" WHERE "
-                + Constants.QUESTION_COUNT + " = '" + count + "' ORDER BY RANDOM()" + " LIMIT "+
+                + Constants.QUESTION_ROUND + " = '" + questionRound + "' ORDER BY RANDOM()" + " LIMIT "+
                 limit, null );
         if (cursor.moveToFirst()) {
             do {
