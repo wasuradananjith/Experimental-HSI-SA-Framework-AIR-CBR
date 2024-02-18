@@ -104,39 +104,39 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    public void initializeQuestionBankForUser(FirebaseUser user) {
-        String username = User.getUsernameFromEmail(user.getEmail());
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.child(username).exists()) {
-                    databaseReference.child(username).setValue(databaseRef);
-                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().
-                            getReference(username + "/" + databaseRef);
-                    databaseReference2.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            QuestionsBank questionsBank = new QuestionsBank();
-                            InputStream inputStream = getResources().openRawResource(R.raw.questions);
-                            questionsBank.readAndSetQuestionsFromCsv(inputStream, databaseReference2);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(RegisterActivity.this,
-                                    "Fail in initializing the question bank " +
-                                            error, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
+//    public void initializeQuestionBankForUser(FirebaseUser user) {
+//        String username = User.getUsernameFromEmail(user.getEmail());
+//
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+//        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (!dataSnapshot.child(username).exists()) {
+//                    databaseReference.child(username).setValue(databaseRef);
+//                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().
+//                            getReference(username + "/" + databaseRef);
+//                    databaseReference2.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            QuestionsBank questionsBank = new QuestionsBank();
+//                            InputStream inputStream = getResources().openRawResource(R.raw.questions);
+//                            questionsBank.readAndSetQuestionsFromCsv(inputStream, databaseReference2);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//                            Toast.makeText(RegisterActivity.this,
+//                                    "Fail in initializing the question bank " +
+//                                            error, Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 }

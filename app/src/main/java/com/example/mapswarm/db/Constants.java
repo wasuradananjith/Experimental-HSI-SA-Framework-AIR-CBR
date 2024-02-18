@@ -16,6 +16,7 @@ public class Constants {
     static final String ANSWER_2 = "ANSWER_2";
     static final String ANSWER_3 = "ANSWER_3";
     static final String ANSWER_4 = "ANSWER_4";
+    static final String ANSWER_5 = "ANSWER_5";
     static final String SA_LEVEL = "SA_LEVEL";
     static final String QUESTION_ROUND = "QUESTION_ROUND";
     static final String QUESTION_COUNT = "QUESTION_COUNT";
@@ -42,6 +43,7 @@ public class Constants {
                     + ANSWER_2 + " TEXT NOT NULL, "
                     + ANSWER_3 + " TEXT NOT NULL, "
                     + ANSWER_4 + " TEXT NOT NULL, "
+                    + ANSWER_5 + " TEXT NOT NULL, "
                     + SA_LEVEL + " INTEGER,"
                     + QUESTION_ROUND + " INTEGER,"
                     + QUESTION_COUNT + " INTEGER DEFAULT 0 );";

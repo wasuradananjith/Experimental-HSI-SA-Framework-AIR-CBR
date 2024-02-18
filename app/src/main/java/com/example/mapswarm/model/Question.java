@@ -9,6 +9,7 @@ public class Question {
     private String mcqAnswer2;
     private String mcqAnswer3;
     private String mcqAnswer4;
+    private String mcqAnswer5;
     private Integer saLevel;
     private String mcqAnswer;
     private byte[] drawingAnswer;
@@ -19,7 +20,7 @@ public class Question {
     private long questionRoundTime;
 
     public Question(String questionContent, Integer isDrawing, String mcqAnswer1, String mcqAnswer2,
-                    String mcqAnswer3, String mcqAnswer4, Integer saLevel, Integer  questionId,
+                    String mcqAnswer3, String mcqAnswer4, String mcqAnswer5, Integer saLevel, Integer  questionId,
                     Integer count) {
         this.questionContent = questionContent;
         this.isDrawing = isDrawing;
@@ -27,6 +28,7 @@ public class Question {
         this.mcqAnswer2 = mcqAnswer2;
         this.mcqAnswer3 = mcqAnswer3;
         this.mcqAnswer4 = mcqAnswer4;
+        this.mcqAnswer5 = mcqAnswer5;
         this.saLevel = saLevel;
         this.questionId = questionId;
         this.count = count;
@@ -86,6 +88,14 @@ public class Question {
 
     public void setMcqAnswer4(String mcqAnswer4) {
         this.mcqAnswer4 = mcqAnswer4;
+    }
+
+    public String getMcqAnswer5() {
+        return mcqAnswer5;
+    }
+
+    public void setMcqAnswer5(String mcqAnswer5) {
+        this.mcqAnswer5 = mcqAnswer5;
     }
 
     public String getMcqAnswer() {

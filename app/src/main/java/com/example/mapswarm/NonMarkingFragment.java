@@ -27,6 +27,7 @@ public class NonMarkingFragment extends Fragment {
     private RadioButton answer2;
     private RadioButton answer3;
     private RadioButton answer4;
+    private RadioButton answer5;
     private RadioGroup radioGroup;
     private RadioButton selectedRadioButton;
     private View root;
@@ -53,6 +54,7 @@ public class NonMarkingFragment extends Fragment {
         answer2 = root.findViewById(R.id.answer2);
         answer3 = root.findViewById(R.id.answer3);
         answer4 = root.findViewById(R.id.answer4);
+        answer5 = root.findViewById(R.id.answer5);
         radioGroup = root.findViewById(R.id.radioGroup);
 
         questionText.setText(question.getQuestionContent());
@@ -61,6 +63,7 @@ public class NonMarkingFragment extends Fragment {
         answer2.setText(question.getMcqAnswer2());
         answer3.setText(question.getMcqAnswer3());
         answer4.setText(question.getMcqAnswer4());
+        answer5.setText(question.getMcqAnswer5());
         return root;
     }
 
@@ -77,5 +80,12 @@ public class NonMarkingFragment extends Fragment {
         // find the radiobutton by returned id
         RadioButton selectedRadioButton = root.findViewById(selectedId);
         return (String) selectedRadioButton.getText();
+    }
+
+    /**
+     * Clear the selected answers if any
+     */
+    public void clearFields() {
+        radioGroup.clearCheck();
     }
 }

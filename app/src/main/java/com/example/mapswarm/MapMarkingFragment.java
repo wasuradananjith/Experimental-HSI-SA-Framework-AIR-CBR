@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mapswarm.model.Question;
 import com.example.mapswarm.util.Grid;
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A simple {@link MapMarkingFragment} subclass
@@ -148,6 +148,18 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         });
 
         swarmMap.setOnCameraMoveListener(() -> calculateGraphicsDistances());
+
+//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+//        {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId)
+//            {
+//                swarmMap.getUiSettings().setScrollGesturesEnabled(false);
+//                swarmMap.getUiSettings().setAllGesturesEnabled(false);
+//                swarmMap.getUiSettings().setMapToolbarEnabled(false);
+//                grid.clearGrid();
+//            }
+//        });
     }
 
     private void calculateGraphicsDistances() {
@@ -256,5 +268,17 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         // find the radiobutton by returned id
         RadioButton selectedRadioButton = root.findViewById(selectedId);
         return (String) selectedRadioButton.getText();
+    }
+
+    /**
+     * Clear the selected answers if any
+     */
+    public void clearFields() {
+        radioGroup.clearCheck();
+        for (Integer id : squaresList.keySet()) {
+            Objects.requireNonNull(squaresList.get(id)).remove();
+        }
+        selectedSquareName = null;
+        selectedSquareId = null;
     }
 }

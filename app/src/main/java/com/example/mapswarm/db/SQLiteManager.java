@@ -80,9 +80,10 @@ public class SQLiteManager {
                 contentValues.put(Constants.ANSWER_2, tokens[4]);
                 contentValues.put(Constants.ANSWER_3, tokens[5]);
                 contentValues.put(Constants.ANSWER_4, tokens[6]);
-                contentValues.put(Constants.SA_LEVEL, Integer.parseInt(tokens[7]));
+                contentValues.put(Constants.ANSWER_5, tokens[7]);
+                contentValues.put(Constants.SA_LEVEL, Integer.parseInt(tokens[8]));
                 contentValues.put(Constants.QUESTION_COUNT, 0);
-                contentValues.put(Constants.QUESTION_ROUND, Integer.parseInt(tokens[8]));
+                contentValues.put(Constants.QUESTION_ROUND, Integer.parseInt(tokens[9]));
                 sqLiteDatabase.insert(Constants.QUESTIONS_BANK_TABLE, null, contentValues);
             }
         } catch (IOException e) {
@@ -113,6 +114,7 @@ public class SQLiteManager {
                         cursor.getString(cursor.getColumnIndex(Constants.ANSWER_2)),
                         cursor.getString(cursor.getColumnIndex(Constants.ANSWER_3)),
                         cursor.getString(cursor.getColumnIndex(Constants.ANSWER_4)),
+                        cursor.getString(cursor.getColumnIndex(Constants.ANSWER_5)),
                         cursor.getInt(cursor.getColumnIndex(Constants.SA_LEVEL)),
                         cursor.getInt(cursor.getColumnIndex(Constants.QUESTION_ID)),
                         cursor.getInt(cursor.getColumnIndex(Constants.QUESTION_COUNT))));

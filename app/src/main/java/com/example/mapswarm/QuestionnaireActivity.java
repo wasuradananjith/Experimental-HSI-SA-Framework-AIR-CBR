@@ -22,6 +22,7 @@ import java.util.TimerTask;
 public class QuestionnaireActivity extends AppCompatActivity {
 
     private Button nextBtn;
+    private Button clearBtn;
     private ArrayList<Question> questions;
     private int questionCounter = 0;
     private int activityRound = 0;
@@ -93,15 +94,15 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion.setDrawingAnswer(null); // This is from an old implementation (can be removed in future)
 
                 String markedCells = mapMarkingFragment.getMarkedCellNames();
-                if ((markedCells.isEmpty())) {
-                    String specialAnswer = mapMarkingFragment.getSelectedAnswer();
-                    if (specialAnswer == null) {
+                String specialAnswer = mapMarkingFragment.getSelectedAnswer();
+                if (specialAnswer == null) {
+                    if ((markedCells.isEmpty())) {
                         currentQuestion.setMarkedCells("skipped");
                     } else {
-                        currentQuestion.setMarkedCells(specialAnswer);
+                        currentQuestion.setMarkedCells(markedCells);
                     }
                 } else {
-                    currentQuestion.setMarkedCells(markedCells);
+                    currentQuestion.setMarkedCells(specialAnswer);
                 }
 
                 currentQuestion.setNumberOfMarkedCells(mapMarkingFragment.getCurrentMarkingsCount());
@@ -164,6 +165,18 @@ public class QuestionnaireActivity extends AppCompatActivity {
                         timer.getCountDownTimer().cancel();
                     }
                 }, 3000);
+            }
+        });
+
+        clearBtn = findViewById(R.id.clearBtn);
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentQuestion.isDrawing() == 1) {
+                    mapMarkingFragment.clearFields();
+                } else {
+                    nonDrawingFragment.clearFields();
+                }
             }
         });
 
