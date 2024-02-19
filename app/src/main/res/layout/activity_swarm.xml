@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".SwarmActivity">
 
     <com.example.loadinganimation.LoadingAnimation
@@ -38,8 +39,8 @@
 
     <fragment
         android:id="@+id/map"
-        android:layout_width="@dimen/_280sdp"
-        android:layout_height="@dimen/_280sdp"
+        android:layout_width="@dimen/_275sdp"
+        android:layout_height="@dimen/_275sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.132"
@@ -157,10 +158,10 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.27"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toBottomOf="@+id/simControlButton"
-        app:layout_constraintVertical_bias="0.384" />
+        app:layout_constraintVertical_bias="0.273" />
 
     <Button
         android:id="@+id/simControlButton"
@@ -171,10 +172,10 @@
         android:textSize="@dimen/_7sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.854"
+        app:layout_constraintHorizontal_bias="0.847"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.08" />
+        app:layout_constraintVertical_bias="0.096" />
 
 
     <!--    <Button-->

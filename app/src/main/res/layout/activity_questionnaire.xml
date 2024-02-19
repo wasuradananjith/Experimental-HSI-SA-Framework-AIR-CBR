@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".QuestionnaireActivity">
 
     <com.example.loadinganimation.LoadingAnimation
@@ -42,12 +43,12 @@
         android:layout_height="@dimen/_20sdp"
         android:textAlignment="center"
         android:textSize="@dimen/_15sdp"
-        app:layout_constraintBottom_toTopOf="@+id/container"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.061"
+        app:layout_constraintHorizontal_bias="0.135"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.678"
+        app:layout_constraintVertical_bias="0.036"
         tools:text="2:00" />
 
     <FrameLayout
@@ -56,15 +57,15 @@
         android:layout_height="@dimen/_220sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.608" />
+        app:layout_constraintVertical_bias="0.381" />
 
     <Button
         android:id="@+id/clearBtn"
         android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_30sdp"
+        android:layout_height="@dimen/_25sdp"
         android:text="Clear"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -77,15 +78,15 @@
     <Button
         android:id="@+id/nextBtn"
         android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_30sdp"
+        android:layout_height="@dimen/_25sdp"
         android:text="Next"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintHorizontal_bias="0.918"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/container"
-        app:layout_constraintVertical_bias="0.369" />
+        app:layout_constraintVertical_bias="0.355" />
 
     <!--    <Button-->
 <!--        android:id="@+id/backBtn"-->

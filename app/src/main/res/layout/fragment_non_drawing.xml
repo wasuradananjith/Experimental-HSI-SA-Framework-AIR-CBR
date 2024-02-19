@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_220sdp"
+    android:keepScreenOn="true"
     tools:context=".NonMarkingFragment">
 
     <TextView
@@ -16,23 +17,23 @@
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.236"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.145" />
+        app:layout_constraintVertical_bias="0.153" />
 
     <TextView
         android:id="@+id/questionNo"
-        android:layout_width="@dimen/_150sdp"
+        android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_15sdp"
         android:text="Question No"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@+id/questionTxt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.077"
+        app:layout_constraintHorizontal_bias="0.159"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.555" />
+        app:layout_constraintVertical_bias="0.722" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -40,10 +41,10 @@
         android:layout_height="295dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
+        app:layout_constraintHorizontal_bias="0.429"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questionTxt"
-        app:layout_constraintVertical_bias="0.297">
+        app:layout_constraintVertical_bias="0.327">
 
         <RadioButton
             android:id="@+id/answer1"

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_220sdp"
+    android:keepScreenOn="true"
     tools:context=".MapMarkingFragment">
 
     <!--    <ImageView-->
@@ -18,21 +19,11 @@
     <!--        app:layout_constraintTop_toTopOf="parent"-->
     <!--        tools:layout="@layout/activity_swarm" />-->
 
-<!--    <ImageView-->
-<!--        android:id="@+id/drawingView"-->
-<!--        android:layout_width="@dimen/_200sdp"-->
-<!--        android:layout_height="@dimen/_200sdp"-->
-<!--        android:layout_marginStart="@dimen/_180sdp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        android:name="com.google.android.gms.maps.SupportMapFragment" />-->
-<!--    -->
-        <androidx.fragment.app.FragmentContainerView
+            <androidx.fragment.app.FragmentContainerView
             android:id="@+id/drawingMapView"
             android:layout_width="@dimen/_220sdp"
             android:layout_height="@dimen/_220sdp"
-            android:layout_marginStart="@dimen/_180sdp"
+            android:layout_marginStart="608dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -75,6 +66,16 @@
 <!--            app:layout_constraintTop_toBottomOf="@+id/pencil" />-->
 <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
+<!--    <ImageView-->
+<!--        android:id="@+id/drawingView"-->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--        android:layout_width="@dimen/_220sdp"-->
+<!--        android:layout_height="@dimen/_220sdp"-->
+<!--        android:layout_marginStart="608dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
     <TextView
         android:id="@+id/questionTxt"
         android:layout_width="@dimen/_150sdp"
@@ -85,7 +86,7 @@
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.087"
+        app:layout_constraintHorizontal_bias="0.183"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.24" />
@@ -98,7 +99,7 @@
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@+id/questionTxt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintHorizontal_bias="0.159"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.722" />
@@ -106,13 +107,13 @@
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_150sdp"
+        android:layout_height="@dimen/_80sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.087"
+        app:layout_constraintHorizontal_bias="0.183"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questionTxt"
-        app:layout_constraintVertical_bias="0.36">
+        app:layout_constraintVertical_bias="0.965">
 
         <RadioButton
             android:id="@+id/answer5"
@@ -127,7 +128,7 @@
         <RadioButton
             android:id="@+id/specialAnswer"
             android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_40sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_gravity="left"
             android:checked="false"
             android:padding="@dimen/_2sdp"
