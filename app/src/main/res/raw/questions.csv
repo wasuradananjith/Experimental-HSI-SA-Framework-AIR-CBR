@@ -1,28 +1,27 @@
 question_id,question_content,is_drawing,answer_1,answer_2,answer_3,answer_4,answer_5,sa_level,question_round
-1,Mark the cells where the robots are currently located,1,None,None,None,None,I don't know,1,2
-2,Mark the cell where exactly the target reside,1,None,None,None,None,I don't know,2,2
+1,Mark the cell(s) where the robots are currently located,1,None,None,None,None,I don't know,1,2
+2,Mark the cell where exactly the target resides,1,None,None,None,None,I don't know,2,2
 3,How many robots are currently within the green-bordered target area?,0,0,1 to 5,6 to 10,11 or more,I don't know,2,1
 4,How many robots are inside the cell where the target exactly reside?,0,0,1 to 5,6 to 10,11 or more,I don't know,2,2
-5,Mark the cells of the robots after next 10 seconds,1,None,None,None,None,I don't know,3,1
-6,How many robots can reach the green-bordered target area within next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
-7,How many robots can reach the cell where exactly the target reside within next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,2
-8,How many sub-groups/clustered robot groups can be identified currently in the search space?,0,0,1,2,3 or more,I don't know,2,1
-9,Mark the cell containing the closest subgroup of robots in relation to the target position,1,None,None,None,None,I don't know,2,2
-10,How many sub-groups/clustered robot groups can be identified in the search space after next 10 seconds?,0,0,1,2,3 or more,I don't know,3,2
-11,Mark the cell containing the closest subgroup of robots in relation to the target position after next 10 seconds,1,None,None,None,None,I don't know,3,2
+5,Mark the cell(s) of the robots after next 10 seconds,1,None,None,None,None,I don't know,3,1
+6,How many robots not currently inside the green-bordered target area will reach it within the next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
+7,How many robots not currently inside the cell where the target is exactly located will reach it within the next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,2
+8,How many sub-groups/clustered robot groups can you identify currently in the search space?,0,1,2,3,4 or more,I don't know,2,1
+9,Mark the cell that represents the centroid position of the closest subgroup of robots in relation to the target position,1,None,None,None,None,I don't know,2,2
+10,How many sub-groups/clustered robot groups can you identify in the search space after the next 10 seconds?,0,0,1,2,3 or more,I don't know,3,2
+11,Mark the cell that represents the centroid position of the closest subgroup of robots in relation to the target position after the next 10 seconds,1,None,None,None,None,I don't know,3,2
 12,How much time left for you to complete the task (in minutes)?,0,4 to 5,3 to 4,2 to 3,Less than 2,I don't know,1,2
 13,How much time have elapsed since you have started doing the task (in minutes)?,0,4 to 5,3 to 4,2 to 3,Less than 2,I don't know,2,1
 14,How much time will be needed for all the active robots to reach the target region?,0,4 to 5,3 to 4,2 to 3,Less than 2,I don't know,3,2
-15,Mark the cells of the currently active dangerous regions according to the information from the notifications,1,None,None,None,None,I don't know,1,1
+15,Mark the cell(s) of the currently active dangerous region(s) according to the information from the notifications,1,None,None,None,None,I don't know,1,1
 16,How many avoidance regions have you drawn on the map?,0,0,1 to 5,6 to 10,11 or more,I don't know,1,2
-17,Mark the avoidance regions that you have already drawn on the map,1,None,None,None,None,I don't know,1,1
-18,How many dangerous regions will get activated within next 1 minute based on the information received from the notifications?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
-19,"How many drawn avoidance regions can be removed (in other words ""mark as safe"") within next 1 minute?",0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
-20,Mark the cells where the deactivated robots are currently located,1,None,None,None,None,I don't know,1,2
+17,Mark the avoidance region(s) that you have already drawn on the map,1,None,None,None,None,I don't know,1,1
+18,How many dangerous regions do you expect will be activated within the next 1 minute?,0,0,1 to 3,4 to 6,7 or more,I don't know,3,1
+19,How many drawn avoidance regions do you expect will be removed (in other words "mark as safe") within the next 1 minute?,0,0,1 to 3,4 to 6,7 or more,I don't know,3,1
+20,Mark the cell(s) that represent(s) the centroid position(s) of the currently deactivated robot(s),1,None,None,None,None,I don't know,1,2
 21,How many robots are currently deactivated?,0,0,1 to 5,6 to 10,11 or more,I don't know,1,2
-22,Mark the cell where the most number of deactivated robots are resided in,1,None,None,None,None,I don't know,2,1
-23,How many robots will get deactivated within next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
-24,How many robots are stuck between obstacles and unable to move?,0,0,1 to 5,6 to 10,11 or more,I don't know,2,2
-25,Mark the cell where the most number of robots are stuck and unable to move,1,None,None,None,None,I don't know,2,1
-26,How many robots can get stuck between obstacles within next 10 seconds,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
-,,,,,,,,,
+22,Mark the cell where the largest number of deactivated robots are located,1,None,None,None,None,I don't know,2,1
+23,How many robots do you think will get deactivated within the next 10 seconds?,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1
+24,How many robots are trapped between obstacles and therefore unable to move?,0,0,1 to 5,6 to 10,11 or more,I don't know,2,2
+25,Mark the cell where the largest number of robots are trapped and therefore unable to move,1,None,None,None,None,I don't know,2,1
+26,How many robots do you think will get trapped between obstacles within the next 10 seconds,0,0,1 to 5,6 to 10,11 or more,I don't know,3,1

@@ -67,6 +67,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
+    private boolean doubleBackToExitPressedOnce = false;
     private GoogleMap swarmMap;
     private Switch showGridSwitch;
     private Switch mapLockSwitch;
@@ -218,8 +219,19 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         simControlButton.setOnClickListener(view -> {
             if (simControlButton.getText().equals("Start")) {
                 initializeQuestionBankAndStartSimulation();
-            } else {
-                stopSimulation();
+            } else if (simControlButton.getText().equals("Pause")) {
+                simControlButton.setText("Resume");
+                pauseSimulation();
+            } else if (simControlButton.getText().equals("Resume")) {
+                simControlButton.setText("Pause");
+                resumeSimulation();
+            }
+        });
+
+        simControlButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return simControlOnLongPress();
             }
         });
 
@@ -610,7 +622,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public void startSimulation() {
         Integer state = coppeliaSimApi.callAttr("startSim", sim).toInt();
         if (state > 0) {
-            simControlButton.setText("Stop");
+            simControlButton.setText("Pause");
             simControlButton.setBackgroundColor(Color.RED);
             loadingAnimation.setVisibility(View.GONE);
             timer.startStop();
@@ -626,10 +638,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public void resumeSimulation() {
         Integer state = coppeliaSimApi.callAttr("resumeSim", sim).toInt();
         if (state > 0) {
-            simControlButton.setText("Stop");
+            simControlButton.setText("Pause");
             simControlButton.setBackgroundColor(Color.RED);
             loadingAnimation.setVisibility(View.GONE);
             timer.startStop();
+            fromPause = false;
+            Toast.makeText(getApplicationContext(), "Task resumed!",
+                    Toast.LENGTH_SHORT).show();
         } else if (state == -1) {
             warningDialog("Error!", "Error when resuming the simulation. " +
                     "Please contact the administrator...");
@@ -668,7 +683,53 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    public void pauseSimulation() {
+        Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
+        Log.i("Log: pauseState ", state.toString());
+        if (state > 0) {
+            timer.startStop();
+            fromPause = true;
+            Toast.makeText(getApplicationContext(), "Task paused!",
+                    Toast.LENGTH_SHORT).show();
+        } else if (state == -1) {
+            warningDialog("Error!", "Error when pausing the simulation. " +
+                    "Please contact the administrator...");
+        } else if (state == 0) {
+            warningDialog("Error!", "Operation could not be performed when pausing " +
+                    "the simulation. Please contact the administrator...");
+        }
+    }
+    private boolean simControlOnLongPress() {
+        if (simControlButton.getText().equals("Start")) {
+            initializeQuestionBankAndStartSimulation();
+            return true;
+        } else if (simControlButton.getText().equals("Pause")) {
+            simControlButton.setText("Resume");
+            pauseSimulation();
+        }
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Stop")
+                .setMessage("Are you sure you want to stop the task?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        stopSimulation();
+                        finish();
+                        System.exit(0);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //resumeSimulation();
+                        if (simControlButton.getText().equals("Resume")) {
+                            resumeSimulation();
+                        }
+                    }
+                }).show();
+        return true;
+    }
     public void stopSimulation() {
+        Toast.makeText(getApplicationContext(), "Task stopped!",
+                Toast.LENGTH_SHORT).show();
         coppeliaSimApi.callAttr("terminateSim", sim);
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
@@ -799,5 +860,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // after generating our bitmap we are returning our
         // bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //
+    }
+
+    @Override
+    protected void onPause() {
+        pauseSimulation();
+        super.onPause();
     }
 }

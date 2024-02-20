@@ -264,4 +264,9 @@ public class QuestionnaireActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

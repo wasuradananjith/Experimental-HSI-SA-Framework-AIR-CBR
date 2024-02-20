@@ -46,6 +46,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     private TextView questionText;
     private TextView questionNoText;
     private RadioButton specialAnswer;
+    private RadioButton answer5;
     private RadioGroup radioGroup;
     private GoogleMap swarmMap;
     private Grid grid;
@@ -81,14 +82,16 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         questionText = root.findViewById(R.id.questionTxt);
         questionText.setText(question.getQuestionContent());
         radioGroup = root.findViewById(R.id.radioGroup);
+        answer5 = root.findViewById(R.id.answer5);
+        answer5.setText(question.getMcqAnswer5());
 
         specialAnswer = root.findViewById(R.id.specialAnswer);
         if (questionId == 17) {
-            specialAnswer.setText("No avoidance regions drawn yet");
+            specialAnswer.setText("No avoidance regions have been drawn yet");
         } else if (questionId == 20 || questionId == 22) {
-            specialAnswer.setText("No robots are deactivated yet");
+            specialAnswer.setText("No robots have been deactivated yet");
         } else if (questionId == 25) {
-            specialAnswer.setText("No robots are stuck yet");
+            specialAnswer.setText("No robots have been trapped yet");
         } else {
             specialAnswer.setVisibility(View.GONE);
         }

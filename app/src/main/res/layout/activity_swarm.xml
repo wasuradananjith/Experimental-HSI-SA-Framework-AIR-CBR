@@ -139,7 +139,7 @@
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_18sdp"
         android:layout_marginTop="44dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="36dp"
         android:textAlignment="center"
         android:textSize="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -165,17 +165,17 @@
 
     <Button
         android:id="@+id/simControlButton"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_44sdp"
         android:layout_height="wrap_content"
         android:backgroundTint="#009688"
         android:text="Start"
         android:textSize="@dimen/_7sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.847"
+        app:layout_constraintHorizontal_bias="0.886"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.096" />
+        app:layout_constraintVertical_bias="0.093" />
 
 
     <!--    <Button-->
