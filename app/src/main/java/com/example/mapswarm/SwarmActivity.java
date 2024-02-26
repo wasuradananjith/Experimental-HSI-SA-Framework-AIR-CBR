@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Spannable;
 import android.text.style.AbsoluteSizeSpan;
@@ -42,6 +43,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -77,6 +80,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public static PyObject sim = null;
     public static int simOffset = 60;
     public static int simSize = 120;
+    private int swipeRadius = 8;
+    private int swipeForceStrength = 1000;
     private long timeLeftInMilliseconds = 300000;
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
@@ -180,6 +185,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     float[] endPos = screenPointToSimCoordinates(x2, y2);
                     coppeliaSimApi.callAttr("createSwipeForce", sim, startPos[0], startPos[1],
                             endPos[0], endPos[1]);
+                    drawCircle(simCoordinatesToLatLng(startPos));
                 }
             }
         });
@@ -380,8 +386,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         if (questionTimes == null || questionTimes.length == 0) {
-            //questionTimes = getQuestionnaireTimes();
-            questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
+            questionTimes = getQuestionnaireTimes();
+            //questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
         }
 
         for (Marker marker: robotPositions) {
@@ -871,5 +877,38 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     protected void onPause() {
         pauseSimulation();
         super.onPause();
+    }
+
+    private void drawCircle(LatLng point){
+
+        // Instantiating CircleOptions to draw a circle around the marker
+        CircleOptions circleOptions = new CircleOptions();
+
+        // Specifying the center of the circle
+        circleOptions.center(point);
+
+        // Radius of the circle
+        circleOptions.radius(swipeRadius);
+
+        // Border color of the circle
+        circleOptions.strokeColor(Color.YELLOW);
+
+        // Fill color of the circle
+        circleOptions.fillColor(0x40FEFFBA);
+
+        // Border width of the circle
+        circleOptions.strokeWidth(2);
+
+        // Adding the circle to the GoogleMap
+        Circle circle = swarmMap.addCircle(circleOptions);
+        //swipeCircles.add(circle);
+        CountDownTimer swipeCountDownTimer = new CountDownTimer(swipeForceStrength, 1000 /*Tick duration*/) {
+            public void onTick(long millisUntilFinished) {
+            }
+            public void onFinish() {
+                circle.remove();
+            }
+        };
+        swipeCountDownTimer.start();
     }
 }
