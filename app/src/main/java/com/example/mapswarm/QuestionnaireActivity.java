@@ -225,42 +225,42 @@ public class QuestionnaireActivity extends AppCompatActivity {
         if (!isTimeOutQuestionsUpdated) {
             if (timer.getTimeLeftInMilliseconds() <= 10000) {
                 timerTextView.setTextColor(Color.RED);
-                if (timer.getTimeLeftInMilliseconds() <= 1000) {
-                    isTimeOutQuestionsUpdated = true;
-                    Timer timer1 = new Timer();
-                    ranOutTimeAnimation.setVisibility(View.VISIBLE);
-                    for (int i = questionCounter; i < questions.size(); i++) {
-                        currentQuestion = questions.get(i);
-                        currentQuestion.setQuestionRoundTime(questionRoundTime);
-                        if (currentQuestion.isDrawing() == 1) {
-                            currentQuestion.setMcqAnswer("drawing");
-                            currentQuestion.setMarkedCells("timeout");
-                            currentQuestion.setNumberOfMarkedCells(0);
-                        } else {
-                            currentQuestion.setMcqAnswer("timeout");
-                            currentQuestion.setMarkedCells("mcq");
-                            currentQuestion.setNumberOfMarkedCells(0);
-                        }
-                        currentQuestion.setCount(currentQuestion.getCount() + 1);
-
-                        // Update the csv file in the simulation side
-                        SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
-                                questionRound, currentQuestion.getQuestionId(),
-                                currentQuestion.getMcqAnswer(), currentQuestion.getMarkedCells(),
-                                currentQuestion.getNumberOfMarkedCells(),
-                                currentQuestion.getElapsedTime());
-
-                        // update the database
-
-                        updateTheQuestionDataOnNext(currentQuestion);
-                    }
-                    timer1.schedule(new TimerTask() {
-                        public void run() {
-                            finish();
-                            timer.getCountDownTimer().cancel();
-                        }
-                    }, 3000);
-                }
+//                if (timer.getTimeLeftInMilliseconds() <= 1000) {
+//                    isTimeOutQuestionsUpdated = true;
+//                    Timer timer1 = new Timer();
+//                    ranOutTimeAnimation.setVisibility(View.VISIBLE);
+//                    for (int i = questionCounter; i < questions.size(); i++) {
+//                        currentQuestion = questions.get(i);
+//                        currentQuestion.setQuestionRoundTime(questionRoundTime);
+//                        if (currentQuestion.isDrawing() == 1) {
+//                            currentQuestion.setMcqAnswer("drawing");
+//                            currentQuestion.setMarkedCells("timeout");
+//                            currentQuestion.setNumberOfMarkedCells(0);
+//                        } else {
+//                            currentQuestion.setMcqAnswer("timeout");
+//                            currentQuestion.setMarkedCells("mcq");
+//                            currentQuestion.setNumberOfMarkedCells(0);
+//                        }
+//                        currentQuestion.setCount(currentQuestion.getCount() + 1);
+//
+//                        // Update the csv file in the simulation side
+//                        SwarmActivity.coppeliaSimApi.callAttr("recordQuestionAnswer", SwarmActivity.sim,
+//                                questionRound, currentQuestion.getQuestionId(),
+//                                currentQuestion.getMcqAnswer(), currentQuestion.getMarkedCells(),
+//                                currentQuestion.getNumberOfMarkedCells(),
+//                                currentQuestion.getElapsedTime());
+//
+//                        // update the database
+//
+//                        updateTheQuestionDataOnNext(currentQuestion);
+//                    }
+//                    timer1.schedule(new TimerTask() {
+//                        public void run() {
+//                            finish();
+//                            timer.getCountDownTimer().cancel();
+//                        }
+//                    }, 3000);
+//                }
             }
         }
     }

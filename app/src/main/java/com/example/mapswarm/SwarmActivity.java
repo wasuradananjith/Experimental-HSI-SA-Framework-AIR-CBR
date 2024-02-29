@@ -72,7 +72,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private boolean doubleBackToExitPressedOnce = false;
     private GoogleMap swarmMap;
-    private Switch showGridSwitch;
     private Switch mapLockSwitch;
     private Button simControlButton;
     private TextView timerTextView;
@@ -136,6 +135,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     int filterDataCount = 0;    // argument to compare the counts of the already asked
                                 // questions when retrieving from the database
     private boolean fromPause = false;
+    private boolean fromQuestionPause = false;
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation endingAnimation;
     private boolean sameInterval = false;
@@ -150,15 +150,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         messageView = findViewById(R.id.messagesTextView);
         messageListAdapter = new MessageListAdapter(messageList, this);
         messageView.setAdapter(messageListAdapter);
-
-        showGridSwitch = findViewById(R.id.showGridSwitch);
-        showGridSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                grid.drawGrid();
-            } else {
-                grid.clearGrid();
-            }
-        });
 
         mapLockSwitch = findViewById(R.id.mapLockSwitch);
         mapLockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -661,6 +652,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     public void pauseSimulationForQuestions(int filterDataCount, long questionRoundTime) {
+        fromQuestionPause = true;
         Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
         Log.i("Log: pauseState ", state.toString());
         if (state > 0) {
@@ -709,23 +701,23 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         if (simControlButton.getText().equals("Start")) {
             initializeQuestionBankAndStartSimulation();
             return true;
-        } else if (simControlButton.getText().equals("Pause")) {
-            simControlButton.setText("Resume");
-            pauseSimulation();
         }
+
         new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Stop")
                 .setMessage("Are you sure you want to stop the task?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (simControlButton.getText().equals("Resume")) {
+                            resumeSimulation();
+                        }
                         stopSimulation();
-                        finish();
-                        System.exit(0);
+                        //finish();
+                        //System.exit(0);
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //resumeSimulation();
                         if (simControlButton.getText().equals("Resume")) {
                             resumeSimulation();
                         }
@@ -734,6 +726,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         return true;
     }
     public void stopSimulation() {
+        fromQuestionPause = true;
         Toast.makeText(getApplicationContext(), "Task stopped!",
                 Toast.LENGTH_SHORT).show();
         coppeliaSimApi.callAttr("terminateSim", sim);
@@ -875,7 +868,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     @Override
     protected void onPause() {
-        pauseSimulation();
+        if (!fromQuestionPause) {
+            pauseSimulation();
+        } else {
+            fromQuestionPause = false;
+        }
         super.onPause();
     }
 

@@ -86,12 +86,8 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         answer5.setText(question.getMcqAnswer5());
 
         specialAnswer = root.findViewById(R.id.specialAnswer);
-        if (questionId == 17) {
-            specialAnswer.setText("No avoidance regions have been drawn yet");
-        } else if (questionId == 20 || questionId == 22) {
-            specialAnswer.setText("No robots have been deactivated yet");
-        } else if (questionId == 25) {
-            specialAnswer.setText("No robots have been trapped yet");
+        if (questionId == 17 || questionId == 20 || questionId == 22 || questionId == 25) {
+            specialAnswer.setText("Not Applicable");
         } else {
             specialAnswer.setVisibility(View.GONE);
         }

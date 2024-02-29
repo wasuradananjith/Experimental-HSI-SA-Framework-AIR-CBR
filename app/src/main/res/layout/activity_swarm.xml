@@ -66,29 +66,14 @@
 <!--    <ImageView-->
 <!--        android:id="@+id/map"-->
 <!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
-<!--        android:layout_width="@dimen/_270sdp"-->
-<!--        android:layout_height="@dimen/_270sdp"-->
+<!--        android:layout_width="@dimen/_275sdp"-->
+<!--        android:layout_height="@dimen/_275sdp"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintHorizontal_bias="0.132"-->
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        tools:layout="@layout/activity_swarm" />-->
-
-    <Switch
-        android:id="@+id/showGridSwitch"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_25sdp"
-        android:text="Show Grid    "
-        android:textSize="@dimen/_8sdp"
-        android:checked="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/timerText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.083" />
+<!--        app:layout_constraintVertical_bias="0.083" />-->
 
     <!--    <Switch-->
 <!--        android:id="@+id/attractorSwitch"-->
@@ -124,15 +109,15 @@
         android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_25sdp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="72dp"
         android:checked="true"
         android:text="Map Lock"
         android:textSize="@dimen/_8sdp"
         app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
         app:layout_constraintEnd_toStartOf="@+id/timerText"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/showGridSwitch"
-        app:layout_constraintVertical_bias="0.465" />
+        app:layout_constraintStart_toEndOf="@+id/map" />
 
     <TextView
         android:id="@+id/timerText"
