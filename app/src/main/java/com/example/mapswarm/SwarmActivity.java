@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -70,7 +71,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
-    private boolean doubleBackToExitPressedOnce = false;
     private GoogleMap swarmMap;
     private Switch mapLockSwitch;
     private Button simControlButton;
@@ -90,7 +90,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     public static LatLng bottomRightLatLng = new LatLng(-35.287459, 149.173901);
     public static LatLng topLeftLatLng = new LatLng(-35.2863799728, 149.172585);
     public static LatLng topRightLatLng = new LatLng(-35.2863799728, 149.173901);
-    public static LatLng mapCentre = new LatLng(-35.286930, 149.173255);
+    public static LatLng mapCentre = new LatLng(-35.286918, 149.173240);
     private Point leftPointBound = null;
     private Point rightPointBound = null;
     private Point bottomPointBound = null;
@@ -139,6 +139,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation endingAnimation;
     private boolean sameInterval = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -294,6 +295,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         // draw the grid when the map is loaded for the first time
         grid.drawGrid();
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
+
+        // To impose the actual image of the area from Google maps 2023 data
+        GroundOverlayOptions newarkMap = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
+                .position(mapCentre, widthInMeters, widthInMeters);
+        swarmMap.addGroundOverlay(newarkMap);
     }
 
     private void markSquare(LatLng latLng) {
@@ -431,7 +438,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
                                         (double) locations.get(key).get(1)}))
-                                        .anchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 // .icon(BitmapFromVector(getApplicationContext(), R.drawable.blue_marker))
                                 .title("Cuboid" + count));
