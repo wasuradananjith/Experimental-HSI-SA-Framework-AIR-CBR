@@ -22,6 +22,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -159,6 +161,13 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
 //                grid.clearGrid();
 //            }
 //        });
+
+        // To impose the actual image of the area from Google maps 2023 data
+        GroundOverlayOptions newarkMap = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
+                .position(SwarmActivity.mapCentre, SwarmActivity.widthInMeters,
+                        SwarmActivity.widthInMeters);
+        swarmMap.addGroundOverlay(newarkMap);
     }
 
     private void calculateGraphicsDistances() {

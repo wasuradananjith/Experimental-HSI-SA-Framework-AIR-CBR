@@ -99,7 +99,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Integer selectedSquareId = null;
     private int regionsCount = 1;
     private int screenWidth = 0;
-    private float widthInMeters = 0;
+    public static float widthInMeters = 0;
 //    private long[] questionTimes = { timeLeftInMilliseconds - 120000,
 //            timeLeftInMilliseconds - 300000, timeLeftInMilliseconds - 420000,
 //            timeLeftInMilliseconds - 540000 }; // 8min, 5min, 3min, 0min
@@ -904,6 +904,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // Adding the circle to the GoogleMap
         Circle circle = swarmMap.addCircle(circleOptions);
+        circle.setZIndex(11);
         //swipeCircles.add(circle);
         CountDownTimer swipeCountDownTimer = new CountDownTimer(swipeForceStrength, 1000 /*Tick duration*/) {
             public void onTick(long millisUntilFinished) {

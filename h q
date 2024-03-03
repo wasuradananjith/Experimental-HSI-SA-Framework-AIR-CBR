@@ -1,0 +1,451 @@
+[33mcommit 21a2d62cbcc8be53d83fb9eb3a592a754934ed06[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Mar 3 14:23:56 2024 +1100
+
+    Add a ground overlay and fix marker offset issues
+    
+    Since the simulation uses an image of the area in google map data 2023, when the realtime image is used, the obstacles are different. Hence, enforce the old image on top of the google map
+
+[33mcommit ac00ce6b0e213efb9d28489996e929d2c09dd4af[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Mar 3 14:22:00 2024 +1100
+
+    Fix the individual message area width
+
+[33mcommit 0a640cbfc50a16268ed38d8ce1a6ec483650487f[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Feb 29 12:50:54 2024 +1100
+
+    Improve interface controls and time management
+    
+    Remove show grid button, remove the time restriction for question rounds and fix the issue in long press stop simulation
+
+[33mcommit ea7da20e8cf77cd145c5f9b38a541ab78ff988f7[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Feb 26 13:07:05 2024 +1100
+
+    Add feedback for swipe interaction
+
+[33mcommit f5030f1e829d8b6cf38429a2453dd0a60d51bc0b[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Tue Feb 20 23:53:53 2024 +1100
+
+    Minor UI improvements
+
+[33mcommit 44c65b8a0481b30a30ee6b4a09aedd813199adde[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Feb 19 14:28:56 2024 +1100
+
+    Fix minor UI issues
+
+[33mcommit a95f34082bd995849555a247f5a3ad36173dde52[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Feb 18 15:50:31 2024 +1100
+
+    Add 5th MCQ answer and clearing button
+
+[33mcommit 638b479591a7ed3e4c2596ffea33131488d20df7[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Tue Feb 13 10:22:11 2024 +1100
+
+    Add question rounds based filtering
+
+[33mcommit b84370187cf1a70c7b1c80b073b25c2ae629d2a4[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Feb 12 17:36:58 2024 +1100
+
+    Make the physical tab experience more neat
+
+[33mcommit 1dcb198bcda45ba1332f6ab88c604c2026f06813[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Feb 12 00:52:28 2024 +1100
+
+    Update the questions and interface fit into physical device (partially)
+
+[33mcommit 6f306348ea2e90bcac074cae8129991e0929105e[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jan 22 13:00:57 2024 +0530
+
+    Update the questions
+
+[33mcommit 3d1fa90791140429fe9f24f5739e130f02d97de0[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jan 21 18:04:37 2024 +0530
+
+    Fix the issue in differentiating touch and fling
+
+[33mcommit 289f5fd524947b8de15cac27cdd000bc36af4190[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jan 21 12:03:32 2024 +0530
+
+    Make the cell marking more accurate
+
+[33mcommit b95d8929b1908f84b95d193c3d6635155ed262cf[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sat Jan 20 12:21:27 2024 +0530
+
+    Add on marker click and mark cells
+
+[33mcommit 38cd7aae36cc7dbcfe53d9f76a0e2bb259e20fe0[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Jan 17 17:42:08 2024 +0530
+
+    Clean the code
+
+[33mcommit 7d8e4296197890f1d95f8a773c9b35ea4d109925[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Jan 17 17:35:43 2024 +0530
+
+    Update questionnaire times and questions
+
+[33mcommit 6af1d54d49f9db45a29501552938f66fd8a0de44[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sat Jan 6 11:11:31 2024 +0530
+
+    Fix resume sim logic and remove storing question content from sim
+
+[33mcommit 964bb05521346268f75abb474d7e5c5c479f290b[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Tue Jan 2 10:00:26 2024 +0530
+
+    Add question round time to the data stream
+
+[33mcommit f9d1d161d947cf202854e5c78581ffccbe72e52a[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Dec 10 13:03:55 2023 +1100
+
+    Increase the map size of questions
+
+[33mcommit 029407c84dcfbeed15a6e95eff41c03c789d9a35[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Dec 10 12:59:22 2023 +1100
+
+    Fix the issue of screen cordinates update
+
+[33mcommit 6150b8c13db22cf35e1c05c20fbfd297decf37be[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Dec 10 12:49:18 2023 +1100
+
+    Add grid marking functionality for question answers
+
+[33mcommit 48ed8d9291b3164908d9f0e0d919a10c6be8a069[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Dec 6 22:05:24 2023 +1100
+
+    Add roughly marking target area
+
+[33mcommit 436d752b4599f18176f937bc3579e0f1d65ecda1[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Dec 6 09:45:37 2023 +1100
+
+    Update simulation
+
+[33mcommit 1b26f44379fbc264c93535ca13e877bb40bcf0eb[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Dec 1 08:28:09 2023 +1100
+
+    Improve messaging functionality
+
+[33mcommit 6b7bd461f3a738dfcf72e614c52bb1a555801e4f[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Nov 29 20:20:05 2023 +1100
+
+    Add grid cells marking as avoidance regions
+
+[33mcommit 5b382dc1d11eda4aa56b1000a4a9556f53e7de34[m[33m ([m[1;31morigin/revision6-circles-and-swipe-forces[m[33m, [m[1;32mrevision6-circles-and-swipe-forces[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Nov 29 09:28:37 2023 +1100
+
+    Update simulation file
+
+[33mcommit 960e1783b48745b4a27af8579cc9970ffd48ba05[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Nov 26 11:03:57 2023 +1100
+
+    Add swipe force functionality and improve messages
+
+[33mcommit 7c2e51aac7a24ca698a12ef4e911c65e4950e81a[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Nov 16 20:05:46 2023 +1100
+
+    Adjust avoidance region numbering
+
+[33mcommit bb7e84183adacb19600390d49f01878ac1d6dab2[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Nov 16 20:01:34 2023 +1100
+
+    Improve the notifications functionality
+
+[33mcommit 6b92a675b7f701120f4df8709fd6296e49c09c11[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Nov 16 09:57:58 2023 +1100
+
+    Increase the grid size
+
+[33mcommit 2b1a7933f0f8fd734816f2d9909fe1c17306895d[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Nov 13 08:22:34 2023 +1100
+
+    Add elapsed time and record correct MCQ answer
+
+[33mcommit 058157a550b46459f6d5406cb50e42c1dcb0dc9d[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Nov 13 08:19:41 2023 +1100
+
+    Modify grid size
+
+[33mcommit 53889ae28e212abd36d17b74a53a41fc46efe71a[m[33m ([m[1;31morigin/confirmation-review-demo[m[33m, [m[1;32mconfirmation-review-demo[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Nov 8 16:54:59 2023 +1100
+
+    Modify questionnaire
+
+[33mcommit 0dc8e7a6109743b224a76a136f695c0f035b9a33[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sat Nov 4 23:31:54 2023 +1100
+
+    Remove unwanted buttons
+    
+    Add timeout animations and question timeouts
+
+[33mcommit c594d12e50e29c2e381ce399c80e756a33404e32[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sat Nov 4 19:46:37 2023 +1100
+
+    Fix problems of question filtering and added a timer for questionnaire
+
+[33mcommit 864173b78409a5938c807a8effd19fd4f53ba207[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Nov 3 22:46:45 2023 +1100
+
+    Improve the questionnaire functionality
+    
+    To retrieve the questions and store answers in MySQLite database
+
+[33mcommit 6a373fdd23d59ed13fa38dc84ab2445f9af929aa[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Nov 1 23:42:07 2023 +1100
+
+    Improve the questionnaire functionality to retrieve the questions
+
+[33mcommit 9e2f99e6a6f57f2789604d52f118f7a7a20108fc[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Oct 22 15:25:28 2023 +1100
+
+    Update the simulation file
+
+[33mcommit 847a70ae0dac152af2591c5f8efc272005d9bdcd[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Oct 22 15:24:45 2023 +1100
+
+    Comment attractive regions functionality
+
+[33mcommit 8c4f9cbe7428df217716113710ea5ac35af0e049[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Oct 13 18:09:48 2023 +1100
+
+    Add google-services.json and questions.csv changes
+
+[33mcommit 13aec3ad96ef6d4e5134942a836c98c4aea0a4ed[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Oct 13 18:09:17 2023 +1100
+
+    Update scaling
+
+[33mcommit 0ae29b49796fb85f8b28c4600dce6f8aa9561cc7[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Sep 4 21:14:49 2023 +1000
+
+    Add SQLite database to store the question bank locally
+
+[33mcommit 52f39b6804e67584cd85b8cc9bad72a919dc2269[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Sep 4 16:34:13 2023 +1000
+
+    Add question bank initialization during registration
+
+[33mcommit aaaad4944ebd063e60c04aa8b28c46f2070f0f53[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Sep 4 16:22:59 2023 +1000
+
+    Add SAGAT question bank during log in
+
+[33mcommit a31687b4567a0fba7411867cfc0a31499cc01441[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Sep 3 15:05:54 2023 +1000
+
+    Update the simulation file
+
+[33mcommit fd57a6c31bffe37d2bc25b15f95e97eb824a237f[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Sep 3 15:04:18 2023 +1000
+
+    Add firebase login and register functionality
+
+[33mcommit 78d410638db1d01b423dca30d3fd2ff41acb3e03[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 21:39:58 2023 +1000
+
+    Add pausing after 30 seconds to test
+
+[33mcommit e22ed0c503f38a39a2216cca65ea1c23b5ec81de[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 17:43:38 2023 +1000
+
+    Improve start, pause and stop simulation logic
+
+[33mcommit 279992eba40408a3818cfe5624324a0e099b73eb[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 17:19:21 2023 +1000
+
+    Fix question transitions
+
+[33mcommit 5fd44d90d7aa2a70f967723ede5ba3eb612d2ca5[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 17:11:01 2023 +1000
+
+    Add fragments for drawing and non-drawing questions
+
+[33mcommit f2b8cd42aaf19b7f9cbf24907d5dff29c50bfeb7[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 15:22:48 2023 +1000
+
+    Add basic loading of questionnaire
+
+[33mcommit 3211de965d80775e8deb5fb88fe7e99bfa899e01[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 31 10:41:20 2023 +1000
+
+    Add drawing saving to device for testing
+
+[33mcommit 885812ffa46cffdecb7e9c97b4401f0c7def5be5[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Aug 30 19:26:05 2023 +1000
+
+    Add initial drawing functionality for SAGAT
+
+[33mcommit e05eb927a38aa4fa69e095ebdee92d651293c38d[m[33m ([m[1;31morigin/revision4-new-search-area-and-timer[m[33m, [m[1;32mrevision4-new-search-area-and-timer[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Thu Aug 24 14:53:43 2023 +1000
+
+    Clean the code
+
+[33mcommit 243577be64054d473859beb80055156b9f141490[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Aug 23 22:37:58 2023 +1000
+
+    Add the timer and start/stop button
+
+[33mcommit a61de3dbb23e30772d83e06bbf434ebaf794aa28[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Aug 23 13:25:15 2023 +1000
+
+    Change the search space
+
+[33mcommit 69cfe8a707787e881de20ffb99ce82b0a3adc679[m[33m ([m[1;31morigin/revision3-before-changing-parade-ground[m[33m, [m[1;32mrevision3-before-changing-parade-ground[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Aug 18 22:23:10 2023 +1000
+
+    Update the simulation
+
+[33mcommit eaf9c4c1b91c9f6b835eb0a576dfdb4cf224bc2d[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Fri Aug 18 22:21:17 2023 +1000
+
+    Improve error handling and mark target region
+
+[33mcommit 389b0d5843e31388dd9fedac3d75bbe1ec0e44b0[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Aug 7 15:37:30 2023 +1000
+
+    Add attractor regions functionality
+
+[33mcommit 08693ccb8ffa228691f5a51c55e43f7eca27729e[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Aug 6 15:37:59 2023 +1000
+
+    Add the current simulation file
+
+[33mcommit e93c5c7d72efb17cda3378435ea94eeb59a47f3e[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jul 24 10:17:24 2023 +1000
+
+    Add breadcrumbs (attractor) functionality
+
+[33mcommit dac112c427986e629604bdc43c7b47ce842aa416[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Wed Jul 19 17:10:22 2023 +1000
+
+    Add messages about safe regions and change colour of deactivated cuboids
+
+[33mcommit b336f5ad80d7853a228e399561d9bf7420f84973[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Tue Jul 18 07:44:51 2023 +1000
+
+    Add dynamic obstacles notification retrieval
+
+[33mcommit 1a2e6eb389c5f93fe2efd28ad4cf1db511389d41[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jul 17 13:08:27 2023 +1000
+
+    Add grid markers
+
+[33mcommit bbded8a2889fda1b9c57fe6e203a569d010bc315[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jul 16 17:01:56 2023 +1000
+
+    Add static obstacles retrieval and improve rendering
+
+[33mcommit 039eeace0423f44413479ed5d4aa5087e945d90b[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jul 3 22:38:13 2023 +1000
+
+    Add basic grid display
+
+[33mcommit 2c8c7065c6ea87c6603e88183a30b128aa9654bb[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jul 2 11:37:26 2023 +1000
+
+    Reduce the overhead of periodic task to make the display functionality smoother
+
+[33mcommit c9f6554769dd2e3313de11c37eaf42a58e592c8c[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jul 2 11:05:24 2023 +1000
+
+    Add functionality to sync regions from UI to simulation
+
+[33mcommit 2a5c1c5ba8cb08af6eaab6ef4ded1592db10e5f7[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sat Jul 1 16:16:11 2023 +1000
+
+    Change the search arena to UNSW Parade Ground
+
+[33mcommit c3a18c6519a962785e6cbae6555c3aa7e6539613[m[33m ([m[1;31morigin/revision1-basketball-court-map[m[33m, [m[1;32mrevision1-basketball-court-map[m[33m)[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jun 26 10:57:04 2023 +1000
+
+    Improve circle regions functionality and add seek bar
+
+[33mcommit 65741212895712e2bb419f685228636c31c6131d[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jun 26 10:56:14 2023 +1000
+
+    Remove App bar from UI
+
+[33mcommit a73a1b1f4db1c96c55822af5c19649377987eb56[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Mon Jun 26 10:55:15 2023 +1000
+
+    Add sdp to make the UI responsive
+
+[33mcommit bc0c0bd89ea4f44d72dae73f1b3aebcc5dfee46c[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jun 25 20:53:38 2023 +1000
+
+    Add the region marking using circles
+
+[33mcommit dddee0994853c32bbee2bb2a40242c25db830c13[m
+Author: Wasura Wattearachchi <z5415828@ad.unsw.edu.au>
+Date:   Sun Jun 25 12:36:29 2023 +1000
+
+    Add initial code
