@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -71,6 +72,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String NOTIFICATION_MESSAGES = "messages";
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
+    private static final String TARGET_CELL_REACHED = "targetCellReached";
+    private boolean targetCellReached = false;
+    private float[] targetRegion;
     private GoogleMap swarmMap;
     private Switch mapLockSwitch;
     private Button simControlButton;
@@ -419,14 +423,38 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         if (!isSimStopped) {
             locations = readLocationsFromJson(pyObject.toString());
 
-            // Drawing the cuboids
             if (locations.size() != 0) {
+                // Mark the target cell if the target cell is reached by at least one robot
+                if (locations.containsKey(TARGET_CELL_REACHED)) {
+                    if (!targetCellReached && (Boolean) locations.get(TARGET_CELL_REACHED).get(0)) {
+                        targetCellReached = true;
+                        if (targetRegion != null) {
+                            float[][] cellBoundary = grid.getCellBoundary(targetRegion);
+                            PolygonOptions squareOptions = new PolygonOptions()
+                                    .add(simCoordinatesToLatLng(cellBoundary[0]),
+                                            simCoordinatesToLatLng(cellBoundary[1]),
+                                            simCoordinatesToLatLng(cellBoundary[3]),
+                                            simCoordinatesToLatLng(cellBoundary[2]),
+                                            simCoordinatesToLatLng(cellBoundary[0]))
+                                    .clickable(false)
+                                    .strokeWidth(1)
+                                    .strokeColor(Color.argb( 128, 0, 167, 0))
+                                    .fillColor(Color.argb( 128, 0, 167, 0));
+                            Polygon newSquare = swarmMap.addPolygon(squareOptions);
+                            newSquare.setZIndex(9);
+                        }
+                    }
+                    locations.remove(TARGET_CELL_REACHED);
+                }
+
+                // Retrieve the deactivated robots related information
                 ArrayList<Object> deactivatedCuboids = new ArrayList<>();
                 if (locations.containsKey(DEACTIVATED_CUBOIDS_INFO)) {
                     deactivatedCuboids = locations.get(DEACTIVATED_CUBOIDS_INFO);
                     locations.remove(DEACTIVATED_CUBOIDS_INFO);
                 }
 
+                // Mark the robots positions
                 int count = 0;
                 for (String key : locations.keySet()) {
                     if (key.equals(NOTIFICATION_MESSAGES) ||
@@ -499,7 +527,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             Log.i("Sim targetRegionData", String.valueOf(targetRegionData));
             isSimStopped = false;
             isTargetRegionRetrieved = true;
-            float[] targetRegion = targetRegionData.toJava(float[].class);
+            targetRegion = targetRegionData.toJava(float[].class);
             float[][] cellBoundary = grid.getNearestRandomCellBoundary(targetRegion);
             swarmMap.addPolygon(new PolygonOptions()
                     .add(simCoordinatesToLatLng(cellBoundary[0]),
