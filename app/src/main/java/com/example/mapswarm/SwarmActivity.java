@@ -360,7 +360,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if (!isSimStopped && timer.getTimeLeftInMilliseconds() <= 10000) {
             timerTextView.setTextColor(Color.RED);
-            if (timer.getTimeLeftInMilliseconds() <= 1000) {
+            if (timerTextView.getText().equals("0:00")) {
                 isSimStopped = true;
                 isSimStoppedByTimeout = true;
                 Timer timer = new Timer();
@@ -761,8 +761,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     public void stopSimulation() {
         fromQuestionPause = true;
-        Toast.makeText(getApplicationContext(), "Task stopped!",
-                Toast.LENGTH_SHORT).show();
         coppeliaSimApi.callAttr("terminateSim", sim);
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
