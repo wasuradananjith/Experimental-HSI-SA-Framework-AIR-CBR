@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,6 +38,7 @@ import com.example.loadinganimation.LoadingAnimation;
 import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.util.Grid;
 import com.example.mapswarm.util.MyTimer;
+import com.example.mapswarm.util.RobotTrappedInf;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -86,6 +86,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int swipeRadius = 8;
     private int swipeForceStrength = 1000;
     private long timeLeftInMilliseconds = 300000;
+    private int trappedDuration = 10000;
+    private double trappedRange = 1;
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
     private boolean isTargetRegionRetrieved = false;
@@ -126,7 +128,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     };
     private Grid grid;
     private ArrayList<Marker> robotPositions = new ArrayList<>();
-    private HashMap<Integer, Marker> breadcrumbsList = new HashMap<>();
+    HashMap<String, RobotTrappedInf> robotTrappedInfs = new HashMap<>();
     private HashMap<Integer, Polygon> squaresList = new HashMap<>();
     private HashMap<String, String> messages = new HashMap<>();
     private ArrayList<String> messageList = new ArrayList<>();
@@ -463,9 +465,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                     } else {
                         Float iconColour = isDeactivated(deactivatedCuboids, key) ?
                                 BitmapDescriptorFactory.HUE_CYAN : BitmapDescriptorFactory.HUE_BLUE;
+                        double[] robotPosition = new double[]{(double) locations.get(key).get(0),
+                                (double) locations.get(key).get(1)};
+                        if (iconColour.equals(BitmapDescriptorFactory.HUE_BLUE) && isRobotTrapped(key, robotPosition)) {
+                            iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                        }
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
-                                .position(simCoordinatesToLatLng(new double[]{(double) locations.get(key).get(0),
-                                        (double) locations.get(key).get(1)}))
+                                .position(simCoordinatesToLatLng(robotPosition))
                                 .icon(BitmapDescriptorFactory.defaultMarker(iconColour))
                                 // .icon(BitmapFromVector(getApplicationContext(), R.drawable.blue_marker))
                                 .title("Cuboid" + count));
@@ -476,6 +482,36 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         }
+    }
+    private boolean isRobotTrapped(String key, double[] robotPosition) {
+        RobotTrappedInf robotTrappedInf;
+        boolean trapped = false;
+        if (!robotTrappedInfs.containsKey(key)) {
+            robotTrappedInf = new RobotTrappedInf(robotPosition, timer.getTimeLeftInMilliseconds());
+            robotTrappedInfs.put(key, robotTrappedInf);
+        } else {
+            robotTrappedInf = robotTrappedInfs.get(key);
+            long currentTime = timer.getTimeLeftInMilliseconds();
+            if (robotTrappedInf.getLastRecordedTime() - currentTime >= trappedDuration || robotTrappedInf.isTrapped()) {
+                double dist = euclideanDistance(robotPosition, robotTrappedInf.getPreviousPosition());
+                if (robotTrappedInf.isTrapped() && dist <= trappedRange) {
+                    trapped = true;
+                } else if (!robotTrappedInf.isTrapped() && dist <= trappedRange) {
+                    trapped = true;
+                } else {
+                    trapped = false;
+                }
+                if (!robotTrappedInf.isTrapped()) {
+                    robotTrappedInf.setLastRecordedTime(currentTime);
+                    robotTrappedInf.setPreviousPosition(robotPosition);
+                    robotTrappedInf.setTrapped(trapped);
+                    robotTrappedInfs.put(key, robotTrappedInf);
+                }
+            }
+            return trapped;
+        }
+        robotTrappedInf.setTrapped(false);
+        return false;
     }
 
     private void deletePopup(int id, String cellName) {
@@ -940,5 +976,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         };
         swipeCountDownTimer.start();
+    }
+
+    private double euclideanDistance(double[] pos1, double[] pos2) {
+        return Math.sqrt(Math.pow((pos1[0] - pos2[0]), 2) + Math.pow((pos1[1] - pos2[1]), 2));
     }
 }
