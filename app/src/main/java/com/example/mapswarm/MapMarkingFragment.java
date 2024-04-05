@@ -88,7 +88,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         answer5.setText(question.getMcqAnswer5());
 
         specialAnswer = root.findViewById(R.id.specialAnswer);
-        if (questionId == 17 || questionId == 20 || questionId == 22 || questionId == 25) {
+        if (questionId == 18 || questionId == 21 || questionId == 23 || questionId == 25 || questionId == 27) {
             specialAnswer.setText("Not Applicable");
         } else {
             specialAnswer.setVisibility(View.GONE);
