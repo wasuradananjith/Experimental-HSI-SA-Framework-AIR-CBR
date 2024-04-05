@@ -126,6 +126,14 @@ public class Grid {
         return letterX+y;
     }
 
+    public String getCellName(double[] simCoordinate) {
+        int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
+        int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String letterX = alphabet.substring(x-1, x);
+        return letterX+y;
+    }
+
     public float[][] getCellBoundary(float[] simCoordinate) {
         int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
         int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));

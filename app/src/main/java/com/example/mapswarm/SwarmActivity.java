@@ -74,7 +74,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String TARGET_CELL_REACHED = "targetCellReached";
     private boolean targetCellReached = false;
-    private float[] targetRegion;
+    private float[] targetPosition;
+    private String targetCell;
     private GoogleMap swarmMap;
     private Switch mapLockSwitch;
     private Button simControlButton;
@@ -430,8 +431,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 if (locations.containsKey(TARGET_CELL_REACHED)) {
                     if (!targetCellReached && (Boolean) locations.get(TARGET_CELL_REACHED).get(0)) {
                         targetCellReached = true;
-                        if (targetRegion != null) {
-                            float[][] cellBoundary = grid.getCellBoundary(targetRegion);
+                        if (targetPosition != null) {
+                            float[][] cellBoundary = grid.getCellBoundary(targetPosition);
                             PolygonOptions squareOptions = new PolygonOptions()
                                     .add(simCoordinatesToLatLng(cellBoundary[0]),
                                             simCoordinatesToLatLng(cellBoundary[1]),
@@ -501,6 +502,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 } else {
                     trapped = false;
                 }
+
+                if (trapped && targetCell.equals(grid.getCellName(robotPosition))) {
+                    trapped = false;
+                }
+
                 if (!robotTrappedInf.isTrapped()) {
                     robotTrappedInf.setLastRecordedTime(currentTime);
                     robotTrappedInf.setPreviousPosition(robotPosition);
@@ -563,8 +569,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             Log.i("Sim targetRegionData", String.valueOf(targetRegionData));
             isSimStopped = false;
             isTargetRegionRetrieved = true;
-            targetRegion = targetRegionData.toJava(float[].class);
-            float[][] cellBoundary = grid.getNearestRandomCellBoundary(targetRegion);
+            targetPosition = targetRegionData.toJava(float[].class);
+            targetCell = grid.getCellName(targetPosition);
+            float[][] cellBoundary = grid.getNearestRandomCellBoundary(targetPosition);
             swarmMap.addPolygon(new PolygonOptions()
                     .add(simCoordinatesToLatLng(cellBoundary[0]),
                             simCoordinatesToLatLng(cellBoundary[1]),
