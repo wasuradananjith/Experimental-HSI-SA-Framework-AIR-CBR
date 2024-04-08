@@ -9,12 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mapswarm.model.Question;
 import com.example.mapswarm.util.Grid;
@@ -62,6 +65,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     private Integer selectedSquareId = null;
     private String selectedSquareName = null;
     private View root;
+    private static String ONE_CELL_ONLY = "You cannot mark more than one cells for this question!";
 
     public MapMarkingFragment(Question question, int questionNo, int totalQuestions, int questionId) {
         this.question = question;
@@ -179,6 +183,15 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     private void markSquare(LatLng latLng) {
         float simCoordinates[] = latLngToSimCoordinates(latLng);
         float[][] cellBoundary = grid.getCellBoundary(simCoordinates);
+        if (question.getQuestionContent().contains("exactly") || question.getQuestionContent().contains("largest") || question.getQuestionContent().contains("closest")) {
+            if (squaresList.size() >= 1) {
+                SpannableStringBuilder biggerText = new SpannableStringBuilder(ONE_CELL_ONLY);
+                biggerText.setSpan(new RelativeSizeSpan(1.5f), 0, ONE_CELL_ONLY.length(), 0);
+                Toast.makeText(getActivity(), biggerText, Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
         String cellName = grid.getCellName(simCoordinates);
         PolygonOptions squareOptions = new PolygonOptions()
                 .add(simCoordinatesToLatLng(cellBoundary[0]),
