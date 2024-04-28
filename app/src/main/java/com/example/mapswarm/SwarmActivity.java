@@ -159,14 +159,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         messageListAdapter = new MessageListAdapter(messageList, this);
         messageView.setAdapter(messageListAdapter);
 
-        mapLockSwitch = findViewById(R.id.mapLockSwitch);
-        mapLockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                swarmMap.getUiSettings().setScrollGesturesEnabled(false);
-            } else {
-                swarmMap.getUiSettings().setScrollGesturesEnabled(true);
-            }
-        });
+//        mapLockSwitch = findViewById(R.id.mapLockSwitch);
+//        mapLockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (isChecked) {
+//                swarmMap.getUiSettings().setScrollGesturesEnabled(false);
+//            } else {
+//                swarmMap.getUiSettings().setScrollGesturesEnabled(true);
+//            }
+//        });
 
         timerTextView = findViewById(R.id.timerText);
         timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
@@ -215,6 +215,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
         swarmMap.getUiSettings().setRotateGesturesEnabled(false);
+        swarmMap.getUiSettings().setScrollGesturesEnabled(false);
 
         Python py = Python.getInstance();
         coppeliaSimApi = py.getModule("coppeliaSimApi");

@@ -104,30 +104,32 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/simControlButton"-->
 <!--        app:layout_constraintVertical_bias="0.184" />-->
 
-    <Switch
-        android:id="@+id/mapLockSwitch"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_25sdp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="72dp"
-        android:checked="true"
-        android:text="Map Lock"
-        android:textSize="@dimen/_8sdp"
-        app:layout_constraintBottom_toTopOf="@+id/messagesTextView"
-        app:layout_constraintEnd_toStartOf="@+id/timerText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/map" />
+<!--    <Switch-->
+<!--        android:id="@+id/mapLockSwitch"-->
+<!--        android:layout_width="@dimen/_80sdp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="@dimen/_25sdp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginBottom="72dp"-->
+<!--        android:checked="true"-->
+<!--        android:text="Map Lock"-->
+<!--        android:textSize="@dimen/_8sdp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/messagesTextView"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/timerText"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/map" />-->
 
     <TextView
         android:id="@+id/timerText"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_18sdp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="36dp"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="28dp"
         android:textAlignment="center"
-        android:textSize="@dimen/_15sdp"
+        android:textSize="@dimen/_20sdp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.018"
+        app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="5:00" />
 
@@ -136,17 +138,14 @@
         android:layout_width="@dimen/_150sdp"
         android:layout_height="@dimen/_215sdp"
         android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_marginBottom="124dp"
         android:background="@drawable/message_area"
         android:gravity="bottom"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.27"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toEndOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/simControlButton"
-        app:layout_constraintVertical_bias="0.273" />
+        app:layout_constraintTop_toBottomOf="@+id/simControlButton" />
 
     <Button
         android:id="@+id/simControlButton"
@@ -157,10 +156,10 @@
         android:textSize="@dimen/_7sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.886"
+        app:layout_constraintHorizontal_bias="0.546"
         app:layout_constraintStart_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/timerText"
-        app:layout_constraintVertical_bias="0.093" />
+        app:layout_constraintVertical_bias="0.104" />
 
 
     <!--    <Button-->
