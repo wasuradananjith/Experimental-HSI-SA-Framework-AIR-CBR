@@ -364,7 +364,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if (!isSimStopped && timer.getTimeLeftInMilliseconds() <= 10000) {
             timerTextView.setTextColor(Color.RED);
-            if (timerTextView.getText().equals("0:00")) {
+            if (timerTextView.getText().equals("0:00") || timer.getTimeLeftInMilliseconds() <= 1000) {
                 isSimStopped = true;
                 isSimStoppedByTimeout = true;
                 Timer timer = new Timer();
@@ -392,7 +392,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         if (questionTimes == null || questionTimes.length == 0) {
-            questionTimes = getQuestionnaireTimes();
+            //questionTimes = getQuestionnaireTimes();
             //questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
         }
 
