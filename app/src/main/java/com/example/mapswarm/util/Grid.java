@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -122,8 +123,23 @@ public class Grid {
         int x = (int) Math.ceil((simCoordinate[0] + this.offset)/(this.simSize/this.numberOfCells));
         int y = (int) Math.ceil((simCoordinate[1] + this.offset)/(this.simSize/this.numberOfCells));
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Log.i("Test x ", Integer.toString(x));
+        Log.i("Test y ", Integer.toString(y));
+        if (x <= 0 || x >= 12) {
+            return "None";
+        }
+        if (y <= 0 || y >= 12) {
+            return "None";
+        }
         String letterX = alphabet.substring(x-1, x);
         return letterX+y;
+//        try {
+//            String letterX = alphabet.substring(x - 1, x);
+//            return letterX+y;
+//        } catch (StringIndexOutOfBoundsException e) {
+//            Log.e("Swarm Activity ", e.toString());
+//            return "";
+//        }
     }
 
     public String getCellName(double[] simCoordinate) {

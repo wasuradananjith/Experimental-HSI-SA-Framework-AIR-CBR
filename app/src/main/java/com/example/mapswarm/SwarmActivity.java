@@ -44,6 +44,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
@@ -216,6 +217,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
         swarmMap.getUiSettings().setRotateGesturesEnabled(false);
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
+        swarmMap.getUiSettings().setTiltGesturesEnabled(false);
 
         Python py = Python.getInstance();
         coppeliaSimApi = py.getModule("coppeliaSimApi");
@@ -260,14 +262,16 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.setOnMapLongClickListener(latLng -> {
             float[] simCoordinates = latLngToSimCoordinates(latLng);
             String cellName = grid.getCellName(simCoordinates);
-            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-                if (!cellName.equals(entry.getValue().getTag())) {
-                    entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
-                } else {
-                    selectedSquareId = entry.getKey();
-                    selectedSquareName = (String) entry.getValue().getTag();
-                    entry.getValue().setStrokeColor(SQUARE_COLOUR_SELECTED);
-                    deletePopup(selectedSquareId, selectedSquareName);
+            if (!cellName.equals("None")) {
+                for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                    if (!cellName.equals(entry.getValue().getTag())) {
+                        entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+                    } else {
+                        selectedSquareId = entry.getKey();
+                        selectedSquareName = (String) entry.getValue().getTag();
+                        entry.getValue().setStrokeColor(SQUARE_COLOUR_SELECTED);
+                        deletePopup(selectedSquareId, selectedSquareName);
+                    }
                 }
             }
         });
@@ -315,38 +319,40 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         float simCoordinates[] = latLngToSimCoordinates(latLng);
         float[][] cellBoundary = grid.getCellBoundary(simCoordinates);
         String cellName = grid.getCellName(simCoordinates);
-        boolean alreadyMarked = false;
-        for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-            if (entry.getValue().getTag().equals(cellName)) {
-                alreadyMarked = true;
-                break;
-            }
-        }
-        if (!alreadyMarked) {
-            boolean isCreated;
-            isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
-                    regionsCount, cellBoundary[4][0], cellBoundary[4][1]).toBoolean();
-            if (isCreated) {
-                PolygonOptions squareOptions = new PolygonOptions()
-                        .add(simCoordinatesToLatLng(cellBoundary[0]),
-                                simCoordinatesToLatLng(cellBoundary[1]),
-                                simCoordinatesToLatLng(cellBoundary[3]),
-                                simCoordinatesToLatLng(cellBoundary[2]),
-                                simCoordinatesToLatLng(cellBoundary[0]))
-                        .strokeWidth(10)
-                        .clickable(true)
-                        .fillColor(Color.argb(128, 255, 0, 0))
-                        .strokeColor(SQUARE_COLOUR_SELECTED);
-                for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-                    entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+        if (!cellName.equals("None")) {
+            boolean alreadyMarked = false;
+            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                if (entry.getValue().getTag().equals(cellName)) {
+                    alreadyMarked = true;
+                    break;
                 }
-                selectedSquareName = cellName;
-                selectedSquareId = regionsCount;
-                Polygon newSquare = swarmMap.addPolygon(squareOptions);
-                newSquare.setTag(cellName);
-                newSquare.setZIndex(10);
-                squaresList.put(selectedSquareId, newSquare);
-                regionsCount += 1;
+            }
+            if (!alreadyMarked) {
+                boolean isCreated;
+                isCreated = coppeliaSimApi.callAttr("createDangerousRegion", sim,
+                        regionsCount, cellBoundary[4][0], cellBoundary[4][1]).toBoolean();
+                if (isCreated) {
+                    PolygonOptions squareOptions = new PolygonOptions()
+                            .add(simCoordinatesToLatLng(cellBoundary[0]),
+                                    simCoordinatesToLatLng(cellBoundary[1]),
+                                    simCoordinatesToLatLng(cellBoundary[3]),
+                                    simCoordinatesToLatLng(cellBoundary[2]),
+                                    simCoordinatesToLatLng(cellBoundary[0]))
+                            .strokeWidth(10)
+                            .clickable(true)
+                            .fillColor(Color.argb(128, 255, 0, 0))
+                            .strokeColor(SQUARE_COLOUR_SELECTED);
+                    for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                        entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+                    }
+                    selectedSquareName = cellName;
+                    selectedSquareId = regionsCount;
+                    Polygon newSquare = swarmMap.addPolygon(squareOptions);
+                    newSquare.setTag(cellName);
+                    newSquare.setZIndex(10);
+                    squaresList.put(selectedSquareId, newSquare);
+                    regionsCount += 1;
+                }
             }
         }
     }
@@ -392,8 +398,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         if (questionTimes == null || questionTimes.length == 0) {
-            //questionTimes = getQuestionnaireTimes();
-            //questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
+            // = getQuestionnaireTimes();
+            questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
         }
 
         for (Marker marker: robotPositions) {

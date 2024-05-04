@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
@@ -120,9 +121,9 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
                 .strokeWidth(5)
                 .strokeColor(Color.DKGRAY));
 
-        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SwarmActivity.mapCentre, 19.0f));
+        swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SwarmActivity.mapCentre, 19.05f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        swarmMap.getUiSettings().setZoomControlsEnabled(true);
+        swarmMap.getUiSettings().setAllGesturesEnabled(false);
 
         calculateGraphicsDistances();
 
@@ -133,6 +134,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         grid.drawGrid();
 
         swarmMap.setOnMapClickListener(latLng -> {
+
             calculateGraphicsDistances();
             markSquare(latLng);
         });
@@ -141,7 +143,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
             float[] simCoordinates = latLngToSimCoordinates(latLng);
             String cellName = grid.getCellName(simCoordinates);
             for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-                if (!cellName.equals(entry.getValue().getTag())) {
+                if (!cellName.equals("None") && !cellName.equals(entry.getValue().getTag())) {
                     entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
                 } else {
                     selectedSquareId = entry.getKey();
@@ -175,6 +177,16 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void calculateGraphicsDistances() {
+        LatLng currentLatLng  = swarmMap.getCameraPosition().target;
+        if (!currentLatLng .equals(SwarmActivity.mapCentre)) {
+            CameraPosition newPosition = new CameraPosition.Builder()
+                    .target(SwarmActivity.mapCentre) // Set to initial LatLng
+                    .zoom(swarmMap.getCameraPosition().zoom) // Keep current zoom
+                    .tilt(swarmMap.getCameraPosition().tilt) // Keep current tilt
+                    .bearing(swarmMap.getCameraPosition().bearing) // Keep current bearing
+                    .build();
+            swarmMap.moveCamera(CameraUpdateFactory.newCameraPosition(newPosition));
+        }
         leftPointBound = swarmMap.getProjection().toScreenLocation(SwarmActivity.bottomLeftLatLng);
         rightPointBound = swarmMap.getProjection().toScreenLocation(SwarmActivity.bottomRightLatLng);
         screenWidth = rightPointBound.x - leftPointBound.x;
@@ -193,26 +205,28 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         }
 
         String cellName = grid.getCellName(simCoordinates);
-        PolygonOptions squareOptions = new PolygonOptions()
-                .add(simCoordinatesToLatLng(cellBoundary[0]),
-                        simCoordinatesToLatLng(cellBoundary[1]),
-                        simCoordinatesToLatLng(cellBoundary[3]),
-                        simCoordinatesToLatLng(cellBoundary[2]),
-                        simCoordinatesToLatLng(cellBoundary[0]))
-                .strokeWidth(10)
-                .clickable(true)
-                .fillColor(Color.argb(128, 255, 0, 0))
-                .strokeColor(SQUARE_COLOUR_SELECTED);
-        for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
-            entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+        if (!cellName.equals("None")) {
+            PolygonOptions squareOptions = new PolygonOptions()
+                    .add(simCoordinatesToLatLng(cellBoundary[0]),
+                            simCoordinatesToLatLng(cellBoundary[1]),
+                            simCoordinatesToLatLng(cellBoundary[3]),
+                            simCoordinatesToLatLng(cellBoundary[2]),
+                            simCoordinatesToLatLng(cellBoundary[0]))
+                    .strokeWidth(10)
+                    .clickable(true)
+                    .fillColor(Color.argb(128, 255, 0, 0))
+                    .strokeColor(SQUARE_COLOUR_SELECTED);
+            for (Map.Entry<Integer, Polygon> entry : squaresList.entrySet()) {
+                entry.getValue().setStrokeColor(SQUARE_COLOUR_UNSELECTED);
+            }
+            selectedSquareName = cellName;
+            selectedSquareId = markingsCount;
+            Polygon newSquare = swarmMap.addPolygon(squareOptions);
+            newSquare.setTag(cellName);
+            newSquare.setZIndex(10);
+            squaresList.put(selectedSquareId, newSquare);
+            markingsCount += 1;
         }
-        selectedSquareName = cellName;
-        selectedSquareId = markingsCount;
-        Polygon newSquare = swarmMap.addPolygon(squareOptions);
-        newSquare.setTag(cellName);
-        newSquare.setZIndex(10);
-        squaresList.put(selectedSquareId, newSquare);
-        markingsCount += 1;
     }
 
     private void deletePopup(int id, String cellName) {
