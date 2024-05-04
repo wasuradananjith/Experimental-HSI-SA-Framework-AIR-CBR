@@ -398,7 +398,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
 
         if (questionTimes == null || questionTimes.length == 0) {
-            // = getQuestionnaireTimes();
+            //questionTimes = getQuestionnaireTimes();
             questionTimes = new long[]{ timeLeftInMilliseconds - 10000, timeLeftInMilliseconds - 20000};
         }
 

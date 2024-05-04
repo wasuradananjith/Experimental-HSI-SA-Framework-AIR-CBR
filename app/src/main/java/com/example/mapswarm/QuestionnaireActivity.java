@@ -5,9 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.loadinganimation.LoadingAnimation;
 import com.example.mapswarm.db.SQLiteManager;
 import com.example.mapswarm.model.Question;
@@ -35,6 +39,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private boolean isTimeOutQuestionsUpdated = false;
     private LoadingAnimation loadingAnimation;
     private LoadingAnimation ranOutTimeAnimation;
+    private final String ANSWER_REQUIRED = "Please answer the question to continue.";
     Handler handler = new Handler();
     Runnable trackTimer = new Runnable() {
         @Override
@@ -95,9 +100,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
                 String markedCells = mapMarkingFragment.getMarkedCellNames();
                 String specialAnswer = mapMarkingFragment.getSelectedAnswer();
+
                 if (specialAnswer == null) {
                     if ((markedCells.isEmpty())) {
                         currentQuestion.setMarkedCells("skipped");
+                        SpannableStringBuilder biggerText = new SpannableStringBuilder(ANSWER_REQUIRED);
+                        biggerText.setSpan(new RelativeSizeSpan(1.5f), 0, ANSWER_REQUIRED.length(), 0);
+                        Toast.makeText(this, biggerText, Toast.LENGTH_LONG).show();
+                        return;
                     } else {
                         currentQuestion.setMarkedCells(markedCells);
                     }
@@ -109,7 +119,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 currentQuestion.setMcqAnswer("-");
             } else {
                 String answer = nonDrawingFragment.getSelectedAnswer();
-                currentQuestion.setMcqAnswer((answer == null)? "skipped": answer);
+                if (answer == null) {
+                    SpannableStringBuilder biggerText = new SpannableStringBuilder(ANSWER_REQUIRED);
+                    biggerText.setSpan(new RelativeSizeSpan(1.5f), 0, ANSWER_REQUIRED.length(), 0);
+                    Toast.makeText(this, biggerText, Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    currentQuestion.setMcqAnswer(answer);
+                }
                 currentQuestion.setMarkedCells("-");
                 currentQuestion.setNumberOfMarkedCells(0);
             }
