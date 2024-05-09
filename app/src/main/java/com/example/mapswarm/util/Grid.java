@@ -125,10 +125,10 @@ public class Grid {
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Log.i("Test x ", Integer.toString(x));
         Log.i("Test y ", Integer.toString(y));
-        if (x <= 0 || x >= 12) {
+        if (x <= 0 || x >= 13) {
             return "None";
         }
-        if (y <= 0 || y >= 12) {
+        if (y <= 0 || y >= 13) {
             return "None";
         }
         String letterX = alphabet.substring(x-1, x);

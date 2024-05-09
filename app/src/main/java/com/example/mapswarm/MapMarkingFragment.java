@@ -313,6 +313,7 @@ public class MapMarkingFragment extends Fragment implements OnMapReadyCallback {
         for (Integer id : squaresList.keySet()) {
             Objects.requireNonNull(squaresList.get(id)).remove();
         }
+        squaresList = new HashMap<>();
         selectedSquareName = null;
         selectedSquareId = null;
     }
