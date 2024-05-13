@@ -75,7 +75,8 @@ public class MyTimer {
             timeLeftText += "0";
         }
         timeLeftText += seconds;
-        timerTextView.setText(timeLeftText);
+        if (timerTextView != null)
+            timerTextView.setText(timeLeftText);
     }
 
     /**

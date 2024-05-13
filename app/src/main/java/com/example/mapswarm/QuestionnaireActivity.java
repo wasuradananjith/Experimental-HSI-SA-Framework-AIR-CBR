@@ -32,9 +32,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private int activityRound = 0;
     private int questionRound = 0;
     private Question currentQuestion = null;
+    private MyTimer displayTimer;
     private MyTimer timer;
     private TextView timerTextView;
-    private long timeLeftInMilliseconds = 150000;
+    private long displayTimeLeftInMilliseconds = 150000;
+    private long timeLeftInMilliseconds = 3600000;
     private long questionStartTime = 0;
     private boolean isTimeOutQuestionsUpdated = false;
     private LoadingAnimation loadingAnimation;
@@ -60,8 +62,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
         loadingAnimation = findViewById(R.id.loadingAnim);
         ranOutTimeAnimation = findViewById(R.id.ranOutTimeAnim);
         timerTextView = findViewById(R.id.timerText);
-        timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
+        displayTimer = new MyTimer(false, displayTimeLeftInMilliseconds, timerTextView);
+        timer = new MyTimer(false, timeLeftInMilliseconds, null);
+        displayTimer.updateTimer();
         timer.updateTimer();
+        displayTimer.startStop();
         timer.startStop();
 
         // Retrieve the filter data count passed from the previous activity
@@ -179,6 +184,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 timer1.schedule(new TimerTask() {
                     public void run() {
                         finish();
+                        displayTimer.getCountDownTimer().cancel();
                         timer.getCountDownTimer().cancel();
                     }
                 }, 3000);
@@ -240,7 +246,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
      */
     public void periodicWork() {
         if (!isTimeOutQuestionsUpdated) {
-            if (timer.getTimeLeftInMilliseconds() <= 10000) {
+            if (displayTimer.getTimeLeftInMilliseconds() <= 10000) {
                 timerTextView.setTextColor(Color.RED);
 //                if (timer.getTimeLeftInMilliseconds() <= 1000) {
 //                    isTimeOutQuestionsUpdated = true;
