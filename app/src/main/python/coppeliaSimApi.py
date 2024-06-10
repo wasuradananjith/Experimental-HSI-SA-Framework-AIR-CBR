@@ -27,9 +27,9 @@ def connect():
 def isSimStopped(sim):
     return sim.getSimulationState() == sim.simulation_stopped;
 
-def getCuboidsLocations(sim):
+def getCuboidsLocations(sim, trappedRobots):
     parentScriptHandle = sim.getScript(0)
-    return json.dumps(sim.callScriptFunction("getCuboidsLocations", parentScriptHandle))
+    return json.dumps(sim.callScriptFunction("getCuboidsLocations", parentScriptHandle, trappedRobots))
 
 def getQuestionnaireTimeSeeds(sim):
     parentScriptHandle = sim.getScript(0)

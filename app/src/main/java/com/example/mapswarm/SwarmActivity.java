@@ -106,6 +106,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private long timeLeftInMilliseconds = 300000;
     private int trappedDuration = 10000;
     private double trappedRange = 1;
+    private boolean trappedRobotMarkingNeededAfterTenSeconds = false;
+    ArrayList<double[]> trappedRobots = new ArrayList<double[]>();
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
     private boolean isTargetRegionRetrieved = false;
@@ -458,7 +460,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             // Check the status of the simulation
             try {
                 // Retrieve the locations of the robots
-                pyObject = coppeliaSimApi.callAttr("getCuboidsLocations", sim);
+                String trappedRobotsString = "";
+                for (double[] position: trappedRobots) {
+                    trappedRobotsString = trappedRobotsString + "X" + position[0] +
+                            "Y" + position[1] + "_";
+                }
+
+                pyObject = coppeliaSimApi.callAttr("getCuboidsLocations", sim, trappedRobotsString);
                 isSimStopped = false;
             } catch (PyException e) {
                 if (e.getMessage() != null && e.getMessage().contains(" has already ended")) {
@@ -514,6 +522,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
                 // Mark the robots positions
                 int count = 0;
+                trappedRobots = new ArrayList<double[]>();
                 for (String key : locations.keySet()) {
                     if (key.equals(NOTIFICATION_MESSAGES) ||
                             key.equals(NOTIFICATION_MESSAGES_KEYS)) {
@@ -536,6 +545,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                                 && !isInfDegradedDimMatched(Dims.DimAll.toString())
                                 && isRobotTrapped(key, robotPosition)) {
                             iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                            trappedRobots.add(robotPosition);
                         }
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
                                 .position(simCoordinatesToLatLng(robotPosition))
@@ -800,6 +810,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     public void pauseSimulationForQuestions(int filterDataCount, long questionRoundTime) {
         fromQuestionPause = true;
+        String trappedRobotsString = "";
+
         Integer state = coppeliaSimApi.callAttr("pauseSim", sim).toInt();
         Log.i("Log: pauseState ", state.toString());
         if (state > 0) {
