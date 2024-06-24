@@ -215,6 +215,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         swarmMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCentre, 19.35f));
         swarmMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         swarmMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(false);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
         swarmMap.getUiSettings().setRotateGesturesEnabled(false);
         swarmMap.getUiSettings().setScrollGesturesEnabled(false);
         swarmMap.getUiSettings().setTiltGesturesEnabled(false);
