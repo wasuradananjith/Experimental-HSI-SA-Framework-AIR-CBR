@@ -489,11 +489,20 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                             key.equals(NOTIFICATION_MESSAGES_KEYS)) {
                         updateMessages(locations);
                     } else {
-                        Float iconColour = isDeactivated(deactivatedCuboids, key) ?
-                                BitmapDescriptorFactory.HUE_CYAN : BitmapDescriptorFactory.HUE_BLUE;
+                        Float iconColour;
+                        boolean deactivatedFlag = isDeactivated(deactivatedCuboids, key);
+                        if (!isInfDegradedDimMatched(Dims.Dim5.toString()) &&
+                                !isInfDegradedDimMatched(Dims.DimAll.toString())) {
+                            iconColour = deactivatedFlag ?
+                                    BitmapDescriptorFactory.HUE_CYAN : BitmapDescriptorFactory.HUE_BLUE;
+                        } else {
+                            // if the deactivated robots information have been degraded
+                            iconColour = BitmapDescriptorFactory.HUE_BLUE;
+                        }
                         double[] robotPosition = new double[]{(double) locations.get(key).get(0),
                                 (double) locations.get(key).get(1)};
-                        if (iconColour.equals(BitmapDescriptorFactory.HUE_BLUE) && isRobotTrapped(key, robotPosition)) {
+                        if (!deactivatedFlag && iconColour.equals(BitmapDescriptorFactory.HUE_BLUE)
+                                && isRobotTrapped(key, robotPosition)) {
                             iconColour = BitmapDescriptorFactory.HUE_YELLOW;
                         }
                         Marker marker = swarmMap.addMarker(new MarkerOptions()
