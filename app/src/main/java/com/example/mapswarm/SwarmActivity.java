@@ -44,7 +44,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
@@ -74,6 +73,18 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String NOTIFICATION_MESSAGES_KEYS = "messagesKeys";
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String TARGET_CELL_REACHED = "targetCellReached";
+    private static final String DEGRADED_DIM = "degradedDim";
+    private String degradedDim = "DimAll";
+    private enum Dims {
+        Dim1, // Location information of the robots and the target
+        Dim2, //  Motion and spatial state information of the robots
+        Dim3, // Temporal progress information
+        Dim4, // Dynamic obstacles status information
+        Dim5, // Robot loss information
+        Dim6, // Robot stuck information
+        DimAll, // All the dimensions
+        DimNone; // None of the dimensions
+    }
     private boolean targetCellReached = false;
     private float[] targetPosition;
     private String targetCell;
@@ -436,9 +447,14 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             locations = readLocationsFromJson(pyObject.toString());
 
             if (locations.size() != 0) {
+                if (locations.containsKey(DEGRADED_DIM)) {
+                    degradedDim = locations.get(DEGRADED_DIM).get(0).toString();
+                    locations.remove(DEGRADED_DIM);
+                }
                 // Mark the target cell if the target cell is reached by at least one robot
                 if (locations.containsKey(TARGET_CELL_REACHED)) {
-                    if (!targetCellReached && (Boolean) locations.get(TARGET_CELL_REACHED).get(0)) {
+                    if (!isInfDegradedDimMatched(Dims.Dim1.toString()) &&
+                            !targetCellReached && (Boolean) locations.get(TARGET_CELL_REACHED).get(0)) {
                         targetCellReached = true;
                         if (targetPosition != null) {
                             float[][] cellBoundary = grid.getCellBoundary(targetPosition);
@@ -577,9 +593,12 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             targetRegionData = coppeliaSimApi.callAttr("getTargetPosition", sim);
             Log.i("Sim targetRegionData", String.valueOf(targetRegionData));
             isSimStopped = false;
-            isTargetRegionRetrieved = true;
             targetPosition = targetRegionData.toJava(float[].class);
             targetCell = grid.getCellName(targetPosition);
+            if (isInfDegradedDimMatched(Dims.Dim1.toString()) || isInfDegradedDimMatched(Dims.DimAll.toString())) {
+                return;
+            }
+            isTargetRegionRetrieved = true;
             float[][] cellBoundary = grid.getNearestRandomCellBoundary(targetPosition);
             swarmMap.addPolygon(new PolygonOptions()
                     .add(simCoordinatesToLatLng(cellBoundary[0]),
@@ -992,6 +1011,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         };
         swipeCountDownTimer.start();
+    }
+
+    private boolean isInfDegradedDimMatched(String dimName) {
+        return dimName.equals(degradedDim);
     }
 
     private double euclideanDistance(double[] pos1, double[] pos2) {
