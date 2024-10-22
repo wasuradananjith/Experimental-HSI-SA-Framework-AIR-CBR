@@ -502,6 +502,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                         double[] robotPosition = new double[]{(double) locations.get(key).get(0),
                                 (double) locations.get(key).get(1)};
                         if (!deactivatedFlag && iconColour.equals(BitmapDescriptorFactory.HUE_BLUE)
+                                && !isInfDegradedDimMatched(Dims.Dim6.toString())
+                                && !isInfDegradedDimMatched(Dims.DimAll.toString())
                                 && isRobotTrapped(key, robotPosition)) {
                             iconColour = BitmapDescriptorFactory.HUE_YELLOW;
                         }
