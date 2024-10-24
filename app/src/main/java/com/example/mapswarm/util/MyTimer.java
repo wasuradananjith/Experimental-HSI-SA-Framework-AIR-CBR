@@ -2,6 +2,7 @@ package com.example.mapswarm.util;
 
 import android.graphics.Color;
 import android.os.CountDownTimer;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MyTimer {
@@ -9,7 +10,9 @@ public class MyTimer {
     private CountDownTimer countDownTimer;
     private Boolean timerRunning;
     private long timeLeftInMilliseconds;
+    private long timeLeftInMillisecondsInStart;
     private TextView timerTextView;
+    private ProgressBar progressBar;
 
     /**
      * Constructor for timer
@@ -17,10 +20,12 @@ public class MyTimer {
      * @param timeLeftInMilliseconds remaining time
      * @param textView text view to update the time
      */
-    public MyTimer(Boolean timerRunning, long timeLeftInMilliseconds, TextView textView) {
+    public MyTimer(Boolean timerRunning, long timeLeftInMilliseconds, TextView textView, ProgressBar progressBar) {
         this.timerRunning = timerRunning;
         this.timeLeftInMilliseconds = timeLeftInMilliseconds;
+        this.timeLeftInMillisecondsInStart = timeLeftInMilliseconds;
         this.timerTextView = textView;
+        this.progressBar = progressBar;
     }
 
     /**
@@ -77,6 +82,8 @@ public class MyTimer {
         timeLeftText += seconds;
         if (timerTextView != null)
             timerTextView.setText(timeLeftText);
+        if (progressBar != null)
+            progressBar.setProgress((int) (timeLeftInMillisecondsInStart/1000 - timeLeftInMilliseconds/1000));
     }
 
     /**

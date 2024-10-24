@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,7 +75,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String TARGET_CELL_REACHED = "targetCellReached";
     private static final String DEGRADED_DIM = "degradedDim";
-    private String degradedDim = "DimAll";
+    private String degradedDim = "DimNotDecided";
     private enum Dims {
         Dim1, // Location information of the robots and the target
         Dim2, //  Motion and spatial state information of the robots
@@ -83,7 +84,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         Dim5, // Robot loss information
         Dim6, // Robot stuck information
         DimAll, // All the dimensions
-        DimNone; // None of the dimensions
+        DimNone, // None of the dimensions
+        DimNotDecided; // Dim not decided yet
     }
     private boolean targetCellReached = false;
     private float[] targetPosition;
@@ -92,6 +94,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private Switch mapLockSwitch;
     private Button simControlButton;
     private TextView timerTextView;
+    private ProgressBar progressBar;
+    private boolean timerDecisionTaken;
     public static PyObject coppeliaSimApi;
     public static PyObject sim = null;
     public static int simOffset = 60;
@@ -168,6 +172,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         supportMapFragment.getMapAsync(this);
 
         messageView = findViewById(R.id.messagesTextView);
+        progressBar = findViewById(R.id.progressBar);
+
         messageListAdapter = new MessageListAdapter(messageList, this);
         messageView.setAdapter(messageListAdapter);
 
@@ -181,7 +187,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 //        });
 
         timerTextView = findViewById(R.id.timerText);
-        timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView);
+        timer = new MyTimer(false, timeLeftInMilliseconds, timerTextView, progressBar);
+        progressBar.setMax((int) timeLeftInMilliseconds/1000);
+        progressBar.setProgress(0);
 
         loadingAnimation = findViewById(R.id.loadingAnim);
         endingAnimation = findViewById(R.id.endingAnim);
@@ -212,6 +220,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        progressBar.setVisibility(View.INVISIBLE);
+        timerDecisionTaken = false;
+
         swarmMap = googleMap;
 
         swarmMap.addPolygon(new PolygonOptions()
@@ -381,6 +392,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void periodicWork() {
 
+        if (!timerDecisionTaken && (isInfDegradedDimMatched(Dims.Dim3.toString()) ||
+                isInfDegradedDimMatched(Dims.DimAll.toString()))) {
+            progressBar.setVisibility(View.VISIBLE);
+            timerTextView.setVisibility(View.INVISIBLE);
+            timerDecisionTaken = true;
+        }
+
         if (!isSimStopped && timer.getTimeLeftInMilliseconds() <= 10000) {
             timerTextView.setTextColor(Color.RED);
             if (timerTextView.getText().equals("0:00") || timer.getTimeLeftInMilliseconds() <= 1000) {
@@ -454,6 +472,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                 // Mark the target cell if the target cell is reached by at least one robot
                 if (locations.containsKey(TARGET_CELL_REACHED)) {
                     if (!isInfDegradedDimMatched(Dims.Dim1.toString()) &&
+                            !isInfDegradedDimMatched(Dims.DimAll.toString()) &&
                             !targetCellReached && (Boolean) locations.get(TARGET_CELL_REACHED).get(0)) {
                         targetCellReached = true;
                         if (targetPosition != null) {
@@ -606,7 +625,8 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             isSimStopped = false;
             targetPosition = targetRegionData.toJava(float[].class);
             targetCell = grid.getCellName(targetPosition);
-            if (isInfDegradedDimMatched(Dims.Dim1.toString()) || isInfDegradedDimMatched(Dims.DimAll.toString())) {
+            if (isInfDegradedDimMatched(Dims.Dim1.toString()) || isInfDegradedDimMatched(Dims.DimAll.toString())
+            || isInfDegradedDimMatched(Dims.DimNotDecided.toString())) {
                 return;
             }
             isTargetRegionRetrieved = true;

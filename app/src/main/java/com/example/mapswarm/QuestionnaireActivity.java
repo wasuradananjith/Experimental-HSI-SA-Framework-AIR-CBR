@@ -62,8 +62,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
         loadingAnimation = findViewById(R.id.loadingAnim);
         ranOutTimeAnimation = findViewById(R.id.ranOutTimeAnim);
         timerTextView = findViewById(R.id.timerText);
-        displayTimer = new MyTimer(false, displayTimeLeftInMilliseconds, timerTextView);
-        timer = new MyTimer(false, timeLeftInMilliseconds, null);
+        displayTimer = new MyTimer(false, displayTimeLeftInMilliseconds, timerTextView, null);
+        timer = new MyTimer(false, timeLeftInMilliseconds, null, null);
         displayTimer.updateTimer();
         timer.updateTimer();
         displayTimer.startStop();
