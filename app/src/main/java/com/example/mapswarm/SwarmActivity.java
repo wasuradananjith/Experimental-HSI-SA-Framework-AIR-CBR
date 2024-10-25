@@ -3,6 +3,7 @@ package com.example.mapswarm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -220,7 +221,6 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        progressBar.setVisibility(View.INVISIBLE);
         timerDecisionTaken = false;
 
         swarmMap = googleMap;
@@ -394,8 +394,19 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if (!timerDecisionTaken && (isInfDegradedDimMatched(Dims.Dim3.toString()) ||
                 isInfDegradedDimMatched(Dims.DimAll.toString()))) {
-            progressBar.setVisibility(View.VISIBLE);
-            timerTextView.setVisibility(View.INVISIBLE);
+            timerTextView.setVisibility(View.GONE);
+
+            // Set layout parameters to position progressBar in place of timerText
+            ConstraintLayout.LayoutParams timerTextParams = (ConstraintLayout.LayoutParams) timerTextView.getLayoutParams();
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) progressBar.getLayoutParams();
+            params.startToStart = timerTextParams.startToStart;
+            params.topToTop = timerTextParams.topToTop;
+            params.endToEnd = timerTextParams.endToEnd;
+            params.bottomToBottom = timerTextParams.bottomToBottom;
+            params.topMargin = timerTextParams.topMargin;
+            params.bottomMargin = timerTextParams.bottomMargin;
+            progressBar.setLayoutParams(params);
+
             timerDecisionTaken = true;
         }
 
