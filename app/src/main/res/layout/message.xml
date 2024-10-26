@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginBottom="@dimen/_25sdp"
+        android:layout_marginBottom="@dimen/_35sdp"
         android:text="Admin"
         android:textSize="@dimen/_4sdp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -55,8 +55,7 @@
                 android:paddingLeft="@dimen/_5sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingRight="@dimen/_5sdp"
-                android:text="Message"
-                android:maxLines="5"
+                android:text="A fire has been reported in the vicinity of H2 and H6. Emergency services are responding."
                 android:textColor="#000000"
                 android:textSize="@dimen/_5sdp" />
         </LinearLayout>
