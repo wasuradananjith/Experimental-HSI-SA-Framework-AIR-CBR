@@ -77,6 +77,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String TARGET_CELL_REACHED = "targetCellReached";
     private static final String DEGRADED_DIM = "degradedDim";
     private String degradedDim = "DimNotDecided";
+    private boolean isQuestionBankInitialised = false;
     private enum Dims {
         Dim1, // Location information of the robots and the target
         Dim2, //  Motion and spatial state information of the robots
@@ -252,7 +253,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         simControlButton = findViewById(R.id.simControlButton);
         simControlButton.setOnClickListener(view -> {
             if (simControlButton.getText().equals("Start")) {
-                initializeQuestionBankAndStartSimulation();
+                startSimulationAndDrawTargetRegion();
             } else if (simControlButton.getText().equals("Pause")) {
                 simControlButton.setText("Resume");
                 pauseSimulation();
@@ -393,6 +394,10 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void periodicWork() {
+
+        if (!degradedDim.equals("DimNotDecided") && !isQuestionBankInitialised) {
+            initializeQuestionBank(degradedDim);
+        }
 
         if (!timerDecisionTaken && (isInfDegradedDimMatched(Dims.Dim3.toString()) ||
                 isInfDegradedDimMatched(Dims.DimAll.toString()))) {
@@ -768,8 +773,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    public void initializeQuestionBankAndStartSimulation() {
-        initializeQuestionBank();
+    public void startSimulationAndDrawTargetRegion() {
         startSimulation();
         drawTargetRegion();
     }
@@ -859,7 +863,7 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     private boolean simControlOnLongPress() {
         if (simControlButton.getText().equals("Start")) {
-            initializeQuestionBankAndStartSimulation();
+            startSimulationAndDrawTargetRegion();
             return true;
         }
 
@@ -916,14 +920,30 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     /**
      * Initialise the question bank for the new round
      */
-    public void initializeQuestionBank() {
+    public void initializeQuestionBank(String degradedDim) {
         SQLiteManager sqLiteManager = new SQLiteManager(this);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         try {
             sqLiteManager.open();
             sqLiteManager.dropQuestionBankIfAlreadyExists();
             sqLiteManager.createQuestionBank();
-            InputStream inputStream = getResources().openRawResource(R.raw.questions);
+            InputStream inputStream = null;
+            if (degradedDim.equals(Dims.Dim1.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdim1);
+            } else if (degradedDim.equals(Dims.Dim3.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdim3);
+            } else if (degradedDim.equals(Dims.Dim4.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdim4);
+            } else if (degradedDim.equals(Dims.Dim5.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdim5);
+            } else if (degradedDim.equals(Dims.Dim6.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdim6);
+            } else if (degradedDim.equals(Dims.DimNone.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdimnone);
+            } else if (degradedDim.equals(Dims.DimAll.toString())) {
+                inputStream = getResources().openRawResource(R.raw.questionsdimall);
+            }
+
             sqLiteManager.insertQuestionBankData(inputStream);
 
             // Update the round number for the user
