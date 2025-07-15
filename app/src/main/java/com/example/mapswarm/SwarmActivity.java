@@ -76,7 +76,11 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String DEACTIVATED_CUBOIDS_INFO = "deactivatedCuboids";
     private static final String TARGET_CELL_REACHED = "targetCellReached";
     private static final String DEGRADED_DIM = "degradedDim";
+    private static final String LAG_PROPERTY = "lagProperty";
+    private static final String LAG_PROPERTY_TRAPPED_ROBOTS = "trapped-robots";
+    private static final String LAG_PROPERTY_ALL = "all";
     private String degradedDim = "DimNotDecided";
+    private String lagProperty = "LagPropertyNotDecided";
     private boolean isQuestionBankInitialised = false;
     private enum Dims {
         Dim1, // Location information of the robots and the target
@@ -105,10 +109,13 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
     private int swipeRadius = 8;
     private int swipeForceStrength = 1000;
     private long timeLeftInMilliseconds = 300000;
+    private long lastTrappedRobotsUpdatedTime = timeLeftInMilliseconds;
+    private long lagTime = 500;
     private int trappedDuration = 10000;
     private double trappedRange = 1;
     private boolean trappedRobotMarkingNeededAfterTenSeconds = false;
     ArrayList<double[]> trappedRobots = new ArrayList<double[]>();
+    ArrayList<String> laggedTrappedRobots = new ArrayList<String>();
     private boolean isSimStopped = false;
     private boolean isSimStoppedByTimeout = false;
     private boolean isTargetRegionRetrieved = false;
@@ -491,7 +498,9 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
             if (locations.size() != 0) {
                 if (locations.containsKey(DEGRADED_DIM)) {
                     degradedDim = locations.get(DEGRADED_DIM).get(0).toString();
+                    lagProperty = locations.get(LAG_PROPERTY).get(0).toString();
                     locations.remove(DEGRADED_DIM);
+                    locations.remove(LAG_PROPERTY);
                 }
                 // Mark the target cell if the target cell is reached by at least one robot
                 if (locations.containsKey(TARGET_CELL_REACHED)) {
@@ -527,7 +536,23 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
 
                 // Mark the robots positions
                 int count = 0;
+                boolean updateLaggedTrappedRobots = false;
                 trappedRobots = new ArrayList<double[]>();
+
+                // Check whether the lag property is set to trapped-robots and decide whether
+                // the trapped robots should be updated or not in this iteration
+                if (lagProperty.equals(LAG_PROPERTY_TRAPPED_ROBOTS) ||
+                        lagProperty.equals(LAG_PROPERTY_ALL)) {
+                    long timeLeft = timer.getTimeLeftInMilliseconds();
+                    if (lastTrappedRobotsUpdatedTime - timeLeft >= lagTime) {
+                        updateLaggedTrappedRobots = true;
+                        laggedTrappedRobots = new ArrayList<>();
+                        lastTrappedRobotsUpdatedTime = timeLeft;
+                    }
+                    else {
+                        updateLaggedTrappedRobots = false;
+                    }
+                }
                 for (String key : locations.keySet()) {
                     if (key.equals(NOTIFICATION_MESSAGES) ||
                             key.equals(NOTIFICATION_MESSAGES_KEYS)) {
@@ -549,7 +574,19 @@ public class SwarmActivity extends AppCompatActivity implements OnMapReadyCallba
                                 && isRobotTrapped(key, robotPosition)) {
                             if (!isInfDegradedDimMatched(Dims.Dim6.toString())
                                     && !isInfDegradedDimMatched(Dims.DimAll.toString())) {
-                                iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                                if (lagProperty.equals(LAG_PROPERTY_TRAPPED_ROBOTS) ||
+                                        lagProperty.equals(LAG_PROPERTY_ALL)) {
+                                    if (updateLaggedTrappedRobots) {
+                                        iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                                        laggedTrappedRobots.add(key);
+                                    } else {
+                                        if (laggedTrappedRobots.contains(key)) {
+                                            iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                                        }
+                                    }
+                                } else {
+                                    iconColour = BitmapDescriptorFactory.HUE_YELLOW;
+                                }
                             }
                             trappedRobots.add(robotPosition);
                         }
