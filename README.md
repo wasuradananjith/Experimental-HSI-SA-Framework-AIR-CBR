@@ -9,12 +9,6 @@ The repository consists of two main components:
 1. **The SA Monitoring Android App Code:** An application that allows an operator to guide a robotic swarm.
 2. **The Robotic Simulation Environment (CoppeliaSim):** The simulated robotic swarm backend, located in the `Tasks` folder, which communicates with the Android application to execute the human-swarm collaboration scenarios.
 
-### Academic Citation
-If you use this interface framework or code in your research, please cite our related publications:
-
-(Placeholder for THRI Journal Paper - Update when published)
-Wattearachchi, W. D., et al. "A Study on Human-Swarm Interaction: A Framework for Assessing Situation Awareness and Task Performance."
-
 ---
 
 ## 🌿 Branch Information: `user-study-1-code`
@@ -83,3 +77,13 @@ Note: Port 23000 is the default port for the ZeroMQ (ZMQ) Remote API in modern v
 <img src="./Screenshots/4 Swarm Activity Screen.jpg" alt="Swarm Activity Screen">
 3. Tap "Start" on the tablet.
 The Android app will automatically send the command over the ZMQ API to start the CoppeliaSim simulation on your PC. During the task, the tablet interface will automatically pause the swarm and prompt the operator with Situation Awareness (SA) questions as described in our methodology.
+
+---
+## Academic Citation
+If you use this interface framework or code in your research, please cite our related publications:
+
+(Placeholder for THRI Journal Paper - Update when published)
+Wattearachchi, W. D., et al. "A Study on Human-Swarm Interaction: A Framework for Assessing Situation Awareness and Task Performance."
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
