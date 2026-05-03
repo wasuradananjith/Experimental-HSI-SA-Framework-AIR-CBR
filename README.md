@@ -55,7 +55,7 @@ The simulated robot environment is handled by CoppeliaSim.
 2. Inside, you will find two folders: `Attempt 1` and `Attempt 2`. 
 3. Open either folder and launch the specific hazard/danger type file you wish to test using **CoppeliaSim Edu 4.4.0**. Do not start the simulation yet. The correctly loaded simulation in CoppeliaSim should be as below in the screenshot.
 
-<img src="./Screenshots/1 CoppeliaSim.png" width="600" alt="CoppeliaSim Robots Environment Screenshot">
+<img src="./Screenshots/1 CoppeliaSim.png" alt="CoppeliaSim Robots Environment Screenshot">
 
 ### Step 2: Android App Startup
 The Android application is installed directly to the testing tablet via USB debugging.
@@ -63,7 +63,7 @@ The Android application is installed directly to the testing tablet via USB debu
 2. Connect the tablet to your computer using a USB-C to USB-C cable.
 3. Open this project in **Android Studio Electric Eel**.
 4. Deploy the app to the tablet by selecting your device and clicking "Run" (Shift + F10). *(See the [Android Studio Deployment Guide](https://developer.android.com/studio/run) for detailed instructions).* The device should show the below screen after when the App is sucessfully deployed and started.
-<img src="./Screenshots/2 Android App Startup Screen.jpg" width="600" alt="Android App Startup Screen">
+<img src="./Screenshots/2 Android App Startup Screen.jpg" alt="Android App Startup Screen">
 
 ### Step 3: Connect the App to the Robot Environment
 We use a direct USB-tethered connection (rather than Wi-Fi) to ensure zero latency between the tablet and the CoppeliaSim backend. 
@@ -75,11 +75,11 @@ We use a direct USB-tethered connection (rather than Wi-Fi) to ensure zero laten
    ```
 Note: Port 23000 is the default port for the ZeroMQ (ZMQ) Remote API in modern versions of CoppeliaSim, which establishes the communication bridge between the simulation and the Android App. If it is correctly setup, the port 23000 should be printed as shown in the below screenshot.
 
-<img src="./Screenshots/3 abd reverese.jpg" width="600" alt="ABD Reverse Command Output">
+<img src="./Screenshots/3 abd reverese.jpg" alt="ABD Reverse Command Output">
 
 ### Step 4: Start the Task
 1. Open the newly installed app on the Android tablet.
 2. On the initial launch screen (shown in Step 2), click "Display Swarm". This will open the main task activity interface as shown in the below screenshot.
-<img src="./Screenshots/4 Swarm Activity Screen.jpg" width="600" alt="Swarm Activity Screen">
+<img src="./Screenshots/4 Swarm Activity Screen.jpg" alt="Swarm Activity Screen">
 3. Tap "Start" on the tablet.
 The Android app will automatically send the command over the ZMQ API to start the CoppeliaSim simulation on your PC. During the task, the tablet interface will automatically pause the swarm and prompt the operator with Situation Awareness (SA) questions as described in our methodology.
