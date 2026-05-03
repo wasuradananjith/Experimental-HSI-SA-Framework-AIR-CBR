@@ -16,6 +16,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/*
+ * Functionality of this class is removed from the app.
+ */
 public class LoginActivity extends AppCompatActivity {
 
     TextInputEditText usernameEditText, passwordEditText;
