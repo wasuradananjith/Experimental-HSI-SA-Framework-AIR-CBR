@@ -82,6 +82,9 @@ The Android app will automatically send the command over the ZMQ API to start th
 ## Academic Citation
 If you use this interface framework or code in your research, please cite our related publications:
 
+W. D. Wattearachchi., E. Lakshika, K. Kasmarik, & M. Barlow, "Designing Effective Human-Swarm Interaction Interfaces: Insights from a User Study on Task Performance", 2025 IEEE International Conference on Systems, Man, and Cybernetics (SMC), Vienna, Austria, doi: 10.1109/SMC58881.2025.11343025.
+W. D. Wattearachchi., E. Lakshika, K. Kasmarik, & M. Barlow, "Understanding Human Situation Awareness in One-to-Many Human-Robot Interaction Scenarios", Australasian Joint Conference on Artificial Intelligence (AJCAI) 2025, Canberra, Australia, doi: 10.1007/978-981-95-4972-6_37.
+
 (Placeholder for THRI Journal Paper - Update when published)
 Wattearachchi, W. D., et al. "A Study on Human-Swarm Interaction: A Framework for Assessing Situation Awareness and Task Performance."
 
