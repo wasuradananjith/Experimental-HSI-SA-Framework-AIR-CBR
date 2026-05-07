@@ -16,7 +16,7 @@ To ensure strict reproducibility for our published user studies, the code, confi
 
 Please navigate to the relevant branch for the study you wish to review or replicate:
 
-*   [`user-study-1-code`](https://github.com/wasuradananjith/experimental-hsi-sa-framework/tree/user-study-1-code) - Contains the code, CoppeliaSim environments, and full setup guide for **User Study 1** (Single-target search task with distributed, moving, and spreading hazard profiles).
+*   [`user-study-1-code`](https://github.com/air-cbr/experimental-hsi-sa-framework/tree/user-study-1-code) - Contains the code, CoppeliaSim environments, and full setup guide for **User Study 1** (Single-target search task with distributed, moving, and spreading hazard profiles).
 *   *(Future studies will be added as independent branches).*
 
 ----
